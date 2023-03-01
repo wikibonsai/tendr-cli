@@ -18,7 +18,7 @@ CLI tooling to edit [`[[wikirefs]]`](https://github.com/wikibonsai/wikirefs) and
 Install with [npm](https://docs.npmjs.com/cli/v9/commands/npm-install):
 
 ```
-npm install -g tendr
+npm install -g tendr-cli
 ```
 
 
