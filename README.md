@@ -32,24 +32,13 @@ $ tendr ls <filename>
 
 ## Commands
 
-### `stat`
+### `stat` (⚠️ TODO)
 
-generate a status report. runs on all files in current directory and all subdirectories.
+Generates a status report. Runs on all files in current directory and all subdirectories.
 
 ```
 $ tendr stat
 ```
-
-- files (doctype)
-  - valid filenames
-  - duplicate filenames
-- default
-- zombies
-- template
-- refs
-- attrs
-- links
-- orphans
 
 ### `list`
 
