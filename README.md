@@ -3,8 +3,8 @@
 ![[A WikiBonsai Project](https://github.com/wikibonsai/wikibonsai)](https://img.shields.io/badge/%F0%9F%8E%8B-A%20WikiBonsai%20Project-brightgreen)
 [![NPM package](https://img.shields.io/npm/v/tendr-cli)](https://npmjs.org/package/tendr-cli)
 
-<div style="width:35%; margin: auto; padding-block: 2em; display: flex; justify-content: center;">
-  <img src="./tendr.svg"/>
+<div style="width:35%; display: flex; justify-content: center;">
+  <img src="./tendr.svg" width="300" height="300"/>
 </div>
 
 CLI tooling to edit [`[[wikirefs]]`](https://github.com/wikibonsai/wikirefs) and [semantic trees](https://github.com/wikibonsai/semtree) in a collection of markdown files.
