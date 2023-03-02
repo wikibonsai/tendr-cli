@@ -5,10 +5,6 @@ import { list } from '../cmds/list';
 import { rename } from '../cmds/rename';
 import { retype } from '../cmds/retype';
 
-import fs from 'fs';
-// from: https://stackoverflow.com/a/67381214
-const pkg: any = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
-
 
 // notes:
 // <> required
@@ -20,8 +16,8 @@ const tendr: Command = new Command();
 tendr
   .alias('tend')
   .alias('t')
-  .version(pkg.version)
-  .description(pkg.description);
+  .version('0.0.3')
+  .description('cli tools for markdown-based digital gardening');
 // .helpOption('-c, --HELP', 'custom help message')
 
 // commands
