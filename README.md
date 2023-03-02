@@ -3,15 +3,15 @@
 ![[A WikiBonsai Project](https://github.com/wikibonsai/wikibonsai)](https://img.shields.io/badge/%F0%9F%8E%8B-A%20WikiBonsai%20Project-brightgreen)
 [![NPM package](https://img.shields.io/npm/v/tendr-cli)](https://npmjs.org/package/tendr-cli)
 
-<div style="width:35%; display: flex; justify-content: center;">
+<div style="width:100%; display: flex; justify-content: center;">
   <img src="./tendr.svg" width="300" height="300"/>
 </div>
+
+⚠️ 🌱 This project is newly sprouted! So please consider it a beta: Remember to backup all data and please use version control.
 
 CLI tooling to edit [`[[wikirefs]]`](https://github.com/wikibonsai/wikirefs) and [semantic trees](https://github.com/wikibonsai/semtree) in a collection of markdown files.
 
 🧑‍🌾 🚰 ✂️ Tend your [🎋 WikiBonsai](https://github.com/wikibonsai/wikibonsai) digital garden with minimalist tooling.
-
-⚠️ 🌱 This project is newly sprouted! So please consider it a beta: Remember to backup all data and please use version control.
 
 ## Install
 
@@ -24,11 +24,31 @@ npm install -g tendr-cli
 
 ## Use
 
+Example:
+
 ```
-$ tendr ls <filename>
+$ tendr list <filename>
 ```
 
-`tend` and `t` are also valid command aliases.
+Manual:
+
+```
+Usage: tendr|tend|t [options] [command]
+
+cli tools for markdown-based digital gardening
+
+Options:
+  -V, --version                              output the version number
+  -h, --help                                 display help for command
+
+Commands:
+  list|ls [options] <filename>               list all references for a given file
+  rename|rn <old-fname> <new-fname>          rename a file and all of its references.
+  retype|rt [options] <old-type> <new-type>  rename reference type and all its occurrences.
+  camltoyaml|ctoy [glob]                     convert between "caml" and "yaml" style attributes.
+  yamltocaml|ytoc [options] [glob]           convert between "caml" and "yaml" style attributes.
+  help [command]                             display help for command
+```
 
 ## Commands
 
@@ -42,75 +62,113 @@ $ tendr stat
 
 ### `list`
 
-list all references for a given file.
+Example:
 
 ```
 $ tendr list <filename>
 ```
 
-`ref-kinds` (reference kinds):
-- ref / attr / link / embed
-- foreref / backref
-- foreattr / backattr
-- forelink / backlink
-- foreembed / backembed
+Manual:
+
+```
+Usage: tendr list|ls [options] <filename>
+
+list all references for a given file
+
+Options:
+  -k, --kind [ref_kinds]  kind of references to list
+                          (kinds: 'ref', 'foreref', 'backref', 'attr',
+                          'foreattr', 'backattr', 'link', 'forelink',
+                          'backlink'; default is 'ref')
+  -h, --help              display help for command
+
+```
 
 ### `rename`
 
-rename a file/doc and all of its references.
+Example:
 
 ```
 $ tendr rename <old-fname> <new-fname>
 ```
 
-kinds:
-- filename / fname
+Manual:
+
+```
+Usage: tendr rename|rn [options] <old-fname> <new-fname>
+
+rename a file and all of its references.
+
+Options:
+  -h, --help  display help for command
+```
 
 ### `retype`
 
-retype a reference type and all its occurrences. the default targets all references (`ref`), but you may target just wikiattrs (`attr`), wikilinks (`link`), or suppress reference renames (`only`).
-
 note: keep in mind this will **not** retype caml primitive properties! this is for wikirefs only.
+
+Example:
 
 ```
 $ tendr retype <old-type> <new-type>
 ```
 
-kinds:
-- ref
-- attr
-- link
+Manual:
+
+```
+Usage: tendr retype|rt [options] <old-type> <new-type>
+
+rename reference type and all its occurrences.
+
+Options:
+  -k, --kind [kind]  kind of entity to rename (kinds: 'reftype', 'attrtype',
+                     'linktype'; default is 'reftype')
+  -h, --help         display help for command
+```
 
 ### `camltoyaml`
 
-convert attributes from `caml` to `yaml` format.
+Example:
 
 ```
 // caml -> yaml
 
-$ tendr ctoy [glob]
+$ tendr camltoyaml [glob]
+```
+
+Manual:
+
+```
+Usage: tendr camltoyaml|ctoy [options] [glob]
+
+convert between "caml" and "yaml" style attributes.
+
+Options:
+  -h, --help  display help for command
 ```
 
 ### `yamltocaml`
 
-convert attributes from `yaml` to `caml` format. (note: will only handle scalar yaml values)
+Example:
 
 ```
 // yaml -> caml
 
-$ tendr ytoc [glob]
+$ tendr yamltocaml [glob]
 ```
 
-## Development
-
-When testing locally, use the following command to run the script from any location:
+Manual:
 
 ```
-$ node -r ts-node/register <path-to-index.ts> <cmd-listed-above>
-```
+Usage: tendr yamltocaml|ytoc [options] [glob]
 
-For example, to list the references for a file in the `./test/fixtures` directory:
+convert between "caml" and "yaml" style attributes.
 
-```
-$ node -r ts-node/register ../src/index.ts list test.md
+Options:
+  -f, --format [format]            how to format caml output (kinds: 'none',
+                                   'pretty', or 'pad'; default is 'none')
+  -l, --list-format [list-format]  how to format caml output lists (kinds:
+                                   'mkdn' or 'comma'; default is 'mkdn')
+  -p, --no-prefix                  do not use colon prefix in caml output
+  -h, --help                       display help for command
 ```
