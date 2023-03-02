@@ -5,11 +5,9 @@ import { list } from '../cmds/list';
 import { rename } from '../cmds/rename';
 import { retype } from '../cmds/retype';
 
-// todo: how to import pkg when building with rollup...??
-// import pkg from '../package.json';
-// import fs from 'fs';
-// // from: https://stackoverflow.com/a/67381214
-// const pkg: any = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+import fs from 'fs';
+// from: https://stackoverflow.com/a/67381214
+const pkg: any = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 
 
 // notes:
@@ -22,10 +20,8 @@ const tendr: Command = new Command();
 tendr
   .alias('tend')
   .alias('t')
-  .version('0.0.1')
-  .description('cli tools for markdown-based digital gardening');
-// .version(pkg.version)
-// .description(pkg.description);
+  .version(pkg.version)
+  .description(pkg.description);
 // .helpOption('-c, --HELP', 'custom help message')
 
 // commands
