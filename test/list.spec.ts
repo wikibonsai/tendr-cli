@@ -63,6 +63,12 @@ describe('list', () => {
     const fnameF: string = `
 ![[fname-a]]
 `;
+    const fnameG: string = `
+:type-1::[[one]],[[two]]
+:type-2::
+- [[three]]
+- [[four]]
+`;
     // populate test files
     if (!fs.existsSync(testCwd)) {
       // populate test files
@@ -74,6 +80,7 @@ describe('list', () => {
     fs.writeFileSync(path.join(testCwd, 'fname-d.md'), fnameD);
     fs.writeFileSync(path.join(testCwd, 'fname-e.md'), fnameE);
     fs.writeFileSync(path.join(testCwd, 'fname-f.md'), fnameF);
+    fs.writeFileSync(path.join(testCwd, 'fname-g.md'), fnameG);
     // fake "current working directory"
     process.cwd = () => testCwd;
     fakeProcessCwd = sinon.spy(process, 'cwd');
@@ -161,6 +168,30 @@ describe('list', () => {
 \x1B[34mBACK\x1B[39m
 \x1B[32m  ATTRS\x1B[39m
       fname-b`,
+    }));
+
+    it('attrs; list', testCmd({
+      cmd: ['node', 'tendr', 'list', 'fname-g'],
+      args: ['list', 'fname-g'],
+      output: 
+`\x1B[33mFILE: \x1B[39mfname-g
+\x1B[34mFORE\x1B[39m
+\x1B[32m  ATTRS\x1B[39m
+\x1B[2m      one\x1B[22m
+\x1B[2m      two\x1B[22m
+\x1B[2m      three\x1B[22m
+\x1B[2m      four\x1B[22m
+\x1B[32m  LINKS\x1B[39m
+\x1B[2m      no wikilinks\x1B[22m
+\x1B[32m  EMBEDS\x1B[39m
+\x1B[2m      no wikiembeds\x1B[22m
+\x1B[34mBACK\x1B[39m
+\x1B[32m  ATTRS\x1B[39m
+\x1B[2m      no wikiattrs\x1B[22m
+\x1B[32m  LINKS\x1B[39m
+\x1B[2m      no wikilinks\x1B[22m
+\x1B[32m  EMBEDS\x1B[39m
+\x1B[2m      no wikiembeds\x1B[22m`,
     }));
 
     it('links', testCmd({

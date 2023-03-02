@@ -56,8 +56,9 @@ export function list(filename: string, opts: any, cmd: any) {
       output.push(chalk.green('  ATTRS'));
       /* eslint-disable indent */
       const wikiattrs: string[] = data.filter((i: any) => i.kind === wikirefs.CONST.WIKI.ATTR)
-                                        .flatMap((d: any) => d.filenames[0][0]);
+                                      .flatMap((d: any) => d.filenames.map((fileInfo: any) => fileInfo[0]));
       /* eslint-enable indent */
+      // console.log(data, wikiattrs);
       if (wikiattrs.length === 0) {
         output.push(chalk.dim('      no wikiattrs'));
       } else {
