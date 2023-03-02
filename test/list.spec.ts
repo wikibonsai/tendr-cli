@@ -10,8 +10,8 @@ import { CommandTestCase } from './types';
 
 
 const commandName: string = 'list';
-const cwd: string = path.dirname(__dirname);
-const testCwd: string = path.join(cwd, 'test', 'fixtures');
+const cwd: string = path.dirname(new URL(import.meta.url).pathname);
+const testCwd: string = path.join(cwd, 'fixtures');
 let fakeConsoleLog: any;
 let fakeConsoleError: any;
 let fakeProcessCwd: any;

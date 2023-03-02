@@ -15,9 +15,12 @@
     "dist/**/*"
   ],
   "bin": {
+    "t": "./dist/index.esm.js",
+    "tend": "./dist/index.esm.js",
     "tendr": "./dist/index.esm.js"
   },
-  "source": "./src/cli.ts",
+  "type": "module",
+  "source": "./src/index.ts",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
   "browser": "./dist/index.umd.js",

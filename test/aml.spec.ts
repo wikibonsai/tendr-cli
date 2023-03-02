@@ -15,8 +15,8 @@ interface CommandTestCase {
 }
 
 let fakeProcessCwd: any;
-const cwd: string = path.dirname(__dirname);
-const testCwd: string = path.join(cwd, 'test', 'fixtures');
+const cwd: string = path.dirname(new URL(import.meta.url).pathname);
+const testCwd: string = path.join(cwd, 'fixtures');
 let testFilePath: string;
 
 const testAmlConv = (test: CommandTestCase) => () => {
@@ -31,7 +31,7 @@ describe('aml (conversion)', () => {
 
   beforeEach(() => {
     // fake "current working directory"
-    process.cwd = () => path.join(cwd, 'test', 'fixtures');
+    process.cwd = () => path.join(cwd, 'fixtures');
     testFilePath = path.join(testCwd, 'attrs.md');
     if (!fs.existsSync(testCwd)) {
       // populate test files

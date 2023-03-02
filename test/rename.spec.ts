@@ -10,8 +10,8 @@ import { CommandTestCase } from './types';
 
 
 const commandName: string = 'rename';
-const cwd: string = path.dirname(__dirname);
-const testCwd: string = path.join(cwd, 'test', 'fixtures');
+const cwd: string = path.dirname(new URL(import.meta.url).pathname);
+const testCwd: string = path.join(cwd, 'fixtures');
 let fakeConsoleLog: any;
 // for some reason eslint can't see the use of this var as a sinon spy
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

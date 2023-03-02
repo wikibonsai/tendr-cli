@@ -12,7 +12,7 @@ import pkg from './package.json';
 import ts from 'rollup-plugin-ts';
 import commonjs from '@rollup/plugin-commonjs';
 import { babel } from '@rollup/plugin-babel';
-
+import hashbang from 'rollup-plugin-hashbang';
 
 // configuration shared by esm / cjs / es
 const shared = {
@@ -47,7 +47,8 @@ const esm = {
   plugins: [
     ts({transpiler: 'babel'}),
     commonjs(),
-    babelPlugin
+    babelPlugin,
+    hashbang(),
   ],
 };
 
@@ -73,7 +74,8 @@ const cjs_es = {
   plugins: [
     ts({transpiler: 'babel'}),
     commonjs(),
-    babelPlugin
+    babelPlugin,
+    hashbang(),
   ]
 };
 
