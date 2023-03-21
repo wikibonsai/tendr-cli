@@ -5,7 +5,7 @@ import * as yaml from 'js-yaml';
 import matter from 'gray-matter';
 import * as caml from 'caml-mkdn';
 
-import { MD } from '../lib/const';
+import { MD } from '../util/const';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

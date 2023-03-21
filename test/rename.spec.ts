@@ -5,8 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import yargs from 'yargs';
 
-import { tendr } from '../src/lib/tendr';
-import { MD } from '../src/lib/const';
+import { tendr } from '../src/tendr';
+import { MD } from '../src/util/const';
 import { CommandTestCase } from './types';
 
 

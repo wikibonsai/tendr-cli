@@ -5,7 +5,7 @@ import chalk from 'chalk';
 
 import * as wikirefs from 'wikirefs';
 
-import { MD } from '../lib/const';
+import { MD } from '../util/const';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { tendr } from './lib/tendr';
+import { tendr } from './tendr';
 
 
 tendr(process.argv.slice(2)).argv;

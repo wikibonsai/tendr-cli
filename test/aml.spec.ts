@@ -6,7 +6,7 @@ import path from 'path';
 import yargs from 'yargs';
 
 import type { CommandTestCase } from './types';
-import { tendr } from '../src/lib/tendr';
+import { tendr } from '../src/tendr';
 
 
 let fakeProcessCwd: any;
