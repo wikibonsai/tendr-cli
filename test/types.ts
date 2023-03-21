@@ -7,10 +7,13 @@ export interface TestHelpers {
 
 export interface CommandTestCase {
   // in
+  input: string[];
   cmd: string[];
-  args: string[];
+  args?: any;
   opts?: any;
+  icontent?: string;                  // In-content
   // out
-  output: string;
+  output?: string;
   contents?: Record<string, string>; // [filename]: content
+  ocontent?: string;                 // Out-content
 }

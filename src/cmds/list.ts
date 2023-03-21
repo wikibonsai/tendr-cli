@@ -7,9 +7,8 @@ import * as wikirefs from 'wikirefs';
 import { MD } from '../lib/const';
 
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function list(filename: string, opts: any, cmd: any) {
-  // console.log('args: ', filename, 'opts: ', opts);
+export function list(filename: string, opts: any) {
+  // console.log('list\nargs: ', filename, 'opts: ', opts);
   // vars
   // note:
   //   'ref' === 'attr' + 'link'

@@ -3,16 +3,11 @@ import sinon from 'sinon';
 
 import fs from 'fs';
 import path from 'path';
+import yargs from 'yargs';
 
+import type { CommandTestCase } from './types';
 import { tendr } from '../src/lib/tendr';
 
-
-interface CommandTestCase {
-  content: string,
-  cmd: string[],
-  args: string[],
-  result: string,
-}
 
 let fakeProcessCwd: any;
 const cwd: string = path.dirname(new URL(import.meta.url).pathname);
@@ -20,11 +15,32 @@ const testCwd: string = path.join(cwd, 'fixtures');
 let testFilePath: string;
 
 const testAmlConv = (test: CommandTestCase) => () => {
-  fs.writeFileSync(testFilePath, test.content);
-  tendr.parse(test.cmd);
-  assert.deepStrictEqual(tendr.args, test.args);
+  // setup
+  fs.writeFileSync(testFilePath, test.icontent as string);
+  // go
+  const argv: yargs.Argv = tendr(test.input);
+  // assert
+  // command
+  // @ts-expect-error: Property '_' does not exist on type '{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; } | Promise<{ [x: string]: unknown; format: string; "list-format": string; ... 4 more ...; $0: string; }>'.\nProperty '_' does not exist on type 'Promise<{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; }>'.ts(2339)
+  assert.deepStrictEqual(argv.argv._, test.cmd);
+  // arguments
+  if (test.args) {
+    for (const key of Object.keys(test.args)) {
+      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
+      // @ts-expect-error: previous test should validate keys
+      assert.strictEqual(argv.argv[key], test.args[key]);             // value
+    }
+  }
+  if (test.opts) {
+    // options
+    for (const key of Object.keys(test.opts)) {
+      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
+      // @ts-expect-error: previous test should validate keys
+      assert.strictEqual(argv.argv[key], test.opts[key]);             // value
+    }
+  }
   const content: string = fs.readFileSync(testFilePath, 'utf8');
-  assert.strictEqual(content, test.result);
+  assert.strictEqual(content, test.ocontent);
 };
 
 describe('aml (conversion)', () => {
@@ -42,7 +58,7 @@ describe('aml (conversion)', () => {
   });
 
   afterEach(() => {
-    fs.rmSync(testCwd, { recursive: true });
+    // fs.rmSync(testCwd, { recursive: true });
     fakeProcessCwd.restore();
   });
 
@@ -51,79 +67,79 @@ describe('aml (conversion)', () => {
     describe('single', () => {
 
       it('null', testAmlConv({
-        content:
+        icontent:
 `---
 empty: null
 ---
 `,
-        cmd: ['node', 'tendr', 'yamltocaml'],
-        args: ['yamltocaml'],
-        result:
+        input: ['yamltocaml'],
+        cmd: ['yamltocaml'],
+        ocontent:
 `: empty :: null
 `,
       }));
 
       it('bool', testAmlConv({
-        content:
+        icontent:
 `---
 success: true
 ---
 `,
-        cmd: ['node', 'tendr', 'yamltocaml'],
-        args: ['yamltocaml'],
-        result:
+        input: ['yamltocaml'],
+        cmd: ['yamltocaml'],
+        ocontent:
 `: success :: true
 `,
       }));
 
       it('int', testAmlConv({
-        content:
+        icontent:
 `---
 id: 12345
 ---
 `,
-        cmd: ['node', 'tendr', 'yamltocaml'],
-        args: ['yamltocaml'],
-        result:
+        input: ['yamltocaml'],
+        cmd: ['yamltocaml'],
+        ocontent:
 `: id :: 12345
 `,
       }));
 
       it('float', testAmlConv({
-        content:
+        icontent:
 `---
 value: 12.345
 ---
 `,
-        cmd: ['node', 'tendr', 'yamltocaml'],
-        args: ['yamltocaml'],
-        result:
+        input: ['yamltocaml'],
+        cmd: ['yamltocaml'],
+        ocontent:
 `: value :: 12.345
 `,
       }));
 
       it('string', testAmlConv({
-        content:
+        icontent:
 `---
 tldr: a file that has attributes which should be converted.
 ---
 `,
-        cmd: ['node', 'tendr', 'yamltocaml'],
-        args: ['yamltocaml'],
-        result:
+        input: ['yamltocaml'],
+        cmd: ['yamltocaml'],
+        ocontent:
 `: tldr :: a file that has attributes which should be converted.
 `,
       }));
 
       it('string; quotes (double)', testAmlConv({
-        content:
+        icontent:
 `---
 tldr: "a file that has attributes, which should be converted."
 ---
 `,
-        cmd: ['node', 'tendr', 'yamltocaml'],
-        args: ['yamltocaml'],
-        result:
+        input: ['yamltocaml'],
+        cmd: ['yamltocaml'],
+        ocontent:
 `: tldr :: a file that has attributes, which should be converted.
 `,
       }));
@@ -131,14 +147,14 @@ tldr: "a file that has attributes, which should be converted."
       it.skip('string; quotes (double); generated caml string loses quotes', () => { return; });
 
       it('time', testAmlConv({
-        content:
+        icontent:
 `---
 time: 2022-11-24 20:00:00 +08:00
 ---
 `,
-        cmd: ['node', 'tendr', 'yamltocaml'],
-        args: ['yamltocaml'],
-        result:
+        input: ['yamltocaml'],
+        cmd: ['yamltocaml'],
+        ocontent:
 `: time :: Thu Nov 24 2022 07:00:00 GMT-0500 (Eastern Standard Time)
 `,
       }));
@@ -151,7 +167,7 @@ time: 2022-11-24 20:00:00 +08:00
     describe.skip('list; mkdn-separated', () => { return; });
 
     it('leave nested objects in yaml format', testAmlConv({
-      content:
+      icontent:
 `---
 tldr: a file that has attributes which should be converted.
 nest-1:
@@ -161,9 +177,9 @@ nest-2:
     nested-array-key-b: nested value.
 ---
 `,
-      cmd: ['node', 'tendr', 'yamltocaml'],
-      args: ['yamltocaml'],
-      result:
+      input: ['yamltocaml'],
+      cmd: ['yamltocaml'],
+      ocontent:
 `---
 nest-1:
   nested-key: nested value.
@@ -182,12 +198,12 @@ nest-2:
     describe('single', () => {
 
       it('null', testAmlConv({
-        content:
+        icontent:
 `: empty :: null
 `,
-        cmd: ['node', 'tendr', 'camltoyaml'],
-        args: ['camltoyaml'],
-        result:
+        input: ['camltoyaml'],
+        cmd: ['camltoyaml'],
+        ocontent:
 `---
 empty: null
 ---
@@ -195,12 +211,12 @@ empty: null
       }));
 
       it('bool', testAmlConv({
-        content:
+        icontent:
 `: success :: true
 `,
-        cmd: ['node', 'tendr', 'camltoyaml'],
-        args: ['camltoyaml'],
-        result:
+        input: ['camltoyaml'],
+        cmd: ['camltoyaml'],
+        ocontent:
 `---
 success: true
 ---
@@ -208,12 +224,12 @@ success: true
       }));
 
       it('int', testAmlConv({
-        content:
+        icontent:
 `: id :: 12345
 `,
-        cmd: ['node', 'tendr', 'camltoyaml'],
-        args: ['camltoyaml'],
-        result:
+        input: ['camltoyaml'],
+        cmd: ['camltoyaml'],
+        ocontent:
 `---
 id: 12345
 ---
@@ -221,12 +237,12 @@ id: 12345
       }));
 
       it('float', testAmlConv({
-        content:
+        icontent:
 `: value :: 12.345
 `,
-        cmd: ['node', 'tendr', 'camltoyaml'],
-        args: ['camltoyaml'],
-        result:
+        input: ['camltoyaml'],
+        cmd: ['camltoyaml'],
+        ocontent:
 `---
 value: 12.345
 ---
@@ -234,12 +250,12 @@ value: 12.345
       }));
 
       it('string', testAmlConv({
-        content:
+        icontent:
 `: tldr  :: a file that has attributes which should be converted.
 `,
-        cmd: ['node', 'tendr', 'camltoyaml'],
-        args: ['camltoyaml'],
-        result:
+        input: ['camltoyaml'],
+        cmd: ['camltoyaml'],
+        ocontent:
 `---
 tldr: a file that has attributes which should be converted.
 ---
@@ -247,12 +263,12 @@ tldr: a file that has attributes which should be converted.
       }));
 
       it('string; quotes (double)', testAmlConv({
-        content:
+        icontent:
 `: tldr  :: "a file that has attributes, which should be converted."
 `,
-        cmd: ['node', 'tendr', 'camltoyaml'],
-        args: ['camltoyaml'],
-        result:
+        input: ['camltoyaml'],
+        cmd: ['camltoyaml'],
+        ocontent:
 `---
 tldr: '"a file that has attributes, which should be converted."'
 ---
@@ -262,12 +278,12 @@ tldr: '"a file that has attributes, which should be converted."'
       it.skip('string; quotes (double); todo: generated yaml adds single quotes', () => { return; });
 
       it('time', testAmlConv({
-        content:
+        icontent:
 `: time :: 2022-11-24 20:00:00 +08:00
 `,
-        cmd: ['node', 'tendr', 'camltoyaml'],
-        args: ['camltoyaml'],
-        result:
+        input: ['camltoyaml'],
+        cmd: ['camltoyaml'],
+        ocontent:
 `---
 time: 2022-11-24T12:00:00.000Z
 ---

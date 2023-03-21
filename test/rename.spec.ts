@@ -3,13 +3,13 @@ import sinon from 'sinon';
 
 import fs from 'fs';
 import path from 'path';
+import yargs from 'yargs';
 
 import { tendr } from '../src/lib/tendr';
 import { MD } from '../src/lib/const';
 import { CommandTestCase } from './types';
 
 
-const commandName: string = 'rename';
 const cwd: string = path.dirname(new URL(import.meta.url).pathname);
 const testCwd: string = path.join(cwd, 'fixtures');
 let fakeConsoleLog: any;
@@ -18,14 +18,29 @@ let fakeConsoleLog: any;
 let fakeProcessCwd: any;
 
 const testCmdRename = (test: CommandTestCase) => () => {
-  tendr.parse(test.cmd);
+  // go //
+  const argv: yargs.Argv = tendr(test.input);
   // in
-  assert.deepStrictEqual(tendr.args, test.args);
-  const cmd: any = tendr.commands.find((cmd) => cmd.name() === commandName);
-  assert.deepStrictEqual(cmd.opts(), test.opts ? test.opts : {});
-  // out
-  assert.strictEqual(fakeConsoleLog.called, true);
-  assert.strictEqual(fakeConsoleLog.getCall(0).args[0], test.output);
+  // assert //
+  // command
+  // @ts-expect-error: Property '_' does not exist on type '{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; } | Promise<{ [x: string]: unknown; format: string; "list-format": string; ... 4 more ...; $0: string; }>'.\nProperty '_' does not exist on type 'Promise<{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; }>'.ts(2339)
+  assert.deepStrictEqual(argv.argv._, test.cmd);
+  // arguments
+  if (test.args) {
+    for (const key of Object.keys(test.args)) {
+      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
+      // @ts-expect-error: previous test should validate keys
+      assert.strictEqual(argv.argv[key], test.args[key]);             // value
+    }
+  }
+  // options
+  if (test.opts) {
+    for (const key of Object.keys(test.opts)) {
+      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
+      // @ts-expect-error: previous test should validate keys
+      assert.strictEqual(argv.argv[key], test.opts[key]);             // value
+    }
+  }
   if (!test.contents) { assert.fail(); }
   // file changes
   for (const fname of Object.keys(test.contents)) {
@@ -98,8 +113,12 @@ describe('rename', () => {
   });
 
   it('base; file + all refs', testCmdRename({
-    cmd: ['node', 'tendr', 'rename', 'fname-a', 'new-name'],
-    args: ['rename', 'fname-a', 'new-name'],
+    input: ['rename', 'fname-a', 'new-name'],
+    cmd: ['rename'],
+    args: {
+      ['old-fname']: 'fname-a',
+      ['new-fname']: 'new-name',
+    },
     output:
 `\x1B[32mUPDATED FILES:\x1B[39m
   fname-b

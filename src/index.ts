@@ -2,4 +2,5 @@
 
 import { tendr } from './lib/tendr';
 
-tendr.parse(process.argv);
+
+tendr(process.argv.slice(2)).argv;

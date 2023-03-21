@@ -9,8 +9,8 @@ import { MD } from '../lib/const';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function rename(oldFname: string, newFname: string, opts: any, cmd: any) {
-  // console.log('args: ', oldFname, newFname, 'opts: ', opts);
+export function rename(oldFname: string, newFname: string, opts?: any) {
+  // console.log('rename\nargs: ', oldFname, newFname, 'opts: ', opts);
   const output: string[] = [chalk.green('UPDATED FILES:')];
   const outputError: string [] = [chalk.red('UPDATE FAILED: ')];
   const cwd: string = process.cwd();

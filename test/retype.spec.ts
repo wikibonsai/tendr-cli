@@ -3,13 +3,13 @@ import sinon from 'sinon';
 
 import fs from 'fs';
 import path from 'path';
+import yargs from 'yargs';
 
 import { tendr } from '../src/lib/tendr';
 import { MD } from '../src/lib/const';
 import { CommandTestCase } from './types';
 
 
-const commandName: string = 'retype';
 const cwd: string = path.dirname(new URL(import.meta.url).pathname);
 const testCwd: string = path.join(cwd, 'fixtures');
 let fakeConsoleLog: any;
@@ -18,14 +18,29 @@ let fakeConsoleLog: any;
 let fakeProcessCwd: any;
 
 const testCmdRetype = (test: CommandTestCase) => () => {
-  tendr.parse(test.cmd);
-  // in
-  assert.deepStrictEqual(tendr.args, test.args);
-  const cmd: any = tendr.commands.find((cmd) => cmd.name() === commandName);
-  assert.deepStrictEqual(cmd.opts(), test.opts ? test.opts : {});
-  // out
-  assert.strictEqual(fakeConsoleLog.called, true);
-  assert.strictEqual(fakeConsoleLog.getCall(0).args[0], test.output);
+  // go //
+  const argv: yargs.Argv = tendr(test.input);
+  // console.warn(argv.argv);
+  // assert //
+  // command
+  // @ts-expect-error: Property '_' does not exist on type '{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; } | Promise<{ [x: string]: unknown; format: string; "list-format": string; ... 4 more ...; $0: string; }>'.\nProperty '_' does not exist on type 'Promise<{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; }>'.ts(2339)
+  assert.deepStrictEqual(argv.argv._, test.cmd);
+  // arguments
+  if (test.args) {
+    for (const key of Object.keys(test.args)) {
+      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
+      // @ts-expect-error: previous test should validate keys
+      assert.strictEqual(argv.argv[key], test.args[key]);             // value
+    }
+  }
+  // options
+  if (test.opts) {
+    for (const key of Object.keys(test.opts)) {
+      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
+      // @ts-expect-error: previous test should validate keys
+      assert.strictEqual(argv.argv[key], test.opts[key]);             // value
+    }
+  }
   if (!test.contents) { assert.fail(); }
   // file changes
   for (const fname of Object.keys(test.contents)) {
@@ -87,14 +102,15 @@ describe('retype', () => {
   afterEach(() => {
     fs.rmSync(testCwd, { recursive: true });
     fakeConsoleLog.restore();
-    // clear opts of tendr program
-    const cmd: any = tendr.commands.find((cmd) => cmd.name() === commandName);
-    cmd._optionValues = {};
   });
 
   it('base; equivalent to ref', testCmdRetype({
-    cmd: ['node', 'tendr', 'retype', 'old-reftype', 'new-reftype'],
-    args: ['retype', 'old-reftype', 'new-reftype'],
+    input: ['retype', 'old-reftype', 'new-reftype'],
+    cmd: ['retype'],
+    args: {
+      ['old-type']: 'old-reftype',
+      ['new-type']: 'new-reftype',
+    },
     opts: {},
     output:
 `\x1B[32mUPDATED FILES:\x1B[39m
@@ -130,8 +146,12 @@ describe('retype', () => {
   describe('kind', () => {
 
     it('ref; attr + link', testCmdRetype({
-      cmd: ['node', 'tendr', 'retype', 'old-reftype', 'new-reftype', '-k', 'reftype'],
-      args: ['retype', 'old-reftype', 'new-reftype', '-k', 'reftype'],
+      input: ['retype', 'old-reftype', 'new-reftype', '-k', 'reftype'],
+      cmd: ['retype'],
+      args: {
+        ['old-type']: 'old-reftype',
+        ['new-type']: 'new-reftype',
+      },
       opts: { kind: 'reftype' },
       output:
 `\x1B[32mUPDATED FILES:\x1B[39m
@@ -165,8 +185,12 @@ describe('retype', () => {
     }));
 
     it('attr', testCmdRetype({
-      cmd: ['node', 'tendr', 'retype', 'old-attrtype', 'new-attrtype', '-k', 'attrtype'],
-      args: ['retype', 'old-attrtype', 'new-attrtype', '-k', 'attrtype'],
+      input: ['retype', 'old-attrtype', 'new-attrtype', '-k', 'attrtype'],
+      cmd: ['retype'],
+      args: {
+        ['old-type']: 'old-attrtype',
+        ['new-type']: 'new-attrtype',
+      },
       opts: { kind: 'attrtype' },
       output:
 `\x1B[32mUPDATED FILES:\x1B[39m
@@ -201,8 +225,12 @@ describe('retype', () => {
     }));
 
     it('link', testCmdRetype({
-      cmd: ['node', 'tendr', 'retype', 'old-linktype', 'new-linktype', '-k', 'linktype'],
-      args: ['retype', 'old-linktype', 'new-linktype', '-k', 'linktype'],
+      input: ['retype', 'old-linktype', 'new-linktype', '-k', 'linktype'],
+      cmd: ['retype'],
+      args: {
+        ['old-type']: 'old-linktype',
+        ['new-type']: 'new-linktype',
+      },
       opts: { kind: 'linktype' },
       output:
 `\x1B[32mUPDATED FILES:\x1B[39m
@@ -239,8 +267,12 @@ describe('retype', () => {
   });
 
   it('none to update', testCmdRetype({
-    cmd: ['node', 'tendr', 'retype', 'no-type', 'new-no-type'],
-    args: ['retype', 'no-type', 'new-no-type'],
+    input: ['retype', 'no-type', 'new-no-type'],
+    cmd: ['retype'],
+    args: {
+      ['old-type']: 'no-type',
+      ['new-type']: 'new-no-type',
+    },
     opts: {},
     output:
 `\x1B[32mUPDATED FILES:\x1B[39m

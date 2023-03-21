@@ -8,9 +8,8 @@ import * as wikirefs from 'wikirefs';
 import { MD } from '../lib/const';
 
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function retype(oldType: string, newType: string, opts: any, cmd: any) {
-  // console.log('args: ', oldType, newType, 'opts: ', opts);
+export function retype(oldType: string, newType: string, opts: any) {
+  // console.log('retype\nargs: ', oldType, newType, 'opts: ', opts);
   const output: string[] = [chalk.green('UPDATED FILES:')];
   const outputError: string [] = [chalk.red('UPDATE FAILED: ')];
   const cwd: string = process.cwd();

@@ -3,13 +3,12 @@ import sinon from 'sinon';
 
 import fs from 'fs';
 import path from 'path';
+import yargs from 'yargs';
 
+import type { CommandTestCase } from './types';
 import { tendr } from '../src/lib/tendr';
-import { CommandTestCase } from './types';
 
 
-
-const commandName: string = 'list';
 const cwd: string = path.dirname(new URL(import.meta.url).pathname);
 const testCwd: string = path.join(cwd, 'fixtures');
 let fakeConsoleLog: any;
@@ -17,12 +16,30 @@ let fakeConsoleError: any;
 let fakeProcessCwd: any;
 
 const testCmd = (test: CommandTestCase) => () => {
-  tendr.parse(test.cmd);
-  // in
-  assert.deepStrictEqual(tendr.args, test.args);
-  const cmd: any = tendr.commands.find((cmd) => cmd.name() === commandName);
-  assert.deepStrictEqual(cmd.opts(), test.opts ? test.opts : {});
-  // out
+  // go //
+  const argv: yargs.Argv = tendr(test.input);
+  // console.warn(argv.argv);
+  // assert //
+  // command
+  // @ts-expect-error: Property '_' does not exist on type '{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; } | Promise<{ [x: string]: unknown; format: string; "list-format": string; ... 4 more ...; $0: string; }>'.\nProperty '_' does not exist on type 'Promise<{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; }>'.ts(2339)
+  assert.deepStrictEqual(argv.argv._, test.cmd);
+  // arguments
+  if (test.args) {
+    for (const key of Object.keys(test.args)) {
+      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
+      // @ts-expect-error: previous test should validate keys
+      assert.strictEqual(argv.argv[key], test.args[key]);             // value
+    }
+  }
+  // options
+  if (test.opts) {
+    for (const key of Object.keys(test.opts)) {
+      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
+      // @ts-expect-error: previous test should validate keys
+      assert.strictEqual(argv.argv[key], test.opts[key]);             // value
+    }
+  }
+  // console output
   assert.strictEqual(fakeConsoleLog.called, true);
   if (fakeConsoleLog.called) {
     assert.strictEqual(fakeConsoleLog.getCall(0).args[0], test.output);
@@ -95,14 +112,14 @@ describe('list', () => {
     fakeConsoleLog.restore();
     fakeConsoleError.restore();
     fakeProcessCwd.restore();
-    // clear opts of tendr program
-    const cmd: any = tendr.commands.find((cmd) => cmd.name() === commandName);
-    cmd._optionValues = {};
   });
 
   it('base; all refs', testCmd({
-    cmd: ['node', 'tendr', 'list', 'fname-a'],
-    args: ['list', 'fname-a'],
+    // input: ['node', 'tendr', 'list', 'fname-a'],
+    input: ['list', 'fname-a'],
+    cmd: ['list'],
+    args: { filename: 'fname-a' },
+    opts: { kind: 'ref' },
     output:
 `\x1B[33mFILE: \x1B[39mfname-a
 \x1B[34mFORE\x1B[39m
@@ -129,8 +146,9 @@ describe('list', () => {
   describe('kind', () => {
 
     it('refs; attrs + links', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'ref'],
-      args: ['list', 'fname-a', '-k', 'ref'],
+      input: ['list', 'fname-a', '-k', 'ref'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'ref' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -156,8 +174,9 @@ describe('list', () => {
     }));
 
     it('attrs', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'attr'],
-      args: ['list', 'fname-a', '-k', 'attr'],
+      input: ['list', 'fname-a', '-k', 'attr'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'attr' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -171,8 +190,10 @@ describe('list', () => {
     }));
 
     it('attrs; list', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-g'],
-      args: ['list', 'fname-g'],
+      input: ['list', 'fname-g', '-k', 'attr'],
+      cmd: ['list'],
+      args: { filename: 'fname-g' },
+      opts: { kind: 'attr' },
       output: 
 `\x1B[33mFILE: \x1B[39mfname-g
 \x1B[34mFORE\x1B[39m
@@ -181,22 +202,16 @@ describe('list', () => {
 \x1B[2m      two\x1B[22m
 \x1B[2m      three\x1B[22m
 \x1B[2m      four\x1B[22m
-\x1B[32m  LINKS\x1B[39m
-\x1B[2m      no wikilinks\x1B[22m
-\x1B[32m  EMBEDS\x1B[39m
-\x1B[2m      no wikiembeds\x1B[22m
 \x1B[34mBACK\x1B[39m
 \x1B[32m  ATTRS\x1B[39m
-\x1B[2m      no wikiattrs\x1B[22m
-\x1B[32m  LINKS\x1B[39m
-\x1B[2m      no wikilinks\x1B[22m
-\x1B[32m  EMBEDS\x1B[39m
-\x1B[2m      no wikiembeds\x1B[22m`,
+\x1B[2m      no wikiattrs\x1B[22m`,
     }));
 
     it('links', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'link'],
-      args: ['list', 'fname-a', '-k', 'link'],
+      // cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'link'],
+      input: ['list', 'fname-a', '-k', 'link'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'link' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -217,8 +232,9 @@ describe('list', () => {
   describe('fore', () => {
 
     it('fore; equivalent to forerefs', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'fore'],
-      args: ['list', 'fname-a', '-k', 'fore'],
+      input: ['list', 'fname-a', '-k', 'fore'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'fore' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -235,8 +251,9 @@ describe('list', () => {
     }));
 
     it('forerefs; equivalent to fore', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'foreref'],
-      args: ['list', 'fname-a', '-k', 'foreref'],
+      input: ['list', 'fname-a', '-k', 'foreref'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'foreref' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -253,8 +270,9 @@ describe('list', () => {
     }));
 
     it('foreattrs', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'foreattr'],
-      args: ['list', 'fname-a', '-k', 'foreattr'],
+      input: ['list', 'fname-a', '-k', 'foreattr'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'foreattr' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -265,8 +283,9 @@ describe('list', () => {
     }));
 
     it('forelinks', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'forelink'],
-      args: ['list', 'fname-a', '-k', 'forelink'],
+      input: ['list', 'fname-a', '-k', 'forelink'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'forelink' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -278,8 +297,9 @@ describe('list', () => {
     }));
 
     it('foreembeds', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'foreembed'],
-      args: ['list', 'fname-a', '-k', 'foreembed'],
+      input: ['list', 'fname-a', '-k', 'foreembed'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'foreembed' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -293,8 +313,9 @@ describe('list', () => {
   describe('back', () => {
 
     it('back; equivalent to backrefs', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'back'],
-      args: ['list', 'fname-a', '-k', 'back'],
+      input: ['list', 'fname-a', '-k', 'back'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'back' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -310,8 +331,9 @@ describe('list', () => {
     }));
 
     it('backrefs; equivalent to back', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'backref'],
-      args: ['list', 'fname-a', '-k', 'backref'],
+      input: ['list', 'fname-a', '-k', 'backref'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'backref' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -327,8 +349,9 @@ describe('list', () => {
     }));
 
     it('backattrs', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'backattr'],
-      args: ['list', 'fname-a', '-k', 'backattr'],
+      input: ['list', 'fname-a', '-k', 'backattr'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'backattr' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -338,8 +361,9 @@ describe('list', () => {
     }));
 
     it('backlinks', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'backlink'],
-      args: ['list', 'fname-a', '-k', 'backlink'],
+      input: ['list', 'fname-a', '-k', 'backlink'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'backlink' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -351,8 +375,9 @@ describe('list', () => {
     }));
 
     it('backembeds', testCmd({
-      cmd: ['node', 'tendr', 'list', 'fname-a', '-k', 'backembed'],
-      args: ['list', 'fname-a', '-k', 'backembed'],
+      input: ['list', 'fname-a', '-k', 'backembed'],
+      cmd: ['list'],
+      args: { filename: 'fname-a' },
       opts: { kind: 'backembed' },
       output:
 `\x1B[33mFILE: \x1B[39mfname-a
@@ -366,8 +391,9 @@ describe('list', () => {
   describe('zombie', () => {
 
     it('zombie (target file does not exist); refs exist', testCmd({
-      cmd: ['node', 'tendr', 'list', 'no-doc'],
-      args: ['list', 'no-doc'],
+      input: ['list', 'no-doc'],
+      cmd: ['list'],
+      args: { filename: 'no-doc' },
       opts: {},
       output:
 `\x1B[31mNO FILE FOR: \x1B[39m\x1B[2mno-doc\x1B[22m
@@ -382,8 +408,9 @@ describe('list', () => {
     }));
 
     it('zombie (target file does not exist); refs do not exist', testCmd({
-      cmd: ['node', 'tendr', 'list', 'no-doc-no-refs'],
-      args: ['list', 'no-doc-no-refs'],
+      input: ['list', 'no-doc-no-refs'],
+      cmd: ['list'],
+      args: { filename: 'no-doc-no-refs' },
       opts: {},
       output:
 `\x1B[31mNO FILE FOR: \x1B[39m\x1B[2mno-doc-no-refs\x1B[22m
@@ -401,23 +428,24 @@ describe('list', () => {
   describe.skip('error', () => {
 
     it('problem with fs.readFileSync() of target file', testCmd({
-      cmd: ['node', 'tendr', 'list', ''],
-      args: ['list', ''],
+      input: ['list', ''],
+      cmd: ['list'],
+      args: { filename: '' },
       opts: {},
       output: '',
     }));
 
     it('problem with wikirefs.scan(); attr', testCmd({
-      cmd: ['node', 'tendr', 'list', ''],
-      args: ['list', ''],
-      opts: {},
+      input: ['list', ''],
+      cmd: ['list'],
+      args: { filename: '' },
       output: '',
     }));
 
     it('problem with wikirefs.scan(); link', testCmd({
-      cmd: ['node', 'tendr', 'list', ''],
-      args: ['list', ''],
-      opts: {},
+      input: ['list', ''],
+      cmd: ['list'],
+      args: { filename: '' },
       output: '',
     }));
 

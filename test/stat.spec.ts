@@ -1,24 +1,24 @@
-import * as assert from 'assert';
-import sinon from 'sinon';
+// import * as assert from 'assert';
+// import sinon from 'sinon';
 
-import { tendr } from '../src/lib/tendr';
+// import { tendr } from '../src/lib/tendr';
 
 
-let fakeConsoleLog: any;
+// let fakeConsoleLog: any;
 
-describe.skip('stat', () => {
+// describe.skip('stat', () => {
 
-  beforeEach(() => {
-    console.warn = (msg) => msg + '\n';
-    fakeConsoleLog = sinon.spy(console, 'warn');
-  });
+//   beforeEach(() => {
+//     console.warn = (msg) => msg + '\n';
+//     fakeConsoleLog = sinon.spy(console, 'warn');
+//   });
 
-  afterEach(() => {
-    fakeConsoleLog.restore();
-  });
+//   afterEach(() => {
+//     fakeConsoleLog.restore();
+//   });
 
-  it('base', () => {
-    assert.strictEqual(tendr.parse(['tendr', 'stat']), '');
-  });
+//   it('base', () => {
+//     assert.strictEqual(tendr.parse(['tendr', 'stat']), '');
+//   });
 
-});
+// });

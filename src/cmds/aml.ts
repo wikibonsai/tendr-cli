@@ -9,8 +9,8 @@ import { MD } from '../lib/const';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function camlToYaml(globPat: string | undefined, opts: any, cmd: any) {
-  // console.log('args: ', globPat, 'opts: ', opts);
+export function camlToYaml(globPat: string | undefined, opts?: any, cmd?: any) {
+  // console.log('camltoyaml\nargs: ', globPat, 'opts: ', opts);
   const cwd: string = process.cwd();
   const fullGlob: string = globPat ? (cwd + globPat + MD) : (cwd + '/**/*' + MD);
   const vaultFilePaths: string[] = glob.sync(fullGlob);
@@ -25,8 +25,8 @@ export function camlToYaml(globPat: string | undefined, opts: any, cmd: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function yamlToCaml(globPat: string | undefined, opts: any, cmd: any) {
-  // console.log('args: ', globPat, 'opts: ', opts);
+export function yamlToCaml(globPat: string | undefined, opts?: any, cmd?: any) {
+  // console.log('yamltocaml\nargs: ', globPat, 'opts: ', opts);
   const cwd: string = process.cwd();
   const fullGlob: string = globPat ? (cwd + globPat + MD) : (cwd + '/**/*' + MD);
   const vaultFilePaths: string[] = glob.sync(fullGlob);
