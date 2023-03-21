@@ -34,15 +34,13 @@
     "tendr": "node -r ts-node/register ./src/index.ts"
   },
   "dependencies": {
-    "@types/glob": "^8.0.0",
-    "caml-mkdn": "^0.0.1",
+    "caml-mkdn": "^0.0.2",
     "columnify": "^1.6.0",
-    "commander": "^9.4.1",
     "glob": "^8.0.3",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
-    "semtree": "^0.0.1",
-    "wikirefs": "^0.0.1",
+    "semtree": "^0.0.2",
+    "wikirefs": "^0.0.2",
     "yargs": "^17.6.1"
   },
   "devDependencies": {
@@ -52,6 +50,7 @@
     "@rollup/plugin-babel": "^6.0.2",
     "@rollup/plugin-commonjs": "^23.0.2",
     "@types/columnify": "^1.5.1",
+    "@types/glob": "^8.1.0",
     "@types/js-yaml": "^4.0.5",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.0.0",
