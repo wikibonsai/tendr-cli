@@ -17,7 +17,7 @@ let fakeProcessCwd: any;
 
 const testCmd = (test: CommandTestCase) => () => {
   // go //
-  const argv: yargs.Argv = tendr(test.input, 'test');
+  const argv: yargs.Argv = tendr(test.input);
   // console.warn(argv.argv);
   // assert //
   // command

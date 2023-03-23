@@ -31,7 +31,7 @@
     "lint": "eslint ./src ./test --ext .ts",
     "pretest": "yarn rebuild",
     "test": "nyc mocha",
-    "tendr": "node --experimental-specifier-resolution=node --loader=ts-node/esm -r ts-node/register ./src/index.ts"
+    "tendr": "node --experimental-specifier-resolution=node --loader=ts-node/esm -r ts-node/register ./src/cli.ts"
   },
   "dependencies": {
     "caml-mkdn": "^0.0.2",

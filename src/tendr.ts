@@ -13,13 +13,8 @@ import { retype } from './cmds/retype';
 // import pkg from '../package.json' assert { type: 'json' };
 
 // helper to extract package.json values
-function getPkgObj(env: string = 'dev') {
-  const envCases: any = {
-    test: '../package.json',
-    dev: '../package.json',
-    prod: './package.json',
-  };
-  const relPkgPath: string = envCases[env];
+function getPkgObj() {
+  const relPkgPath: string = '../package.json';
   const pkgPath: string = path.resolve(path.dirname(new URL(import.meta.url).pathname), relPkgPath);
   const fileContent: string = fs.readFileSync(pkgPath, 'utf-8').toString();
   return JSON.parse(fileContent);
@@ -31,8 +26,8 @@ function getPkgObj(env: string = 'dev') {
 // ... list
 // | or
 
-export const tendr = (argv: string[], env: string = 'dev'): yargs.Argv => {
-  const pkg: any = getPkgObj(env);
+export const tendr = (argv: string[]): yargs.Argv => {
+  const pkg: any = getPkgObj();
   return yargs(argv)
     .scriptName('tendr')
     .alias('tend', 't')

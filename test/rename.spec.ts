@@ -19,7 +19,7 @@ let fakeProcessCwd: any;
 
 const testCmdRename = (test: CommandTestCase) => () => {
   // go //
-  const argv: yargs.Argv = tendr(test.input, 'test');
+  const argv: yargs.Argv = tendr(test.input);
   // in
   // assert //
   // command
