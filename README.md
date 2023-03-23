@@ -7,7 +7,7 @@
   <img src="./tendr.svg" width="300" height="300"/>
 </div>
 
-⚠️ 🌱 This project is newly sprouted! So please consider it a beta: Remember to backup all data and please use version control.
+> ⚠️ 🌱 This project is newly sprouted! So please consider it a beta: Remember to backup all data and please use version control.
 
 CLI tooling to edit [`[[wikirefs]]`](https://github.com/wikibonsai/wikirefs) and [semantic trees](https://github.com/wikibonsai/semtree) in a collection of markdown files.
 
