@@ -1,27 +1,45 @@
 import type { ArgumentsCamelCase } from 'yargs';
 import yargs from 'yargs';
 
+import fs from 'fs';
+import path from 'path';
+
 import { camlToYaml, yamlToCaml } from './cmds/aml';
 import { list } from './cmds/list';
 import { rename } from './cmds/rename';
 import { retype } from './cmds/retype';
 
-import pkg from '../package.json' assert { type: 'json' };
+// waiting on: https://github.com/tc39/proposal-import-assertions
+// import pkg from '../package.json' assert { type: 'json' };
 
-// notes:
+// helper to extract package.json values
+function getPkgObj(env: string = 'dev') {
+  const envCases: any = {
+    test: '../package.json',
+    dev: '../package.json',
+    prod: './package.json',
+  };
+  const relPkgPath: string = envCases[env];
+  const pkgPath: string = path.resolve(path.dirname(new URL(import.meta.url).pathname), relPkgPath);
+  const fileContent: string = fs.readFileSync(pkgPath, 'utf-8').toString();
+  return JSON.parse(fileContent);
+}
+
+// from: https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax
 // <> required
 // [] optional
 // ... list
+// | or
 
-export const tendr = (argv: string[]): yargs.Argv => {
+export const tendr = (argv: string[], env: string = 'dev'): yargs.Argv => {
+  const pkg: any = getPkgObj(env);
   return yargs(argv)
     .scriptName('tendr')
     .alias('tend', 't')
-    // .version('0.0.4')
     .version(pkg.version)
-    .help('cli tools for markdown-based digital gardening')
-    .usage('usage: $0 <command>')
+    .usage('usage: $0 <command>\n\ncli tools for markdown-based digital gardening.')
     .demandCommand(1, 'please provide a valid command.')
+    .help()
     // .wrap(null)
     // .epilogue('cli tools for markdown-based digital gardening')
 

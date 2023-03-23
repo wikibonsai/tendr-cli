@@ -18,7 +18,7 @@ const testAmlConv = (test: CommandTestCase) => () => {
   // setup
   fs.writeFileSync(testFilePath, test.icontent as string);
   // go
-  const argv: yargs.Argv = tendr(test.input);
+  const argv: yargs.Argv = tendr(test.input, 'test');
   // assert
   // command
   // @ts-expect-error: Property '_' does not exist on type '{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; } | Promise<{ [x: string]: unknown; format: string; "list-format": string; ... 4 more ...; $0: string; }>'.\nProperty '_' does not exist on type 'Promise<{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; }>'.ts(2339)

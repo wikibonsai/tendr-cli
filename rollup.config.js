@@ -4,15 +4,14 @@
 // https://github.com/landakram/micromark-extension-wiki-link/blob/master/rollup.config.js
 
 // package.json
-// todo: upgrade rollup; use esm
-// import pkg from './package.json' assert { type: 'json' };
-import pkg from './package.json';
+import pkg from './package.json' assert { type: 'json' };
 
 // rollup plugins
 import ts from 'rollup-plugin-ts';
 import commonjs from '@rollup/plugin-commonjs';
 import { babel } from '@rollup/plugin-babel';
-import hashbang from 'rollup-plugin-hashbang';
+import { preserveShebangs } from 'rollup-plugin-preserve-shebangs';
+
 
 // configuration shared by esm / cjs / es
 const shared = {
@@ -48,7 +47,7 @@ const esm = {
     ts({transpiler: 'babel'}),
     commonjs(),
     babelPlugin,
-    hashbang(),
+    preserveShebangs(),
   ],
 };
 
@@ -75,7 +74,7 @@ const cjs_es = {
     ts({transpiler: 'babel'}),
     commonjs(),
     babelPlugin,
-    hashbang(),
+    preserveShebangs(),
   ]
 };
 
