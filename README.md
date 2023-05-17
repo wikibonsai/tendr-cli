@@ -21,7 +21,6 @@ Install with [npm](https://docs.npmjs.com/cli/v9/commands/npm-install):
 npm install -g tendr-cli
 ```
 
-
 ## Use
 
 Example:
@@ -33,21 +32,25 @@ $ tendr list <filename>
 Manual:
 
 ```
-Usage: tendr|tend|t [options] [command]
+usage: tendr <command>
 
-cli tools for markdown-based digital gardening
-
-Options:
-  -V, --version                              output the version number
-  -h, --help                                 display help for command
+cli tools for markdown-based digital gardening.
 
 Commands:
-  list|ls [options] <filename>               list all references for a given file
-  rename|rn <old-fname> <new-fname>          rename a file and all of its references.
-  retype|rt [options] <old-type> <new-type>  rename reference type and all its occurrences.
-  camltoyaml|ctoy [glob]                     convert between "caml" and "yaml" style attributes.
-  yamltocaml|ytoc [options] [glob]           convert between "caml" and "yaml" style attributes.
-  help [command]                             display help for command
+  tendr list <filename>                 list all references for a given file
+                                                                   [aliases: ls]
+  tendr rename <old-fname> <new-fname>  rename a file and all of its references.
+                                                                   [aliases: rn]
+  tendr retype <old-type> <new-type>    rename reference type and all its occurr
+                                        ences.                     [aliases: rt]
+  tendr camltoyaml [glob]               convert between "caml" and "yaml" style
+                                        attributes.              [aliases: ctoy]
+  tendr yamltocaml [glob]               convert between "caml" and "yaml" style
+                                        attributes.              [aliases: ytoc]
+
+Options:
+  --version  Show version number                                       [boolean]
+  --help     Show help                                                 [boolean]
 ```
 
 ## Commands
@@ -71,17 +74,15 @@ $ tendr list <filename>
 Manual:
 
 ```
-Usage: tendr list|ls [options] <filename>
-
 list all references for a given file
 
 Options:
-  -k, --kind [ref_kinds]  kind of references to list
-                          (kinds: 'ref', 'foreref', 'backref', 'attr',
-                          'foreattr', 'backattr', 'link', 'forelink',
-                          'backlink'; default is 'ref')
-  -h, --help              display help for command
-
+      --version  Show version number                                   [boolean]
+      --help     Show help                                             [boolean]
+  -k, --kind     kind of references to list
+                 (kinds: "ref", "foreref", "backref",
+                  "attr", "foreattr", "backattr", "link", "forelink", "backlink"
+                 ; default is "ref")                   [string] [default: "ref"]
 ```
 
 ### `rename`
@@ -95,12 +96,13 @@ $ tendr rename <old-fname> <new-fname>
 Manual:
 
 ```
-Usage: tendr rename|rn [options] <old-fname> <new-fname>
+tendr rename <old-fname> <new-fname>
 
 rename a file and all of its references.
 
 Options:
-  -h, --help  display help for command
+  --version  Show version number                                       [boolean]
+  --help     Show help                                                 [boolean]
 ```
 
 ### `retype`
@@ -116,14 +118,15 @@ $ tendr retype <old-type> <new-type>
 Manual:
 
 ```
-Usage: tendr retype|rt [options] <old-type> <new-type>
+tendr retype <old-type> <new-type>
 
 rename reference type and all its occurrences.
 
 Options:
-  -k, --kind [kind]  kind of entity to rename (kinds: 'reftype', 'attrtype',
-                     'linktype'; default is 'reftype')
-  -h, --help         display help for command
+      --version  Show version number                                   [boolean]
+      --help     Show help                                             [boolean]
+  -k, --kind     kind of entity to rename (kinds: "reftype", "attrtype", "linkty
+                 pe"; default is "reftype")        [string] [default: "reftype"]
 ```
 
 ### `camltoyaml`
@@ -139,12 +142,15 @@ $ tendr camltoyaml [glob]
 Manual:
 
 ```
-Usage: tendr camltoyaml|ctoy [options] [glob]
+tendr retype <old-type> <new-type>
 
-convert between "caml" and "yaml" style attributes.
+rename reference type and all its occurrences.
 
 Options:
-  -h, --help  display help for command
+      --version  Show version number                                   [boolean]
+      --help     Show help                                             [boolean]
+  -k, --kind     kind of entity to rename (kinds: "reftype", "attrtype", "linkty
+                 pe"; default is "reftype")        [string] [default: "reftype"]
 ```
 
 ### `yamltocaml`
