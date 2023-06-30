@@ -14,7 +14,7 @@ const cwd: string = path.dirname(new URL(import.meta.url).pathname);
 const testCwd: string = path.join(cwd, 'fixtures');
 let testFilePath: string;
 
-const testAmlConv = (test: CommandTestCase) => () => {
+const testConv = (test: CommandTestCase) => () => {
   // setup
   fs.writeFileSync(testFilePath, test.icontent as string);
   // go
@@ -43,12 +43,12 @@ const testAmlConv = (test: CommandTestCase) => () => {
   assert.strictEqual(content, test.ocontent);
 };
 
-describe('aml (conversion)', () => {
+describe('conversion', () => {
 
   beforeEach(() => {
     // fake "current working directory"
     process.cwd = () => path.join(cwd, 'fixtures');
-    testFilePath = path.join(testCwd, 'attrs.md');
+    testFilePath = path.join(testCwd, 'conv.md');
     if (!fs.existsSync(testCwd)) {
       // populate test files
       fs.mkdirSync(testCwd);
@@ -62,119 +62,161 @@ describe('aml (conversion)', () => {
     fakeProcessCwd.restore();
   });
 
-  describe('yaml -> caml', () => {
+  describe('links', () => {
 
-    it('empty', testAmlConv({
-      icontent: 'no yaml here!',
-      input: ['yamltocaml'],
-      cmd: ['yamltocaml'],
-      ocontent: 'no yaml here!',
-    }));
+    describe('mkdn -> wiki', () => {
+    
+      it('empty', testConv({
+        icontent: 'no links here!',
+        input: ['mkdntowiki'],
+        cmd: ['mkdntowiki'],
+        ocontent: 'no links here!',
+      }));
 
-    describe('single', () => {
+      it('single', testConv({
+        icontent: '[[fname-a]]',
+        input: ['wikitomkdn'],
+        cmd: ['wikitomkdn'],
+        ocontent: '[fname-a](/fname-a.md)',
+      }));
 
-      it('null', testAmlConv({
-        icontent:
+    });
+
+    describe('wiki -> mkdn', () => {
+
+      it('empty', testConv({
+        icontent: 'no links here!',
+        input: ['mkdntowiki'],
+        cmd: ['mkdntowiki'],
+        ocontent: 'no links here!',
+      }));
+
+      it('single', testConv({
+        icontent: '[fname-a](/fname-a.md)',
+        input: ['mkdntowiki'],
+        cmd: ['mkdntowiki'],
+        ocontent: '[[fname-a]]',
+      }));
+
+    });
+
+  });
+
+  describe('aml', () => {
+
+    describe('yaml -> caml', () => {
+
+      it('empty', testConv({
+        icontent: 'no yaml here!',
+        input: ['yamltocaml'],
+        cmd: ['yamltocaml'],
+        ocontent: 'no yaml here!',
+      }));
+
+      describe('single', () => {
+
+        it('null', testConv({
+          icontent:
 `---
 empty: null
 ---
 `,
-        input: ['yamltocaml'],
-        cmd: ['yamltocaml'],
-        ocontent:
+          input: ['yamltocaml'],
+          cmd: ['yamltocaml'],
+          ocontent:
 `: empty :: null
 `,
-      }));
+        }));
 
-      it('bool', testAmlConv({
-        icontent:
+        it('bool', testConv({
+          icontent:
 `---
 success: true
 ---
 `,
-        input: ['yamltocaml'],
-        cmd: ['yamltocaml'],
-        ocontent:
+          input: ['yamltocaml'],
+          cmd: ['yamltocaml'],
+          ocontent:
 `: success :: true
 `,
-      }));
+        }));
 
-      it('int', testAmlConv({
-        icontent:
+        it('int', testConv({
+          icontent:
 `---
 id: 12345
 ---
 `,
-        input: ['yamltocaml'],
-        cmd: ['yamltocaml'],
-        ocontent:
+          input: ['yamltocaml'],
+          cmd: ['yamltocaml'],
+          ocontent:
 `: id :: 12345
 `,
-      }));
+        }));
 
-      it('float', testAmlConv({
-        icontent:
+        it('float', testConv({
+          icontent:
 `---
 value: 12.345
 ---
 `,
-        input: ['yamltocaml'],
-        cmd: ['yamltocaml'],
-        ocontent:
+          input: ['yamltocaml'],
+          cmd: ['yamltocaml'],
+          ocontent:
 `: value :: 12.345
 `,
-      }));
+        }));
 
-      it('string', testAmlConv({
-        icontent:
+        it('string', testConv({
+          icontent:
 `---
 tldr: a file that has attributes which should be converted.
 ---
 `,
-        input: ['yamltocaml'],
-        cmd: ['yamltocaml'],
-        ocontent:
+          input: ['yamltocaml'],
+          cmd: ['yamltocaml'],
+          ocontent:
 `: tldr :: a file that has attributes which should be converted.
 `,
-      }));
+        }));
 
-      it('string; quotes (double)', testAmlConv({
-        icontent:
+        it('string; quotes (double)', testConv({
+          icontent:
 `---
 tldr: "a file that has attributes, which should be converted."
 ---
 `,
-        input: ['yamltocaml'],
-        cmd: ['yamltocaml'],
-        ocontent:
+          input: ['yamltocaml'],
+          cmd: ['yamltocaml'],
+          ocontent:
 `: tldr :: a file that has attributes, which should be converted.
 `,
-      }));
+        }));
 
-      it.skip('string; quotes (double); generated caml string loses quotes', () => { return; });
+        it.skip('string; quotes (double); generated caml string loses quotes', () => { return; });
 
-      it('time', testAmlConv({
-        icontent:
+        it('time', testConv({
+          icontent:
 `---
 time: 2022-11-24 20:00:00 +08:00
 ---
 `,
-        input: ['yamltocaml'],
-        cmd: ['yamltocaml'],
-        ocontent:
+          input: ['yamltocaml'],
+          cmd: ['yamltocaml'],
+          ocontent:
 `: time :: Thu Nov 24 2022 07:00:00 GMT-0500 (Eastern Standard Time)
 `,
-      }));
+        }));
 
-      it.skip('time; formatting', () => { return; });
+        it.skip('time; formatting', () => { return; });
 
-    });
+      });
 
-    describe.skip('list; comma-separated', () => { return; });
-    describe.skip('list; mkdn-separated', () => { return; });
+      describe.skip('list; comma-separated', () => { return; });
+      describe.skip('list; mkdn-separated', () => { return; });
 
-    it('leave nested objects in yaml format', testAmlConv({
-      icontent:
+      it('leave nested objects in yaml format', testConv({
+        icontent:
 `---
 tldr: a file that has attributes which should be converted.
 nest-1:
@@ -184,9 +226,9 @@ nest-2:
     nested-array-key-b: nested value.
 ---
 `,
-      input: ['yamltocaml'],
-      cmd: ['yamltocaml'],
-      ocontent:
+        input: ['yamltocaml'],
+        cmd: ['yamltocaml'],
+        ocontent:
 `---
 nest-1:
   nested-key: nested value.
@@ -196,120 +238,122 @@ nest-2:
 ---
 : tldr :: a file that has attributes which should be converted.
 `,
-    }));
+      }));
 
-  });
+    });
 
-  describe('caml -> yaml', () => {
+    describe('caml -> yaml', () => {
 
-    it('empty', testAmlConv({
-      icontent: 'no caml here!',
-      input: ['camltoyaml'],
-      cmd: ['camltoyaml'],
-      ocontent: 'no caml here!',
-    }));
-
-    describe('single', () => {
-
-      it('null', testAmlConv({
-        icontent:
-`: empty :: null
-`,
+      it('empty', testConv({
+        icontent: 'no caml here!',
         input: ['camltoyaml'],
         cmd: ['camltoyaml'],
-        ocontent:
+        ocontent: 'no caml here!',
+      }));
+
+      describe('single', () => {
+
+        it('null', testConv({
+          icontent:
+`: empty :: null
+`,
+          input: ['camltoyaml'],
+          cmd: ['camltoyaml'],
+          ocontent:
 `---
 empty: null
 ---
 `,
-      }));
+        }));
 
-      it('bool', testAmlConv({
-        icontent:
+        it('bool', testConv({
+          icontent:
 `: success :: true
 `,
-        input: ['camltoyaml'],
-        cmd: ['camltoyaml'],
-        ocontent:
+          input: ['camltoyaml'],
+          cmd: ['camltoyaml'],
+          ocontent:
 `---
 success: true
 ---
 `,
-      }));
+        }));
 
-      it('int', testAmlConv({
-        icontent:
+        it('int', testConv({
+          icontent:
 `: id :: 12345
 `,
-        input: ['camltoyaml'],
-        cmd: ['camltoyaml'],
-        ocontent:
+          input: ['camltoyaml'],
+          cmd: ['camltoyaml'],
+          ocontent:
 `---
 id: 12345
 ---
 `,
-      }));
+        }));
 
-      it('float', testAmlConv({
-        icontent:
+        it('float', testConv({
+          icontent:
 `: value :: 12.345
 `,
-        input: ['camltoyaml'],
-        cmd: ['camltoyaml'],
-        ocontent:
+          input: ['camltoyaml'],
+          cmd: ['camltoyaml'],
+          ocontent:
 `---
 value: 12.345
 ---
 `,
-      }));
+        }));
 
-      it('string', testAmlConv({
-        icontent:
+        it('string', testConv({
+          icontent:
 `: tldr  :: a file that has attributes which should be converted.
 `,
-        input: ['camltoyaml'],
-        cmd: ['camltoyaml'],
-        ocontent:
+          input: ['camltoyaml'],
+          cmd: ['camltoyaml'],
+          ocontent:
 `---
 tldr: a file that has attributes which should be converted.
 ---
 `,
-      }));
+        }));
 
-      it('string; quotes (double)', testAmlConv({
-        icontent:
+        it('string; quotes (double)', testConv({
+          icontent:
 `: tldr  :: "a file that has attributes, which should be converted."
 `,
-        input: ['camltoyaml'],
-        cmd: ['camltoyaml'],
-        ocontent:
+          input: ['camltoyaml'],
+          cmd: ['camltoyaml'],
+          ocontent:
 `---
 tldr: '"a file that has attributes, which should be converted."'
 ---
 `,
-      }));
+        }));
 
-      it.skip('string; quotes (double); todo: generated yaml adds single quotes', () => { return; });
+        it.skip('string; quotes (double); todo: generated yaml adds single quotes', () => { return; });
 
-      it('time', testAmlConv({
-        icontent:
+        it('time', testConv({
+          icontent:
 `: time :: 2022-11-24 20:00:00 +08:00
 `,
-        input: ['camltoyaml'],
-        cmd: ['camltoyaml'],
-        ocontent:
+          input: ['camltoyaml'],
+          cmd: ['camltoyaml'],
+          ocontent:
 `---
 time: 2022-11-24T12:00:00.000Z
 ---
 `,
-      }));
+        }));
 
-      it.skip('time; formatting', () => { return; });
+        it.skip('time; formatting', () => { return; });
+
+      });
+
+      describe.skip('list; comma-separated', () => { return; });
+      describe.skip('list; mkdn-separated', () => { return; });
 
     });
-
-    describe.skip('list; comma-separated', () => { return; });
-    describe.skip('list; mkdn-separated', () => { return; });
 
   });
 

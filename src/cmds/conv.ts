@@ -4,6 +4,7 @@ import glob from 'glob';
 import * as yaml from 'js-yaml';
 import matter from 'gray-matter';
 import * as caml from 'caml-mkdn';
+import * as wikirefs from 'wikirefs';
 
 import { MD } from '../util/const';
 
@@ -11,7 +12,39 @@ import { MD } from '../util/const';
 ////
 // links (mkdn, wiki)
 
-// todo
+const RGX_MKDN_LINK: RegExp = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+export function mkdnToWiki(globPat: string | undefined, opts?: any, cmd?: any) {
+  // console.log('mkdnToWiki\nargs: ', globPat, 'opts: ', opts);
+  const cwd: string = process.cwd();
+  const fullGlob: string = globPat ? (cwd + globPat + MD) : (cwd + '/**/*' + MD);
+  const vaultFilePaths: string[] = glob.sync(fullGlob);
+  for (const thisFilePath of vaultFilePaths) {
+    const content: string = fs.readFileSync(thisFilePath, 'utf8');
+    let wikiContent: string = content; // initialize to original content
+    for (const m in RGX_MKDN_LINK.exec(content)) {
+      // todo: calculate link
+      wikiContent = content.replace(m, wikirefs.CONST.MARKER.OPEN + wikirefs.CONST.MARKER.CLOSE);
+    }
+    fs.writeFileSync(thisFilePath, wikiContent, 'utf8');
+  }
+}
+
+export function wikiToMkdn(globPat: string | undefined, opts?: any, cmd?: any) {
+  // console.log('wikiToMkdn\nargs: ', globPat, 'opts: ', opts);
+  const cwd: string = process.cwd();
+  const fullGlob: string = globPat ? (cwd + globPat + MD) : (cwd + '/**/*' + MD);
+  const vaultFilePaths: string[] = glob.sync(fullGlob);
+  for (const thisFilePath of vaultFilePaths) {
+    const content: string = fs.readFileSync(thisFilePath, 'utf8');
+    let mkdnContent: string = content; // initialize to original content
+    for (const m in wikirefs.scan(content)) {
+      // todo: calculate link
+      mkdnContent = content.replace(m, `[${m}](${m})`);
+    }
+    fs.writeFileSync(thisFilePath, mkdnContent, 'utf8');
+  }
+}
 
 ////
 // amls (caml, yaml)
