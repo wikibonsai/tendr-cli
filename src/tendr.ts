@@ -10,8 +10,10 @@ import { CONFIG_PATH, DOCTYPE_PATH } from './util/const';
 import type { InitTree } from './util/tree';
 import { buildTree } from './util/tree';
 
-import { camlToYaml, yamlToCaml } from './cmds/aml';
 import { REL_KINDS, status } from './cmds/status';
+
+import { camlToYaml, yamlToCaml } from './cmds/conv';
+// import { list } from './cmds/list';
 import { rename } from './cmds/rename';
 import { retype } from './cmds/retype';
 import { tree } from './cmds/tree';

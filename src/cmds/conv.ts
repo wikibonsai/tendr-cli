@@ -8,6 +8,14 @@ import * as caml from 'caml-mkdn';
 import { MD } from '../util/const';
 
 
+////
+// links (mkdn, wiki)
+
+// todo
+
+////
+// amls (caml, yaml)
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function camlToYaml(globPat: string | undefined, opts?: any, cmd?: any) {
   // console.log('camltoyaml\nargs: ', globPat, 'opts: ', opts);
