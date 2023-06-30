@@ -18,6 +18,12 @@ export function camlToYaml(globPat: string | undefined, opts?: any, cmd?: any) {
     const content: string = fs.readFileSync(thisFilePath, 'utf8');
     const camlStuff: any = caml.load(content);
     const data: any = camlStuff.data;
+    if ((data === null)
+    || (data === undefined)
+    || (Object.keys(data).length === 0)
+    ) {
+      continue;
+    }
     const attrLessContent: string = camlStuff.content;
     const yamlString: string = '---\n' + yaml.dump(data) + '---\n';
     fs.writeFileSync(thisFilePath, yamlString + attrLessContent, 'utf8');

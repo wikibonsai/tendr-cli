@@ -64,6 +64,13 @@ describe('aml (conversion)', () => {
 
   describe('yaml -> caml', () => {
 
+    it('empty', testAmlConv({
+      icontent: 'no yaml here!',
+      input: ['yamltocaml'],
+      cmd: ['yamltocaml'],
+      ocontent: 'no yaml here!',
+    }));
+
     describe('single', () => {
 
       it('null', testAmlConv({
@@ -194,6 +201,13 @@ nest-2:
   });
 
   describe('caml -> yaml', () => {
+
+    it('empty', testAmlConv({
+      icontent: 'no caml here!',
+      input: ['camltoyaml'],
+      cmd: ['camltoyaml'],
+      ocontent: 'no caml here!',
+    }));
 
     describe('single', () => {
 
