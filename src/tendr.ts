@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { camlToYaml, yamlToCaml } from './cmds/aml';
-import { list } from './cmds/list';
+import { REL_KINDS, list } from './cmds/list';
 import { rename } from './cmds/rename';
 import { retype } from './cmds/retype';
 
@@ -46,7 +46,7 @@ export const tendr = (argv: string[]): yargs.Argv => {
         .option('kind', {
           alias: 'k',
           type: 'string',
-          describe: 'kind of references to list\n(kinds: "ref", "foreref", "backref", "attr", "foreattr", "backattr", "link", "forelink", "backlink"; default is "ref")',
+          describe: `kind of references to list\n(kinds: ${REL_KINDS.join(', ')}; default is "ref")`,
           default: 'ref',
         }),
       handler: (argv: ArgumentsCamelCase) =>

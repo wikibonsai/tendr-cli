@@ -9,33 +9,46 @@ import * as wikirefs from 'wikirefs';
 import { MD } from '../util/const';
 
 
+/* eslint-disable indent */
+// note:
+//   'fam'  === 'ancestor' + 'children' (tree relationships)
+//   'ref'  === 'attr' + 'link'         (web relationships)
+//   'fore' === 'foreref'
+//   'back' === 'backref'
+export const REL_KINDS: string[] = [
+  // 'rel',
+  // 'fam', 'ancestor', 'children',
+              'ref',     'attr',     'link',     'embed',
+  'fore', 'foreref', 'foreattr', 'forelink', 'foreembed',
+  'back', 'backref', 'backattr', 'backlink', 'backembed',
+];
+/* eslint-enable indent */
+
 const EMPTY: string = chalk.dim('--');
 
 function isEmpty(refs: string[]): boolean {
   return (refs.length === 1) && (refs[0] === EMPTY);
 }
-
+ 
 export function list(filename: string, opts: any) {
   // console.log('list\nargs: ', filename, 'opts: ', opts);
   // vars
-  // note:
-  //   'ref'  === 'attr' + 'link'
-  //   'fore' === 'foreref'
-  //   'back' === 'backref'
-  /* eslint-disable indent */
-  const validKinds: string[] = [
-                'ref',     'attr',     'link',     'embed',
-    'fore', 'foreref', 'foreattr', 'forelink', 'foreembed',
-    'back', 'backref', 'backattr', 'backlink', 'backembed',
-  ];
-  const kind: string = (opts.kind && validKinds.includes(opts.kind)) ? opts.kind : 'ref';
+  const kind: string = (opts.kind && REL_KINDS.includes(opts.kind)) ? opts.kind : 'ref';
   const foreattr: boolean = !kind.includes('back') && !kind.includes('link') && !kind.includes('embed');
   const foreembed: boolean = !kind.includes('back') && !kind.includes('attr') && !kind.includes('link');
   const forelink: boolean = !kind.includes('back') && !kind.includes('attr') && !kind.includes('embed');
   const backattr: boolean = !kind.includes('fore') && !kind.includes('link') && !kind.includes('embed');
   const backlink: boolean = !kind.includes('fore') && !kind.includes('attr') && !kind.includes('embed');
   const backembed: boolean = !kind.includes('fore') && !kind.includes('attr') && !kind.includes('link');
-  /* eslint-enable indent */
+  // temp data vars
+  // const ancestors: string[] = [];
+  // const children: string[] = [];
+  const foreattrs: string[] = [];
+  const forelinks: string[] = [];
+  const foreembeds: string[] = [];
+  const backattrs: string[] = [];
+  const backlinks: string[] = [];
+  const backembeds: string[] = [];
   ////
   // go
   const cwd: string = process.cwd();
@@ -46,14 +59,6 @@ export function list(filename: string, opts: any) {
   /* eslint-disable indent */
   const thisFilePath: string | undefined = vaultFilePaths.filter((fp) => MD === path.extname(fp).toLowerCase())
                                                           .find((fp) => path.basename(fp, MD) === filename);
-  ////
-  // temp data vars
-  const foreattrs: string[] = [];
-  const forelinks: string[] = [];
-  const foreembeds: string[] = [];
-  const backattrs: string[] = [];
-  const backlinks: string[] = [];
-  const backembeds: string[] = [];
   // no file / zombie
   if (thisFilePath === undefined) {
     foreattrs.push(EMPTY);
