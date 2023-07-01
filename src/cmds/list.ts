@@ -2,16 +2,24 @@ import fs from 'fs';
 import path from 'path';
 import glob from 'glob';
 import chalk from 'chalk';
+import { table } from 'table';
+
 import * as wikirefs from 'wikirefs';
 
 import { MD } from '../util/const';
 
 
+const EMPTY: string = chalk.dim('--');
+
+function isEmpty(refs: string[]): boolean {
+  return (refs.length === 1) && (refs[0] === EMPTY);
+}
+
 export function list(filename: string, opts: any) {
   // console.log('list\nargs: ', filename, 'opts: ', opts);
   // vars
   // note:
-  //   'ref' === 'attr' + 'link'
+  //   'ref'  === 'attr' + 'link'
   //   'fore' === 'foreref'
   //   'back' === 'backref'
   /* eslint-disable indent */
@@ -21,7 +29,14 @@ export function list(filename: string, opts: any) {
     'back', 'backref', 'backattr', 'backlink', 'backembed',
   ];
   const kind: string = (opts.kind && validKinds.includes(opts.kind)) ? opts.kind : 'ref';
+  const foreattr: boolean = !kind.includes('back') && !kind.includes('link') && !kind.includes('embed');
+  const foreembed: boolean = !kind.includes('back') && !kind.includes('attr') && !kind.includes('link');
+  const forelink: boolean = !kind.includes('back') && !kind.includes('attr') && !kind.includes('embed');
+  const backattr: boolean = !kind.includes('fore') && !kind.includes('link') && !kind.includes('embed');
+  const backlink: boolean = !kind.includes('fore') && !kind.includes('attr') && !kind.includes('embed');
+  const backembed: boolean = !kind.includes('fore') && !kind.includes('attr') && !kind.includes('link');
   /* eslint-enable indent */
+  ////
   // go
   const cwd: string = process.cwd();
   const listGlob: string = cwd + '/**/*' + MD;
@@ -31,12 +46,21 @@ export function list(filename: string, opts: any) {
   /* eslint-disable indent */
   const thisFilePath: string | undefined = vaultFilePaths.filter((fp) => MD === path.extname(fp).toLowerCase())
                                                           .find((fp) => path.basename(fp, MD) === filename);
-  /* eslint-enable indent */
+  ////
+  // temp data vars
+  const foreattrs: string[] = [];
+  const forelinks: string[] = [];
+  const foreembeds: string[] = [];
+  const backattrs: string[] = [];
+  const backlinks: string[] = [];
+  const backembeds: string[] = [];
+  // no file / zombie
   if (thisFilePath === undefined) {
-    output.push(chalk.red('NO FILE FOR: ') + chalk.dim(filename));
-  } else {
-    output.push(chalk.yellow('FILE: ') + filename);
+    foreattrs.push(EMPTY);
+    forelinks.push(EMPTY);
+    foreembeds.push(EMPTY);
   }
+  /* eslint-enable indent */
   ////
   // fore
   if (!kind.includes('back') && (thisFilePath !== undefined)) {
@@ -48,62 +72,58 @@ export function list(filename: string, opts: any) {
       console.error(e);
       return;
     }
-    output.push(chalk.blue('FORE'));
     const data: any[] = wikirefs.scan(content);
     // attr
-    if (!kind.includes('link') && !kind.includes('embed')) {
-      output.push(chalk.green('  ATTRS'));
+    if (foreattr) {
       /* eslint-disable indent */
       const wikiattrs: string[] = data.filter((i: any) => i.kind === wikirefs.CONST.WIKI.ATTR)
                                       .flatMap((d: any) => d.filenames.map((fileInfo: any) => fileInfo[0]));
       /* eslint-enable indent */
-      // console.log(data, wikiattrs);
       if (wikiattrs.length === 0) {
-        output.push(chalk.dim('      no wikiattrs'));
+        foreattrs.push(EMPTY);
       } else {
         for (const wa of wikiattrs) {
           if (allFileNames.includes(wa)) {
-            output.push('      ' + wa);
+            foreattrs.push(wa);
           } else {
-            output.push(chalk.dim('      ' + wa));
+            foreattrs.push(chalk.dim(wa));
           }
         }
       }
     }
     // link
-    if (!kind.includes('attr') && !kind.includes('embed')) {
-      output.push(chalk.green('  LINKS'));
+    if (forelink) {
       /* eslint-disable indent */
       const wikilinks: string[] = data.filter((i: any) => i.kind === wikirefs.CONST.WIKI.LINK)
                                         .map((d: any) => d.filename[0]);
       /* eslint-enable indent */
       if (wikilinks.length === 0) {
-        output.push(chalk.dim('      no wikilinks'));
+        forelinks.push(EMPTY);
       } else {
         for (const wl of wikilinks) {
           if (allFileNames.includes(wl)) {
-            output.push('      ' + wl);
+            forelinks.push(wl);
           } else {
-            output.push(chalk.dim('      ' + wl));
+            forelinks.push(chalk.dim(wl));
           }
         }
       }
     }
     // embed
-    if (!kind.includes('attr') && !kind.includes('link')) {
+    if (foreembed) {
       output.push(chalk.green('  EMBEDS'));
       /* eslint-disable indent */
       const wikiembeds: string[] = data.filter((i: any) => i.kind === wikirefs.CONST.WIKI.EMBED)
                                         .map((d: any) => d.filename[0]);
       /* eslint-enable indent */
       if (wikiembeds.length === 0) {
-        output.push(chalk.dim('      no wikiembeds'));
+        foreembeds.push(EMPTY);
       } else {
         for (const we of wikiembeds) {
           if (allFileNames.includes(we)) {
-            output.push('      ' + we);
+            foreembeds.push(we);
           } else {
-            output.push(chalk.dim('      ' + we));
+            foreembeds.push(chalk.dim(we));
           }
         }
       }
@@ -112,7 +132,6 @@ export function list(filename: string, opts: any) {
   ////
   // back
   if (!kind.includes('fore')) {
-    output.push(chalk.blue('BACK'));
     // those / that vars
     /* eslint-disable indent */
     const thoseFilePaths: string[] | undefined = vaultFilePaths.filter((fp) =>
@@ -122,7 +141,7 @@ export function list(filename: string, opts: any) {
     /* eslint-enable indent */
     if (!thoseFilePaths) { console.error('unable to find filenames'); return; }
     // attr
-    if (!kind.includes('link') && !kind.includes('embed')) {
+    if (backattr) {
       output.push(chalk.green('  ATTRS'));
       let attrFileNames: Set<string>;
       try {
@@ -142,19 +161,19 @@ export function list(filename: string, opts: any) {
         return;
       }
       if (attrFileNames.size === 0) {
-        output.push(chalk.dim('      no wikiattrs'));
+        backattrs.push(EMPTY);
       } else {
         for (const afn of attrFileNames) {
           if (allFileNames.includes(afn)) {
-            output.push('      ' + afn);
+            backattrs.push(afn);
           } else {
-            output.push(chalk.dim('      ' + afn));
+            backattrs.push(chalk.dim(afn));
           }
         }
       }
     }
     // link
-    if (!kind.includes('attr') && !kind.includes('embed')) {
+    if (backlink) {
       output.push(chalk.green('  LINKS'));
       let linkFileNames: Set<string>;
       try {
@@ -174,19 +193,19 @@ export function list(filename: string, opts: any) {
         return;
       }
       if (linkFileNames.size === 0) {
-        output.push(chalk.dim('      no wikilinks'));
+        backlinks.push(EMPTY);
       } else {
         for (const lfn of linkFileNames) {
           if (allFileNames.includes(lfn)) {
-            output.push('      ' + lfn);
+            backlinks.push(lfn);
           } else {
-            output.push(chalk.dim('      ' + lfn));
+            backlinks.push(chalk.dim(lfn));
           }
         }
       }
     }
     // embeds
-    if (!kind.includes('attr') && !kind.includes('link')) {
+    if (backembed) {
       output.push(chalk.green('  EMBEDS'));
       let embedFileNames: Set<string>;
       try {
@@ -206,18 +225,139 @@ export function list(filename: string, opts: any) {
         return;
       }
       if (embedFileNames.size === 0) {
-        output.push(chalk.dim('      no wikiembeds'));
+        backembeds.push(EMPTY);
       } else {
         for (const efn of embedFileNames) {
           if (allFileNames.includes(efn)) {
-            output.push('      ' + efn);
+            backembeds.push(efn);
           } else {
-            output.push(chalk.dim('      ' + efn));
+            backembeds.push(chalk.dim(efn));
           }
         }
       }
     }
   }
+  ////
+  // table
+  // configure table
+  const config: any = {
+    spanningCells: [],
+    border: {
+      topBody: chalk.dim('─'),
+      topJoin: chalk.dim('┬'),
+      topLeft: chalk.dim('┌'),
+      topRight: chalk.dim('┐'),
+
+      bottomBody: chalk.dim('─'),
+      bottomJoin: chalk.dim('┴'),
+      bottomLeft: chalk.dim('└'),
+      bottomRight: chalk.dim('┘'),
+
+      bodyLeft: chalk.dim('│'),
+      bodyRight: chalk.dim('│'),
+      bodyJoin: chalk.dim('│'),
+
+      joinBody: chalk.dim('─'),
+      joinLeft: chalk.dim('├'),
+      joinRight: chalk.dim('┤'),
+      joinJoin: chalk.dim('┼'),
+      joinMiddleLeft: chalk.dim('┤'),
+      joinMiddleRight: chalk.dim('├'),
+      joinMiddleDown: chalk.dim('┬'),
+      joinMiddleUp: chalk.dim('┴'),
+    }
+  };
+  // collapse columns if fore or back is excluded
+  if (!kind.includes('back') && !kind.includes('fore')) {
+    config.spanningCells.push(
+      { col: 1, row: 0, colSpan: 2, alignment: 'left' }
+    );
+  }
+  // build table
+  const tableData: any[] = [];
+  if (thisFilePath === undefined) {
+    tableData.push([chalk.red('NO FILE'), chalk.dim(filename)]);
+  } else {
+    tableData.push([chalk.green('FILE'), filename]);
+  }
+  // pad file row if both fore and back are on
+  if (!kind.includes('back') && !kind.includes('fore')) {
+    tableData[tableData.length - 1].push('');
+  }
+  if (!kind.includes('back') && !kind.includes('fore')) {
+    tableData.push([
+      '',
+      !kind.includes('fore') ? chalk.blue('BACK') : '',
+      !kind.includes('back') ? chalk.blue('FORE') : '',
+    ]);
+  } else {
+    tableData.push([
+      '',
+      !kind.includes('fore') ? chalk.blue('BACK') : chalk.blue('FORE'),
+    ]);
+  }
+  // fore AND back
+  if (!kind.includes('back') && !kind.includes('fore')) {
+    if (foreattr || backattr) {
+      tableData.push([
+        chalk.blue('ATTR'),
+        backattr ? (isEmpty(backattrs) ? backattrs : '• ' + backattrs.join('\n• ')) : '',
+        foreattr ? (isEmpty(foreattrs) ? foreattrs : '• ' + foreattrs.join('\n• ')) : '',
+      ]);
+    }
+    if (forelink || backlink) {
+      tableData.push([
+        chalk.blue('LINK'),
+        backlink ? (isEmpty(backlinks) ? backlinks : '• ' + backlinks.join('\n• ')) : '',
+        forelink ? (isEmpty(forelinks) ? forelinks : '• ' + forelinks.join('\n• ')) : '',
+      ]);
+    }
+    if (foreembed || backembed) {
+      tableData.push([
+        chalk.blue('EMBED'),
+        backembed ? (isEmpty(backembeds) ? backembeds : '• ' + backembeds.join('\n• ')) : '',
+        foreembed ? (isEmpty(foreembeds) ? foreembeds : '• ' + foreembeds.join('\n• ')) : '',
+      ]);
+    }
+  // fore OR back
+  } else {
+    if (foreattr || backattr) {
+      tableData.push([
+        chalk.blue('ATTR'),
+        backattr
+          ? isEmpty(backattrs)
+            ? backattrs
+            : '• ' + backattrs.join('\n• ')
+          : isEmpty(foreattrs)
+            ? foreattrs
+            : '• ' + foreattrs.join('\n• '),
+      ]);
+    }
+    if (forelink || backlink) {
+      tableData.push([
+        chalk.blue('LINK'),
+        backlink
+          ? isEmpty(backlinks)
+            ? backlinks
+            : '• ' + backlinks.join('\n• ')
+          : isEmpty(forelinks)
+            ? forelinks
+            : '• ' + forelinks.join('\n• '),
+      ]);
+    }
+    if (foreembed || backembed) {
+      tableData.push([
+        chalk.blue('EMBED'),
+        backembed
+          ? isEmpty(backembeds)
+            ? backembeds
+            : '• ' + backembeds.join('\n• ')
+          : isEmpty(foreembeds)
+            ? foreembeds
+            : '• ' + foreembeds.join('\n• '),
+      ]);
+    }
+  }
   // print
-  console.log(output.join('\n'));
+  console.log(table(tableData, config));
 }

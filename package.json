@@ -40,6 +40,7 @@
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
     "semtree": "^0.0.2",
+    "table": "^6.8.1",
     "wikirefs": "^0.0.2",
     "yargs": "^17.6.1"
   },
