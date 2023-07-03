@@ -1,19 +1,24 @@
+import fs from 'fs';
+import path from 'path';
+
 import type { ArgumentsCamelCase } from 'yargs';
 import yargs from 'yargs';
 
-import fs from 'fs';
-import path from 'path';
+import { CONFIG_PATH, DOCTYPE_PATH, INDEX_GLOB, ROOT_NAME } from './util/const';
+import { getRootFileName, getIndexFileUris } from './util/util';
 
 import { camlToYaml, yamlToCaml } from './cmds/aml';
 import { REL_KINDS, list } from './cmds/list';
 import { rename } from './cmds/rename';
 import { retype } from './cmds/retype';
+import { tree } from './cmds/tree';
+
 
 // waiting on: https://github.com/tc39/proposal-import-assertions
 // import pkg from '../package.json' assert { type: 'json' };
 
 // helper to extract package.json values
-function getPkgObj() {
+export function getPkgObj() {
   const relPkgPath: string = '../package.json';
   const pkgPath: string = path.resolve(path.dirname(new URL(import.meta.url).pathname), relPkgPath);
   const fileContent: string = fs.readFileSync(pkgPath, 'utf-8').toString();
@@ -37,6 +42,46 @@ export const tendr = (argv: string[]): yargs.Argv => {
     .help()
     // .wrap(null)
     // .epilogue('cli tools for markdown-based digital gardening')
+
+    .command({
+      command: 'tree',
+      // aliases: [''],
+      describe: 'print full knowledge bonsai',
+      builder: (yargs: yargs.Argv) => yargs
+        .option('config', {
+          alias: 'c',
+          type: 'string',
+          describe: 'relative path to config file, including filename',
+          default: CONFIG_PATH,
+        })
+        .option('doctype', {
+          alias: 'dt',
+          type: 'string',
+          describe: 'relative path to doctype file, including filename',
+          default: DOCTYPE_PATH,
+        })
+        .option('root', {
+          alias: 'r',
+          type: 'string',
+          describe: 'filename for root of tree',
+          default: ROOT_NAME,
+        })
+        .option('glob', {
+          alias: 'g',
+          type: 'string',
+          describe: 'glob to index files',
+          default: INDEX_GLOB,
+        }),
+      handler: (argv: ArgumentsCamelCase) => {
+        const root: string | undefined = getRootFileName(argv.config as string, argv.root as string);
+        if (root === undefined) {
+          console.error('root file not found');
+          return;
+        }
+        const indexFileUris: string[] = getIndexFileUris(argv.doctype as string, argv.glob as string);
+        tree(root, indexFileUris, argv);
+      },
+    })
 
     .command({
       command: 'list <filename>',

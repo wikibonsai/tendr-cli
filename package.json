@@ -34,6 +34,7 @@
     "tendr": "node --experimental-specifier-resolution=node --loader=ts-node/esm -r ts-node/register ./src/cli.ts"
   },
   "dependencies": {
+    "@iarna/toml": "^2.2.5",
     "caml-mkdn": "^0.0.2",
     "columnify": "^1.6.0",
     "glob": "^8.0.3",
