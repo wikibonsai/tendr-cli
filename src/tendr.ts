@@ -4,7 +4,7 @@ import path from 'path';
 import type { ArgumentsCamelCase } from 'yargs';
 import yargs from 'yargs';
 
-import { CONFIG_PATH, DOCTYPE_PATH, INDEX_GLOB, ROOT_NAME } from './util/const';
+import { CONFIG_PATH, DOCTYPE_PATH } from './util/const';
 import { getRootFileName, getIndexFileUris } from './util/util';
 
 import { camlToYaml, yamlToCaml } from './cmds/aml';
@@ -51,34 +51,30 @@ export const tendr = (argv: string[]): yargs.Argv => {
         .option('config', {
           alias: 'c',
           type: 'string',
-          describe: 'relative path to config file, including filename',
+          describe: 'relative path to config file, including filename; defaults to "./config.toml"',
           default: CONFIG_PATH,
         })
         .option('doctype', {
-          alias: 'dt',
+          alias: 'd',
           type: 'string',
-          describe: 'relative path to doctype file, including filename',
+          describe: 'relative path to doctype file, including filename; defaults to "t.doc.toml"',
           default: DOCTYPE_PATH,
         })
         .option('root', {
           alias: 'r',
           type: 'string',
           describe: 'filename for root of tree',
-          default: ROOT_NAME,
         })
         .option('glob', {
           alias: 'g',
           type: 'string',
           describe: 'glob to index files',
-          default: INDEX_GLOB,
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        const root: string | undefined = getRootFileName(argv.config as string, argv.root as string);
-        if (root === undefined) {
-          console.error('root file not found');
-          return;
-        }
-        const indexFileUris: string[] = getIndexFileUris(argv.doctype as string, argv.glob as string);
+        const root: string | undefined = getRootFileName(argv.config as string, argv.root as string | undefined);
+        if (root === undefined) { return; }
+        const indexFileUris: string[] | undefined = getIndexFileUris(argv.doctype as string, argv.glob as string | undefined);
+        if (indexFileUris === undefined) { return; }
         tree(root, indexFileUris, argv);
       },
     })

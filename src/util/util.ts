@@ -30,10 +30,18 @@ export function getConfig(uri?: string | undefined): any {
   let configContent: string;
   if (uri === undefined) {
     extKind = 'toml';
-    configContent = fs.readFileSync(CONFIG_PATH, 'utf8');
+    try {
+      configContent = fs.readFileSync(CONFIG_PATH, 'utf8');
+    } catch (e) {
+      return {};
+    }
   } else {
     extKind = path.extname(uri);
-    configContent = fs.readFileSync(uri, 'utf8');
+    try {
+      configContent = fs.readFileSync(uri, 'utf8');
+    } catch (e) {
+      return {};
+    }
   }
   if (extKind === '.toml') {
     const tomlData: any = toml.parse(configContent);
@@ -51,10 +59,18 @@ export function getDocTypes(uri?: string | undefined): any {
   let doctypeContent: string;
   if (uri === undefined) {
     extKind = 'toml';
-    doctypeContent = fs.readFileSync(DOCTYPE_PATH, 'utf8');
+    try {
+      doctypeContent = fs.readFileSync(DOCTYPE_PATH, 'utf8');
+    } catch (e) {
+      return {};
+    }
   } else {
     extKind = path.extname(uri);
-    doctypeContent = fs.readFileSync(uri, 'utf8');
+    try {
+      doctypeContent = fs.readFileSync(uri, 'utf8');
+    } catch (e) {
+      return {};
+    }
   }
   if (extKind === '.toml') {
     const tomlData: any = toml.parse(doctypeContent);
@@ -144,20 +160,40 @@ function resolveDocType(uri: string, doctypes: any): string {
 }
 
 // tree-related file operations
-
-export function getRootFileName(configPath: string, root: string = ROOT_NAME): string | undefined {
-  const config: any = getConfig(configPath);
+export function getRootFileName(configPath: string, root: string | undefined): string | undefined {
+  const config: any | undefined = getConfig(configPath);
   const cwd: string = process.cwd();
-  const rootName: string = config.root ? config.root : root;
+  let rootName: string | undefined;
+  if (root === undefined) {
+    if (config && config.garden && config.garden.root) {
+      rootName = config.garden.root;
+    }
+    if (rootName === undefined) { rootName = ROOT_NAME; }
+  } else {
+    rootName = root;
+  }
   const files: string[] = glob.sync(cwd + '/**/' + rootName + MD);
   if ((files.length === 1) && files[0].indexOf(rootName) > -1) {
     return rootName;
   }
-  console.error('root not found: ' + rootName);
+  console.error('unable to find root with name: ' + '"' + rootName + '"');
 }
 
-export function getIndexFileUris(doctypePath: string, indexGlob: string = INDEX_GLOB): string[] {
+export function getIndexFileUris(doctypePath: string, indexGlob: string | undefined): string[] | undefined {
   let fileUris: string[] = [];
+  // ...from glob
+  if (indexGlob !== undefined) {
+    try {
+      fileUris = glob.sync(path.join(process.cwd(), indexGlob + MD));
+      if (fileUris.length === 0) {
+        console.error('no index files found at location: ' + '"' + indexGlob + '"');
+        return;
+      }
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+  }
   // ...from doctype
   const doctypes: any = getDocTypes(doctypePath);
   if (doctypes.index) {
@@ -167,14 +203,14 @@ export function getIndexFileUris(doctypePath: string, indexGlob: string = INDEX_
         fileUris.push(uri);
       }
     });
-  // ...from glob
-  } else {
-    try {
-      fileUris = glob.sync(indexGlob);
-    } catch (err) {
-      console.error(err);
-      return [];
+    if (fileUris.length === 0) {
+      console.error('no index files found from doctype payload: ' + doctypes);
+      return;
     }
+  }
+  // ...from base default (e.g. './index/' dir)
+  if (fileUris.length === 0) {
+    fileUris = glob.sync(path.join(process.cwd(), INDEX_GLOB + MD));
   }
   return fileUris;
 }

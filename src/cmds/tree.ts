@@ -10,6 +10,7 @@ import * as caml from 'caml-mkdn';
 import { SemTree } from 'semtree';
 
 import { MD } from '../util/const';
+import { buildTree } from '../util/tree';
 import { getFileNames } from '../util/util';
 
 
@@ -20,33 +21,18 @@ export interface Node {
 }
 
 export function tree(root: string, indexFileUris: string[], opts: any) {
+  // generate filenames for printTree() function below
   const allFileNames: string[] = getFileNames();
-  // build tree data
-  const treeData: Record<string, string> = {};
   const indexFileNames: string[] = indexFileUris.map((uri: string) => path.basename(uri, MD));
-  indexFileUris.forEach((uri: string) => {
-    const fileContent: string = fs.readFileSync(uri, 'utf-8').toString();
-    const contentNoCAML: any = caml.load(fileContent).content;
-    const attrLessContent: any = matter(contentNoCAML).content;
-    const filename: string = path.basename(uri, path.extname(uri));
-    treeData[filename] = attrLessContent;
-  });
-  try {
-    // build tree
-    const semtree: SemTree = new SemTree({
-      suffix: 'none',
-      setRoot: () => root,
-    });
-    const msg: string = semtree.parse(treeData, root);
-    // print
-    if (typeof msg === 'string') {
-      console.log(msg);
-    } else {
-      console.log(printTree(semtree.root, semtree.tree));
-    }
-  } catch (e) {
-    console.error(e);
-    return;
+
+  // build tree
+  const semtree: SemTree | string = buildTree(root, indexFileUris);
+  if (typeof semtree === 'string') {
+    console.error(semtree);
+  } else if (semtree instanceof SemTree) {
+    console.log(printTree(semtree.root, semtree.tree));
+  } else {
+    console.error('error');
   }
 
   // helper function to render tree
