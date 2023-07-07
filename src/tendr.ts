@@ -11,7 +11,7 @@ import { getRootFileName, getIndexFileUris } from './util/util';
 import { buildTree } from './util/tree';
 
 import { camlToYaml, yamlToCaml } from './cmds/aml';
-import { REL_KINDS, list } from './cmds/list';
+import { REL_KINDS, status } from './cmds/status';
 import { rename } from './cmds/rename';
 import { retype } from './cmds/retype';
 import { tree } from './cmds/tree';
@@ -83,9 +83,9 @@ export const tendr = (argv: string[]): yargs.Argv => {
     })
 
     .command({
-      command: 'list <filename>',
-      aliases: ['ls'],
-      describe: 'list all relationships for a given file',
+      command: 'status <filename>',
+      aliases: ['stat'],
+      describe: 'show status of file relationships',
       builder: (yargs: yargs.Argv) => yargs
         .option('kind', {
           alias: 'k',
@@ -99,7 +99,7 @@ export const tendr = (argv: string[]): yargs.Argv => {
         const indexFileUris: string[] | undefined = getIndexFileUris(argv.doctype as string, argv.glob as string | undefined);
         if (indexFileUris === undefined) { return; }
         const semtree: SemTree | string = buildTree(root, indexFileUris);
-        list(argv.filename as string, semtree, argv);
+        status(argv.filename as string, semtree, argv);
       }
     })
 

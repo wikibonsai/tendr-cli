@@ -63,20 +63,20 @@ Generates a status report. Runs on all files in current directory and all subdir
 $ tendr stat
 ```
 
-### `list`
+### `status`
 
 Example:
 
 ```
-$ tendr list <filename>
+$ tendr status <filename>
 ```
 
 Manual:
 
 ```
-tendr list <filename>
+tendr status <filename>
 
-list all relationships for a given file
+show status of file relationships
 
 Options:
       --version  Show version number                                   [boolean]

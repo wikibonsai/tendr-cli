@@ -54,7 +54,7 @@ const testCmd = (test: CommandTestCase) => () => {
   }
 };
 
-describe('list', () => {
+describe('status', () => {
 
   beforeEach(() => {
     const bonsai: string = 
@@ -136,8 +136,8 @@ describe('list', () => {
   });
 
   it('base; all rels', testCmd({
-    input: ['list', 'fname-a'],
-    cmd: ['list'],
+    input: ['status', 'fname-a'],
+    cmd: ['status'],
     args: { filename: 'fname-a' },
     opts: { kind: 'rel' },
     output:
@@ -169,8 +169,8 @@ describe('list', () => {
   describe('kind', () => {
 
     it('refs; all refs (attrs + links + embeds)', testCmd({
-      input: ['list', 'fname-a', '-k', 'ref'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'ref'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'ref' },
       output:
@@ -193,8 +193,8 @@ describe('list', () => {
     }));
 
     it('attrs', testCmd({
-      input: ['list', 'fname-a', '-k', 'attr'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'attr'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'attr' },
       output:
@@ -210,8 +210,8 @@ describe('list', () => {
     }));
 
     it('attrs; list', testCmd({
-      input: ['list', 'fname-g', '-k', 'attr'],
-      cmd: ['list'],
+      input: ['status', 'fname-g', '-k', 'attr'],
+      cmd: ['status'],
       args: { filename: 'fname-g' },
       opts: { kind: 'attr' },
       output:
@@ -229,8 +229,8 @@ describe('list', () => {
     }));
 
     it('links', testCmd({
-      input: ['list', 'fname-a', '-k', 'link'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'link'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'link' },
       output:
@@ -252,8 +252,8 @@ describe('list', () => {
   describe('fore', () => {
 
     it('fore; equivalent to forerefs', testCmd({
-      input: ['list', 'fname-a', '-k', 'fore'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'fore'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'fore' },
       output:
@@ -275,8 +275,8 @@ describe('list', () => {
     }));
 
     it('forerefs; equivalent to fore', testCmd({
-      input: ['list', 'fname-a', '-k', 'foreref'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'foreref'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'foreref' },
       output:
@@ -298,8 +298,8 @@ describe('list', () => {
     }));
 
     it('foreattrs', testCmd({
-      input: ['list', 'fname-a', '-k', 'foreattr'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'foreattr'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'foreattr' },
       output:
@@ -315,8 +315,8 @@ describe('list', () => {
     }));
 
     it('forelinks', testCmd({
-      input: ['list', 'fname-a', '-k', 'forelink'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'forelink'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'forelink' },
       output:
@@ -333,8 +333,8 @@ describe('list', () => {
     }));
 
     it('foreembeds', testCmd({
-      input: ['list', 'fname-a', '-k', 'foreembed'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'foreembed'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'foreembed' },
       output:
@@ -353,8 +353,8 @@ describe('list', () => {
   describe('back', () => {
 
     it('back; equivalent to backrefs', testCmd({
-      input: ['list', 'fname-a', '-k', 'back'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'back'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'back' },
       output:
@@ -376,8 +376,8 @@ describe('list', () => {
     }));
 
     it('backrefs; equivalent to back', testCmd({
-      input: ['list', 'fname-a', '-k', 'backref'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'backref'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'backref' },
       output:
@@ -399,8 +399,8 @@ describe('list', () => {
     }));
 
     it('backattrs', testCmd({
-      input: ['list', 'fname-a', '-k', 'backattr'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'backattr'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'backattr' },
       output:
@@ -415,8 +415,8 @@ describe('list', () => {
     }));
 
     it('backlinks', testCmd({
-      input: ['list', 'fname-a', '-k', 'backlink'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'backlink'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'backlink' },
       output:
@@ -434,8 +434,8 @@ describe('list', () => {
     }));
 
     it('backembeds', testCmd({
-      input: ['list', 'fname-a', '-k', 'backembed'],
-      cmd: ['list'],
+      input: ['status', 'fname-a', '-k', 'backembed'],
+      cmd: ['status'],
       args: { filename: 'fname-a' },
       opts: { kind: 'backembed' },
       output:
@@ -454,8 +454,8 @@ describe('list', () => {
   describe('zombie', () => {
 
     it('zombie (target file does not exist); rels do not exist', testCmd({
-      input: ['list', 'no-doc-no-rels'],
-      cmd: ['list'],
+      input: ['status', 'no-doc-no-rels'],
+      cmd: ['status'],
       args: { filename: 'no-doc-no-rels' },
       opts: {},
       output:
@@ -479,8 +479,8 @@ describe('list', () => {
     }));
 
     it('zombie (target file does not exist); fams exist', testCmd({
-      input: ['list', 'fname-i'],
-      cmd: ['list'],
+      input: ['status', 'fname-i'],
+      cmd: ['status'],
       args: { filename: 'fname-i' },
       opts: {},
       output:
@@ -505,8 +505,8 @@ describe('list', () => {
     }));
 
     it('zombie (target file does not exist); refs exist', testCmd({
-      input: ['list', 'no-doc'],
-      cmd: ['list'],
+      input: ['status', 'no-doc'],
+      cmd: ['status'],
       args: { filename: 'no-doc' },
       opts: {},
       output:
@@ -534,30 +534,30 @@ describe('list', () => {
   describe.skip('error', () => {
 
     it('problem with fs.readFileSync() of target file', testCmd({
-      input: ['list', ''],
-      cmd: ['list'],
+      input: ['status', ''],
+      cmd: ['status'],
       args: { filename: '' },
       opts: {},
       output: '',
     }));
 
     it('problem with wikirefs.scan(); attr', testCmd({
-      input: ['list', ''],
-      cmd: ['list'],
+      input: ['status', ''],
+      cmd: ['status'],
       args: { filename: '' },
       output: '',
     }));
 
     it('problem with wikirefs.scan(); link', testCmd({
-      input: ['list', ''],
-      cmd: ['list'],
+      input: ['status', ''],
+      cmd: ['status'],
       args: { filename: '' },
       output: '',
     }));
 
     it('problem with wikirefs.scan(); embed', testCmd({
-      input: ['list', ''],
-      cmd: ['list'],
+      input: ['status', ''],
+      cmd: ['status'],
       args: { filename: '' },
       output: '',
     }));

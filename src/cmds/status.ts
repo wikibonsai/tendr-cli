@@ -8,7 +8,6 @@ import * as wikirefs from 'wikirefs';
 
 import { MD } from '../util/const';
 import { Node } from '../util/tree';
-import { getFileNames } from '../util/util';
 import { SemTree } from 'semtree';
 
 
@@ -33,8 +32,8 @@ function isEmpty(refs: string[]): boolean {
   return (refs.length === 1) && (refs[0] === EMPTY);
 }
 
-export function list(filename: string, semtree: SemTree | string, opts: any) {
-  // console.log('list\nargs: ', filename, 'opts: ', opts);
+export function status(filename: string, semtree: SemTree | string, opts: any) {
+  // console.log('status\nargs: ', filename, 'opts: ', opts);
   ////
   // vars
   const kind: string = (opts.kind && REL_KINDS.includes(opts.kind)) ? opts.kind : 'rel';
