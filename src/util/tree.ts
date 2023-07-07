@@ -12,13 +12,24 @@ import { INDEX_GLOB, MD, ROOT_NAME } from './const';
 import { getFileUris, resolveDocType } from './util';
 
 
+export interface InitTree {
+  configUri: string;
+  doctypeUri: string;
+  rootFileName: string | undefined;
+  globIndexUris: string | undefined;
+}
+
 export interface Node {
   text: string;
   ancestors: string[];
   children: string[];
 }
 
-export function buildTree(root: string, indexFileUris: string[]): SemTree |  string {
+export function buildTree(payload: InitTree): SemTree | undefined {
+  const rootFileName: string | undefined = getRootFileName(payload.configUri, payload.rootFileName);
+  if (rootFileName === undefined) { return; }
+  const indexFileUris: string[] | undefined = getIndexFileUris(payload.doctypeUri, payload.globIndexUris);
+  if (indexFileUris === undefined) { return; }
   // build tree data
   const treeData: Record<string, string> = {};
   indexFileUris.forEach((uri: string) => {
@@ -33,25 +44,22 @@ export function buildTree(root: string, indexFileUris: string[]): SemTree |  str
     }
   });
   if (Object.keys(treeData).length === 0) {
-    return 'error with tree data payload -- result was empty';
+    console.error('error with tree data payload -- result was empty');
   }
   try {
-    // build tree
     const semtree: SemTree = new SemTree({
       // semtree options...
     });
-    const msg: string = semtree.parse(treeData, root);
-    // print
+    const msg: string = semtree.parse(treeData, rootFileName);
     if (typeof msg === 'string') {
-      return msg;
+      console.error(msg);
     } else {
       return semtree;
     }
   } catch (e) {
-    return e as unknown as string;
+    console.error(e);
   }
 }
-
 
 // tree-related file operations
 export function getRootFileName(configPath: string, root: string | undefined): string | undefined {

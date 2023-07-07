@@ -7,7 +7,8 @@ import yargs from 'yargs';
 import { SemTree } from 'semtree';
 
 import { CONFIG_PATH, DOCTYPE_PATH } from './util/const';
-import { buildTree, getRootFileName, getIndexFileUris } from './util/tree';
+import type { InitTree } from './util/tree';
+import { buildTree } from './util/tree';
 
 import { camlToYaml, yamlToCaml } from './cmds/aml';
 import { REL_KINDS, status } from './cmds/status';
@@ -73,11 +74,16 @@ export const tendr = (argv: string[]): yargs.Argv => {
           describe: 'glob to index files',
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        const root: string | undefined = getRootFileName(argv.config as string, argv.root as string | undefined);
-        if (root === undefined) { return; }
-        const indexFileUris: string[] | undefined = getIndexFileUris(argv.doctype as string, argv.glob as string | undefined);
-        if (indexFileUris === undefined) { return; }
-        tree(root, indexFileUris, argv);
+        const payload: InitTree = {
+          configUri: argv.config as string,
+          doctypeUri: argv.doctype as string,
+          rootFileName: argv.root as string | undefined,
+          globIndexUris: argv.glob as string | undefined
+        };
+        const semtree: SemTree | undefined = buildTree(payload);
+        if (semtree instanceof SemTree) {
+          tree(semtree, argv);
+        }
       },
     })
 
@@ -93,12 +99,16 @@ export const tendr = (argv: string[]): yargs.Argv => {
           default: 'rel',
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        const root: string | undefined = getRootFileName(argv.config as string, argv.root as string | undefined);
-        if (root === undefined) { return; }
-        const indexFileUris: string[] | undefined = getIndexFileUris(argv.doctype as string, argv.glob as string | undefined);
-        if (indexFileUris === undefined) { return; }
-        const semtree: SemTree | string = buildTree(root, indexFileUris);
-        status(argv.filename as string, semtree, argv);
+        const payload: InitTree = {
+          configUri: argv.config as string,
+          doctypeUri: argv.doctype as string,
+          rootFileName: argv.root as string | undefined,
+          globIndexUris: argv.glob as string | undefined
+        };
+        const semtree: SemTree | undefined = buildTree(payload);
+        if (semtree instanceof SemTree) {
+          status(argv.filename as string, semtree, argv);
+        }
       }
     })
 

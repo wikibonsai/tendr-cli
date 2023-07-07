@@ -1,28 +1,19 @@
-import path from 'path';
-
 import chalk from 'chalk';
 
 import { SemTree } from 'semtree';
 
-import { MD } from '../util/const';
-import { Node, buildTree } from '../util/tree';
+import { Node } from '../util/tree';
 import { getFileNames } from '../util/util';
 
 
-export function tree(root: string, indexFileUris: string[], opts: any) {
+export function tree(semtree: SemTree, opts: any) {
   // generate filenames for printTree() function below
   const allFileNames: string[] = getFileNames();
-  const indexFileNames: string[] = indexFileUris.map((uri: string) => path.basename(uri, MD));
+  // todo:
+  // const indexFileNames: string[] = semtree.trunk;
+  const indexFileNames: string[] = Array.from(new Set(Object.values(semtree.petioleMap)));
 
-  // build tree
-  const semtree: SemTree | string = buildTree(root, indexFileUris);
-  if (typeof semtree === 'string') {
-    console.error(semtree);
-  } else if (semtree instanceof SemTree) {
-    console.log(printTree(semtree.root, semtree.tree));
-  } else {
-    console.error('error');
-  }
+  console.log(printTree(semtree.root, semtree.tree));
 
   // helper function to render tree
   function printTree(curNodeName: string, nodes: Node[], prefix: string = ''): string {

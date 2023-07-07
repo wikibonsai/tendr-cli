@@ -8,58 +8,37 @@ import { CONFIG_PATH, DOCTYPE_PATH } from './const';
 
 
 export function getConfig(uri?: string | undefined): any {
-  let extKind: string;
-  let configContent: string;
-  if (uri === undefined) {
-    extKind = 'toml';
-    try {
-      configContent = fs.readFileSync(CONFIG_PATH, 'utf8');
-    } catch (e) {
-      return {};
-    }
-  } else {
-    extKind = path.extname(uri);
-    try {
-      configContent = fs.readFileSync(uri, 'utf8');
-    } catch (e) {
-      return {};
-    }
-  }
-  if (extKind === '.toml') {
-    const tomlData: any = toml.parse(configContent);
-    if ((tomlData !== undefined) && (tomlData !== null)) { return tomlData; }
-  }
-  if (extKind === '.yaml' || extKind === '.yml') {
-    const yamlData: any = yaml.load(configContent);
-    if ((yamlData !== undefined) && (yamlData !== null)) { return yamlData; }
-  }
-  return {};
+  return get(uri, CONFIG_PATH);
 }
 
 export function getDocTypes(uri?: string | undefined): any {
+  return get(uri, DOCTYPE_PATH);
+}
+
+function get(uri?: string | undefined, kind: string = CONFIG_PATH): any {
   let extKind: string;
-  let doctypeContent: string;
+  let content: string;
   if (uri === undefined) {
     extKind = 'toml';
     try {
-      doctypeContent = fs.readFileSync(DOCTYPE_PATH, 'utf8');
+      content = fs.readFileSync(kind, 'utf8');
     } catch (e) {
       return {};
     }
   } else {
     extKind = path.extname(uri);
     try {
-      doctypeContent = fs.readFileSync(uri, 'utf8');
+      content = fs.readFileSync(uri, 'utf8');
     } catch (e) {
       return {};
     }
   }
   if (extKind === '.toml') {
-    const tomlData: any = toml.parse(doctypeContent);
+    const tomlData: any = toml.parse(content);
     if ((tomlData !== undefined) && (tomlData !== null)) { return tomlData; }
   }
   if (extKind === '.yaml' || extKind === '.yml') {
-    const yamlData: any = yaml.load(doctypeContent);
+    const yamlData: any = yaml.load(content);
     if ((yamlData !== undefined) && (yamlData !== null)) { return yamlData; }
   }
   return {};
