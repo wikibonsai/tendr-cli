@@ -129,7 +129,7 @@ export const tendr = (argv: string[]): yargs.Argv => {
     .command({
       command: 'camltoyaml [glob]',
       aliases: ['ctoy'],
-      describe: 'convert between "caml" and "yaml" style attributes.',
+      describe: 'convert from "caml" to "yaml" style attributes.',
       handler: (argv: ArgumentsCamelCase) =>
         camlToYaml(argv.glob as string, argv),
     })
@@ -137,7 +137,7 @@ export const tendr = (argv: string[]): yargs.Argv => {
     .command({
       command: 'yamltocaml [glob]',
       aliases: ['ytoc'],
-      describe: 'convert between "caml" and "yaml" style attributes.',
+      describe: 'convert from "yaml" to "caml" style attributes.',
       // builder: (yargs: yargs.CommandBuilder<Record<string, any>, Record<string, any>>) => yargs
       builder: (yargs: yargs.Argv) => yargs
         .option('format', {
