@@ -14,6 +14,7 @@ const testCwd: string = path.join(cwd, 'fixtures');
 let fakeConsoleLog: any;
 let fakeConsoleError: any;
 let fakeProcessCwd: any;
+let testOutput: string;
 
 const testCmd = (test: CommandTestCase) => () => {
   // go //
@@ -40,9 +41,11 @@ const testCmd = (test: CommandTestCase) => () => {
   }
   // console output
   if (fakeConsoleLog.called) {
-    assert.strictEqual(fakeConsoleLog.getCall(0).args[0], test.output);
+    testOutput = fakeConsoleLog.getCall(0).args[0];
+    assert.strictEqual(testOutput, test.output);
   } else if (fakeConsoleError.called) {
-    assert.strictEqual(fakeConsoleError.getCall(0).args[0], test.output);
+    testOutput = fakeConsoleError.getCall(0).args[0];
+    assert.strictEqual(testOutput, test.output);
   } else {
     console.error('console not called');
     assert.fail();
@@ -108,6 +111,8 @@ prefix = "i."
   });
 
   afterEach(() => {
+    console.info('Output Result:\n' + testOutput);
+    testOutput = '';
     if (fs.existsSync('config.toml')) {
       fs.rmSync('config.toml');
     }

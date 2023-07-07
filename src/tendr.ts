@@ -4,8 +4,11 @@ import path from 'path';
 import type { ArgumentsCamelCase } from 'yargs';
 import yargs from 'yargs';
 
+import { SemTree } from 'semtree';
+
 import { CONFIG_PATH, DOCTYPE_PATH } from './util/const';
 import { getRootFileName, getIndexFileUris } from './util/util';
+import { buildTree } from './util/tree';
 
 import { camlToYaml, yamlToCaml } from './cmds/aml';
 import { REL_KINDS, list } from './cmds/list';
@@ -82,16 +85,22 @@ export const tendr = (argv: string[]): yargs.Argv => {
     .command({
       command: 'list <filename>',
       aliases: ['ls'],
-      describe: 'list all references for a given file',
+      describe: 'list all relationships for a given file',
       builder: (yargs: yargs.Argv) => yargs
         .option('kind', {
           alias: 'k',
           type: 'string',
-          describe: `kind of references to list\n(kinds: ${REL_KINDS.join(', ')}; default is "ref")`,
-          default: 'ref',
+          describe: `kind of relationships to list\n(kinds: ${REL_KINDS.join(', ')}; default is "rel")`,
+          default: 'rel',
         }),
-      handler: (argv: ArgumentsCamelCase) =>
-        list(argv.filename as string, argv),
+      handler: (argv: ArgumentsCamelCase) => {
+        const root: string | undefined = getRootFileName(argv.config as string, argv.root as string | undefined);
+        if (root === undefined) { return; }
+        const indexFileUris: string[] | undefined = getIndexFileUris(argv.doctype as string, argv.glob as string | undefined);
+        if (indexFileUris === undefined) { return; }
+        const semtree: SemTree | string = buildTree(root, indexFileUris);
+        list(argv.filename as string, semtree, argv);
+      }
     })
 
     .command({

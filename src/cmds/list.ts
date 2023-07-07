@@ -7,17 +7,20 @@ import { table } from 'table';
 import * as wikirefs from 'wikirefs';
 
 import { MD } from '../util/const';
+import { Node } from '../util/tree';
+import { getFileNames } from '../util/util';
+import { SemTree } from 'semtree';
 
 
 /* eslint-disable indent */
 // note:
-//   'fam'  === 'ancestor' + 'children' (tree relationships)
+//   'fam'  === 'ancestor' + 'child'    (tree relationships)
 //   'ref'  === 'attr' + 'link'         (web relationships)
 //   'fore' === 'foreref'
 //   'back' === 'backref'
 export const REL_KINDS: string[] = [
-  // 'rel',
-  // 'fam', 'ancestor', 'children',
+  'rel',
+  'fam', 'ancestor', 'child',
               'ref',     'attr',     'link',     'embed',
   'fore', 'foreref', 'foreattr', 'forelink', 'foreembed',
   'back', 'backref', 'backattr', 'backlink', 'backembed',
@@ -29,20 +32,23 @@ const EMPTY: string = chalk.dim('--');
 function isEmpty(refs: string[]): boolean {
   return (refs.length === 1) && (refs[0] === EMPTY);
 }
- 
-export function list(filename: string, opts: any) {
+
+export function list(filename: string, semtree: SemTree | string, opts: any) {
   // console.log('list\nargs: ', filename, 'opts: ', opts);
+  ////
   // vars
-  const kind: string = (opts.kind && REL_KINDS.includes(opts.kind)) ? opts.kind : 'ref';
-  const foreattr: boolean = !kind.includes('back') && !kind.includes('link') && !kind.includes('embed');
-  const foreembed: boolean = !kind.includes('back') && !kind.includes('attr') && !kind.includes('link');
-  const forelink: boolean = !kind.includes('back') && !kind.includes('attr') && !kind.includes('embed');
-  const backattr: boolean = !kind.includes('fore') && !kind.includes('link') && !kind.includes('embed');
-  const backlink: boolean = !kind.includes('fore') && !kind.includes('attr') && !kind.includes('embed');
-  const backembed: boolean = !kind.includes('fore') && !kind.includes('attr') && !kind.includes('link');
+  const kind: string = (opts.kind && REL_KINDS.includes(opts.kind)) ? opts.kind : 'rel';
+  const ancestor : boolean = (kind === 'rel') || (kind === 'fam') || (kind === 'ancestor');
+  const child    : boolean = (kind === 'rel') || (kind === 'fam') || (kind === 'child');
+  const foreattr : boolean = (kind === 'rel') || (kind === 'ref') || (kind === 'fore') || (kind === 'foreref') || (kind === 'attr') || (kind === ('foreattr'));
+  const foreembed: boolean = (kind === 'rel') || (kind === 'ref') || (kind === 'fore') || (kind === 'foreref') || (kind === 'embed') || (kind === ('foreembed'));
+  const forelink : boolean = (kind === 'rel') || (kind === 'ref') || (kind === 'fore') || (kind === 'foreref') || (kind === 'link') || (kind === ('forelink'));
+  const backattr : boolean = (kind === 'rel') || (kind === 'ref') || (kind === 'back') || (kind === 'backref') || (kind === 'attr') || (kind === ('backattr'));
+  const backlink : boolean = (kind === 'rel') || (kind === 'ref') || (kind === 'back') || (kind === 'backref') || (kind === 'link') || (kind === ('backlink'));
+  const backembed: boolean = (kind === 'rel') || (kind === 'ref') || (kind === 'back') || (kind === 'backref') || (kind === 'embed') || (kind === ('backembed'));
   // temp data vars
-  // const ancestors: string[] = [];
-  // const children: string[] = [];
+  let ancestors: string[] = [];
+  let children: string[] = [];
   const foreattrs: string[] = [];
   const forelinks: string[] = [];
   const foreembeds: string[] = [];
@@ -64,6 +70,17 @@ export function list(filename: string, opts: any) {
     foreattrs.push(EMPTY);
     forelinks.push(EMPTY);
     foreembeds.push(EMPTY);
+  }
+  // tree
+  let node: Node | undefined;
+  if (semtree instanceof SemTree) {
+    node = semtree.tree.find((node) => node.text === filename);
+    if (ancestor) {
+      ancestors = node ? node.ancestors : [];
+    }
+    if (child) {
+      children = node ? node.children : [];
+    }
   }
   /* eslint-enable indent */
   ////
@@ -246,6 +263,7 @@ export function list(filename: string, opts: any) {
   // table
   // configure table
   const config: any = {
+    // configure below...
     spanningCells: [],
     border: {
       topBody: chalk.dim('─'),
@@ -272,14 +290,45 @@ export function list(filename: string, opts: any) {
       joinMiddleUp: chalk.dim('┴'),
     }
   };
-  // collapse columns if fore or back is excluded
+  // configure 'spanningCells' dynamically
   if (!kind.includes('back') && !kind.includes('fore')) {
+    // expand tree columns
+    let fileNameRow: number = 0;
+    let childRow: number = 1;
+    if (ancestor) {
+      config.spanningCells.push(
+        { col: 1, row: 0, colSpan: 2, alignment: 'left' }
+      );
+      fileNameRow += 1;
+      childRow += 1;
+    }
+    // filename row
     config.spanningCells.push(
-      { col: 1, row: 0, colSpan: 2, alignment: 'left' }
+      { col: 1, row: fileNameRow, colSpan: 2, alignment: 'left' }   // delete separator
     );
+    if (child) {
+      config.spanningCells.push(
+        { col: 1, row: childRow, colSpan: 2, alignment: 'left' }
+      );
+    }
   }
   // build table
   const tableData: any[] = [];
+  if (ancestor) { // && (node !== undefined)) {
+    if (ancestors.length > 0) {
+      if (!kind.includes('back') && !kind.includes('fore')) {
+        tableData.push([chalk.yellow('ANCESTORS'), ancestors.join(' > '), '']);
+      } else {
+        tableData.push([chalk.yellow('ANCESTORS'), ancestors.join(' > ')]);
+      }
+    } else {
+      if (!kind.includes('back') && !kind.includes('fore')) {
+        tableData.push([chalk.yellow('ANCESTORS'), EMPTY, '']);
+      } else {
+        tableData.push([chalk.yellow('ANCESTORS'), EMPTY]);
+      }
+    }
+  }
   if (thisFilePath === undefined) {
     tableData.push([chalk.red('NO FILE'), chalk.dim(filename)]);
   } else {
@@ -288,6 +337,21 @@ export function list(filename: string, opts: any) {
   // pad file row if both fore and back are on
   if (!kind.includes('back') && !kind.includes('fore')) {
     tableData[tableData.length - 1].push('');
+  }
+  if (child) { // && (node !== undefined)) {
+    if (children.length > 0) {
+      if (!kind.includes('back') && !kind.includes('fore')) {
+        tableData.push([chalk.yellow('CHILDREN'), children.join('\n'), '']);
+      } else {
+        tableData.push([chalk.yellow('CHILDREN'), children.join('\n')]);
+      }
+    } else {
+      if (!kind.includes('back') && !kind.includes('fore')) {
+        tableData.push([chalk.yellow('CHILDREN'), EMPTY, '']);
+      } else {
+        tableData.push([chalk.yellow('CHILDREN'), EMPTY]);
+      }
+    }
   }
   if (!kind.includes('back') && !kind.includes('fore')) {
     tableData.push([
@@ -306,22 +370,22 @@ export function list(filename: string, opts: any) {
     if (foreattr || backattr) {
       tableData.push([
         chalk.blue('ATTR'),
-        backattr ? (isEmpty(backattrs) ? backattrs : '• ' + backattrs.join('\n• ')) : '',
-        foreattr ? (isEmpty(foreattrs) ? foreattrs : '• ' + foreattrs.join('\n• ')) : '',
+        backattr ? (isEmpty(backattrs) ? backattrs[0] : '• ' + backattrs.join('\n• ')) : '',
+        foreattr ? (isEmpty(foreattrs) ? foreattrs[0] : '• ' + foreattrs.join('\n• ')) : '',
       ]);
     }
     if (forelink || backlink) {
       tableData.push([
         chalk.blue('LINK'),
-        backlink ? (isEmpty(backlinks) ? backlinks : '• ' + backlinks.join('\n• ')) : '',
-        forelink ? (isEmpty(forelinks) ? forelinks : '• ' + forelinks.join('\n• ')) : '',
+        backlink ? (isEmpty(backlinks) ? backlinks[0] : '• ' + backlinks.join('\n• ')) : '',
+        forelink ? (isEmpty(forelinks) ? forelinks[0] : '• ' + forelinks.join('\n• ')) : '',
       ]);
     }
     if (foreembed || backembed) {
       tableData.push([
         chalk.blue('EMBED'),
-        backembed ? (isEmpty(backembeds) ? backembeds : '• ' + backembeds.join('\n• ')) : '',
-        foreembed ? (isEmpty(foreembeds) ? foreembeds : '• ' + foreembeds.join('\n• ')) : '',
+        backembed ? (isEmpty(backembeds) ? backembeds[0] : '• ' + backembeds.join('\n• ')) : '',
+        foreembed ? (isEmpty(foreembeds) ? foreembeds[0] : '• ' + foreembeds.join('\n• ')) : '',
       ]);
     }
   // fore OR back
@@ -331,10 +395,10 @@ export function list(filename: string, opts: any) {
         chalk.blue('ATTR'),
         backattr
           ? isEmpty(backattrs)
-            ? backattrs
+            ? backattrs[0]
             : '• ' + backattrs.join('\n• ')
           : isEmpty(foreattrs)
-            ? foreattrs
+            ? foreattrs[0]
             : '• ' + foreattrs.join('\n• '),
       ]);
     }
@@ -343,10 +407,10 @@ export function list(filename: string, opts: any) {
         chalk.blue('LINK'),
         backlink
           ? isEmpty(backlinks)
-            ? backlinks
+            ? backlinks[0]
             : '• ' + backlinks.join('\n• ')
           : isEmpty(forelinks)
-            ? forelinks
+            ? forelinks[0]
             : '• ' + forelinks.join('\n• '),
       ]);
     }
@@ -355,10 +419,10 @@ export function list(filename: string, opts: any) {
         chalk.blue('EMBED'),
         backembed
           ? isEmpty(backembeds)
-            ? backembeds
+            ? backembeds[0]
             : '• ' + backembeds.join('\n• ')
           : isEmpty(foreembeds)
-            ? foreembeds
+            ? foreembeds[0]
             : '• ' + foreembeds.join('\n• '),
       ]);
     }

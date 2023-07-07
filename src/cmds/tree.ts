@@ -1,24 +1,13 @@
-import fs from 'fs';
 import path from 'path';
 
 import chalk from 'chalk';
-import glob from 'glob';
-import * as yaml from 'js-yaml';
-import matter from 'gray-matter';
-import * as caml from 'caml-mkdn';
 
 import { SemTree } from 'semtree';
 
 import { MD } from '../util/const';
-import { buildTree } from '../util/tree';
+import { Node, buildTree } from '../util/tree';
 import { getFileNames } from '../util/util';
 
-
-export interface Node {
-  text: string;
-  ancestors: string[];
-  children: string[];
-}
 
 export function tree(root: string, indexFileUris: string[], opts: any) {
   // generate filenames for printTree() function below

@@ -7,6 +7,12 @@ import * as caml from 'caml-mkdn';
 import { SemTree } from 'semtree';
 
 
+export interface Node {
+  text: string;
+  ancestors: string[];
+  children: string[];
+}
+
 export function buildTree(root: string, indexFileUris: string[]): SemTree |  string {
   // build tree data
   const treeData: Record<string, string> = {};

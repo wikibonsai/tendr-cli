@@ -74,15 +74,19 @@ $ tendr list <filename>
 Manual:
 
 ```
-list all references for a given file
+tendr list <filename>
+
+list all relationships for a given file
 
 Options:
       --version  Show version number                                   [boolean]
       --help     Show help                                             [boolean]
-  -k, --kind     kind of references to list
-                 (kinds: "ref", "foreref", "backref",
-                  "attr", "foreattr", "backattr", "link", "forelink", "backlink"
-                 ; default is "ref")                   [string] [default: "ref"]
+  -k, --kind     kind of relationships to list
+                 (kinds: rel, fam, ancestor, child
+                 , ref, attr, link, embed, fore, foreref, foreattr, forelink, fo
+                 reembed, back, backref, backattr, backlink, backembed; default
+                 is "rel")                             [string] [default: "rel"]
+
 ```
 
 ### `rename`
