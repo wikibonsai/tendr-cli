@@ -7,8 +7,7 @@ import yargs from 'yargs';
 import { SemTree } from 'semtree';
 
 import { CONFIG_PATH, DOCTYPE_PATH } from './util/const';
-import { getRootFileName, getIndexFileUris } from './util/util';
-import { buildTree } from './util/tree';
+import { buildTree, getRootFileName, getIndexFileUris } from './util/tree';
 
 import { camlToYaml, yamlToCaml } from './cmds/aml';
 import { REL_KINDS, status } from './cmds/status';
