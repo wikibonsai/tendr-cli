@@ -26,7 +26,7 @@ npm install -g tendr-cli
 Example:
 
 ```
-$ tendr list <filename>
+$ tendr stat <filename>
 ```
 
 Manual:
@@ -37,16 +37,18 @@ usage: tendr <command>
 cli tools for markdown-based digital gardening.
 
 Commands:
-  tendr list <filename>                 list all references for a given file
-                                                                   [aliases: ls]
+  tendr list                            list garden contents       [aliases: ls]
+  tendr tree                            print full knowledge bonsai
+  tendr status <filename>               show status of file relationships
+                                                                 [aliases: stat]
   tendr rename <old-fname> <new-fname>  rename a file and all of its references.
                                                                    [aliases: rn]
   tendr retype <old-type> <new-type>    rename reference type and all its occurr
                                         ences.                     [aliases: rt]
-  tendr camltoyaml [glob]               convert between "caml" and "yaml" style
-                                        attributes.              [aliases: ctoy]
-  tendr yamltocaml [glob]               convert between "caml" and "yaml" style
-                                        attributes.              [aliases: ytoc]
+  tendr camltoyaml [glob]               convert from "caml" to "yaml" style attr
+                                        ibutes.                  [aliases: ctoy]
+  tendr yamltocaml [glob]               convert from "yaml" to "caml" style attr
+                                        ibutes.                  [aliases: ytoc]
 
 Options:
   --version  Show version number                                       [boolean]
@@ -55,12 +57,12 @@ Options:
 
 ## Commands
 
-### `stat` (⚠️ TODO)
+### `list`
 
 Generates a status report. Runs on all files in current directory and all subdirectories.
 
 ```
-$ tendr stat
+$ tendr list
 ```
 
 ### `status`
@@ -146,15 +148,13 @@ $ tendr camltoyaml [glob]
 Manual:
 
 ```
-tendr retype <old-type> <new-type>
+tendr camltoyaml [glob]
 
-rename reference type and all its occurrences.
+convert from "caml" to "yaml" style attributes.
 
 Options:
-      --version  Show version number                                   [boolean]
-      --help     Show help                                             [boolean]
-  -k, --kind     kind of entity to rename (kinds: "reftype", "attrtype", "linkty
-                 pe"; default is "reftype")        [string] [default: "reftype"]
+  --version  Show version number                                       [boolean]
+  --help     Show help                                                 [boolean]
 ```
 
 ### `yamltocaml`
@@ -170,15 +170,17 @@ $ tendr yamltocaml [glob]
 Manual:
 
 ```
-Usage: tendr yamltocaml|ytoc [options] [glob]
+tendr yamltocaml [glob]
 
-convert between "caml" and "yaml" style attributes.
+convert from "yaml" to "caml" style attributes.
 
 Options:
-  -f, --format [format]            how to format caml output (kinds: 'none',
-                                   'pretty', or 'pad'; default is 'none')
-  -l, --list-format [list-format]  how to format caml output lists (kinds:
-                                   'mkdn' or 'comma'; default is 'mkdn')
-  -p, --no-prefix                  do not use colon prefix in caml output
-  -h, --help                       display help for command
+      --version      Show version number                               [boolean]
+      --help         Show help                                         [boolean]
+  -f, --format       how to format caml output (kinds: "none", "pretty", or "pad
+                     "; default is "none")          [string] [default: "pretty"]
+  -l, --list-format  how to format caml output lists (kinds: "mkdn" or "comma";
+                     default is "mkdn")               [string] [default: "mkdn"]
+  -p, --no-prefix    do not use colon prefix in caml output
+                                                       [boolean] [default: true]
 ```
