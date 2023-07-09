@@ -14,7 +14,7 @@ import { MD } from '../util/const';
 
 const RGX_MKDN_LINK: RegExp = /\[([^\]]+)\]\(([^)]+)\)/g;
 
-export function mkdnToWiki(globPat: string | undefined, opts?: any, cmd?: any) {
+export function mkdnToWiki(globPat: string | undefined, opts?: any) {
   // console.log('mkdnToWiki\nargs: ', globPat, 'opts: ', opts);
   const cwd: string = process.cwd();
   const fullGlob: string = globPat ? (cwd + globPat + MD) : (cwd + '/**/*' + MD);
@@ -30,7 +30,7 @@ export function mkdnToWiki(globPat: string | undefined, opts?: any, cmd?: any) {
   }
 }
 
-export function wikiToMkdn(globPat: string | undefined, opts?: any, cmd?: any) {
+export function wikiToMkdn(globPat: string | undefined, opts?: any) {
   // console.log('wikiToMkdn\nargs: ', globPat, 'opts: ', opts);
   const cwd: string = process.cwd();
   const fullGlob: string = globPat ? (cwd + globPat + MD) : (cwd + '/**/*' + MD);
@@ -50,7 +50,7 @@ export function wikiToMkdn(globPat: string | undefined, opts?: any, cmd?: any) {
 // amls (caml, yaml)
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function camlToYaml(globPat: string | undefined, opts?: any, cmd?: any) {
+export function camlToYaml(globPat: string | undefined, opts?: any) {
   // console.log('camltoyaml\nargs: ', globPat, 'opts: ', opts);
   const cwd: string = process.cwd();
   const fullGlob: string = globPat ? (cwd + globPat + MD) : (cwd + '/**/*' + MD);
@@ -72,7 +72,7 @@ export function camlToYaml(globPat: string | undefined, opts?: any, cmd?: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function yamlToCaml(globPat: string | undefined, opts?: any, cmd?: any) {
+export function yamlToCaml(globPat: string | undefined, opts?: any) {
   // console.log('yamltocaml\nargs: ', globPat, 'opts: ', opts);
   const cwd: string = process.cwd();
   const fullGlob: string = globPat ? (cwd + globPat + MD) : (cwd + '/**/*' + MD);
