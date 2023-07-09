@@ -152,7 +152,7 @@ export const tendr = (argv: string[]): yargs.Argv => {
       // builder: (yargs: yargs.CommandBuilder<Record<string, any>, Record<string, any>>) => yargs
       builder: (yargs: yargs.Argv) => yargs
         .option('format', {
-          alias: 'f',
+          alias: 'F',
           type: 'string',
           describe: 'how to format caml output (kinds: "none", "pretty", or "pad"; default is "none")',
           default: 'pretty',
