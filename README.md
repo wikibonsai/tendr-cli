@@ -70,6 +70,32 @@ Generates a status report. Runs on all files in current directory and all subdir
 $ tendr list
 ```
 
+### `tree`
+
+Example:
+
+```
+$ tendr tree
+```
+
+Manual:
+
+```
+tendr tree
+
+print full knowledge bonsai/semantic tree
+
+Options:
+      --version  Show version number                                   [boolean]
+      --help     Show help                                             [boolean]
+  -c, --config   relative path to config file, including filename; defaults to "
+                 ./config.toml"              [string] [default: "./config.toml"]
+  -d, --doctype  relative path to doctype file, including filename; defaults to
+                 "t.doc.toml"                 [string] [default: "./t.doc.toml"]
+  -r, --root     filename for root of tree                              [string]
+  -g, --glob     glob to index files                                    [string]
+```
+
 ### `status`
 
 Example:
