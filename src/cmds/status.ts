@@ -58,11 +58,11 @@ export function status(filename: string, semtree: SemTree | string, opts: any) {
   // go
   const cwd: string = process.cwd();
   const listGlob: string = cwd + '/**/*' + MD;
-  const vaultFilePaths: string[] = glob.sync(listGlob);
-  const allFileNames: string[] = vaultFilePaths.map((fp) => path.basename(fp, MD));
+  const gardenFilePaths: string[] = glob.sync(listGlob);
+  const allFileNames: string[] = gardenFilePaths.map((fp) => path.basename(fp, MD));
   const output: string[] = [];
   /* eslint-disable indent */
-  const thisFilePath: string | undefined = vaultFilePaths.filter((fp) => MD === path.extname(fp).toLowerCase())
+  const thisFilePath: string | undefined = gardenFilePaths.filter((fp) => MD === path.extname(fp).toLowerCase())
                                                           .find((fp) => path.basename(fp, MD) === filename);
   // no file / zombie
   if (thisFilePath === undefined) {
@@ -155,7 +155,7 @@ export function status(filename: string, semtree: SemTree | string, opts: any) {
   if (!kind.includes('fore')) {
     // those / that vars
     /* eslint-disable indent */
-    const thoseFilePaths: string[] | undefined = vaultFilePaths.filter((fp) =>
+    const thoseFilePaths: string[] | undefined = gardenFilePaths.filter((fp) =>
                                                                         (MD === path.extname(fp))
                                                                         && (path.basename(fp, MD) !== filename)
                                                                       );
