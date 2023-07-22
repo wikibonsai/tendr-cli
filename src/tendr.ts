@@ -12,7 +12,7 @@ import { buildTree } from './util/tree';
 
 import { REL_KINDS, status } from './cmds/status';
 
-import { camlToYaml, mkdnToWiki, wikiToMkdn, yamlToCaml } from './cmds/conv';
+import { camlToYaml, mkdnToWiki, wikiToMkdn, yamlToCaml } from './cmds/convert';
 // import { list } from './cmds/list';
 import { rename } from './cmds/rename';
 import { retype } from './cmds/retype';
@@ -47,6 +47,23 @@ export const tendr = (argv: string[]): yargs.Argv => {
     .help()
     // .wrap(null)
     // .epilogue('cli tools for markdown-based digital gardening')
+
+  // garden level
+
+  // todo
+  // .command({
+  //   command: 'list',
+  //   aliases: ['ls'],
+  //   describe: 'list garden contents',
+  //   builder: (yargs: yargs.Argv) => yargs
+  //     .option('kind', {
+  //       alias: 'k',
+  //       type: 'string',
+  //       describe: 'list information about a markdown garden',
+  //       default: 'rel',
+  //     }),
+  //   handler: (argv: ArgumentsCamelCase) => list(),
+  // })
 
     .command({
       command: 'tree',
@@ -89,6 +106,8 @@ export const tendr = (argv: string[]): yargs.Argv => {
       },
     })
 
+  // file level
+
     .command({
       command: 'status <filename>',
       aliases: ['stat'],
@@ -114,6 +133,8 @@ export const tendr = (argv: string[]): yargs.Argv => {
       }
     })
 
+  // refactor
+
     .command({
       command: 'rename <old-fname> <new-fname>',
       aliases: ['rn'],
@@ -137,6 +158,25 @@ export const tendr = (argv: string[]): yargs.Argv => {
         retype(argv.oldType as string, argv.newType as string, argv),
     })
 
+  // convert
+
+  // todo: (both links and aml)
+
+  // .command({
+  //   command: 'cmntowiki [glob]',
+  //   aliases: ['ctow'],
+  //   describe: 'convert from commonmark to wiki syntax.',
+  //   handler: (argv: ArgumentsCamelCase) =>
+  //     cmmnToWiki(argv.glob as string, argv),
+  // })
+
+  // .command({
+  //   command: 'wikitocmn [glob]',
+  //   aliases: ['wtoc'],
+  //   describe: 'convert from wiki to commonmark syntax.',
+  //   handler: (argv: ArgumentsCamelCase) =>
+  //     wikiToCmmn(argv.glob as string, argv),
+  // })
 
     .command({
       command: 'mkdntowiki [glob]',
