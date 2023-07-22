@@ -37,7 +37,6 @@ usage: tendr <command>
 cli tools for markdown-based digital gardening.
 
 Commands:
-  tendr list                            list garden contents       [aliases: ls]
   tendr tree                            print full knowledge bonsai
   tendr status <filename>               show status of file relationships
                                                                  [aliases: stat]
@@ -94,7 +93,6 @@ Options:
                  , ref, attr, link, embed, fore, foreref, foreattr, forelink, fo
                  reembed, back, backref, backattr, backlink, backembed; default
                  is "rel")                             [string] [default: "rel"]
-
 ```
 
 ### `rename`
