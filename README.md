@@ -45,6 +45,12 @@ Commands:
                                                                    [aliases: rn]
   tendr retype <old-type> <new-type>    rename reference type and all its occurr
                                         ences.                     [aliases: rt]
+  tendr mkdntowiki [glob]               convert from "[markdown](style)" to "[[w
+                                        iki-style]]" internal links.
+                                                                 [aliases: mtow]
+  tendr wikitomkdn [glob]               convert from "[[wiki-style]]" to "[markd
+                                        own](style)" internal links.
+                                                                 [aliases: wtom]
   tendr camltoyaml [glob]               convert from "caml" to "yaml" style attr
                                         ibutes.                  [aliases: ctoy]
   tendr yamltocaml [glob]               convert from "yaml" to "caml" style attr
@@ -133,6 +139,60 @@ Options:
       --help     Show help                                             [boolean]
   -k, --kind     kind of entity to rename (kinds: "reftype", "attrtype", "linkty
                  pe"; default is "reftype")        [string] [default: "reftype"]
+```
+
+### `mkdntowiki`
+
+Example:
+
+```
+$ tendr mkdntowiki
+```
+
+Manual:
+
+```
+tendr mkdntowiki [glob]
+
+convert from "[markdown](style)" to "[[wiki-style]]" internal links.
+
+Options:
+      --version  Show version number                                   [boolean]
+      --help     Show help                                             [boolean]
+  -F, --format   how to parse markdown links -- "filename", "relative" urls, or
+                 "absolute" urls                  [string] [default: "filename"]
+  -k, --kind     kind of references to convert
+                 (kinds: rel, fam, ancestor, child
+                 , ref, attr, link, embed, fore, foreref, foreattr, forelink, fo
+                 reembed, back, backref, backattr, backlink, backembed; default
+                 is "rel")                             [string] [default: "ref"]
+```
+
+### `wikitomkdn`
+
+Example:
+
+```
+$ tendr wikitomkdn
+```
+
+Manual:
+
+```
+tendr wikitomkdn [glob]
+
+convert from "[[wiki-style]]" to "[markdown](style)" internal links.
+
+Options:
+      --version  Show version number                                   [boolean]
+      --help     Show help                                             [boolean]
+  -F, --format   how to format the resulting markdown links -- "filename", "rela
+                 tive" urls, or "absolute" urls   [string] [default: "filename"]
+  -k, --kind     kind of references to convert
+                 (kinds: rel, fam, ancestor, child
+                 , ref, attr, link, embed, fore, foreref, foreattr, forelink, fo
+                 reembed, back, backref, backattr, backlink, backembed; default
+                 is "rel")                             [string] [default: "ref"]
 ```
 
 ### `camltoyaml`

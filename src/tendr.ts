@@ -12,7 +12,7 @@ import { buildTree } from './util/tree';
 
 import { REL_KINDS, status } from './cmds/status';
 
-import { camlToYaml, yamlToCaml } from './cmds/conv';
+import { camlToYaml, mkdnToWiki, wikiToMkdn, yamlToCaml } from './cmds/conv';
 // import { list } from './cmds/list';
 import { rename } from './cmds/rename';
 import { retype } from './cmds/retype';
@@ -135,6 +135,49 @@ export const tendr = (argv: string[]): yargs.Argv => {
         }),
       handler: (argv: ArgumentsCamelCase) =>
         retype(argv.oldType as string, argv.newType as string, argv),
+    })
+
+
+    .command({
+      command: 'mkdntowiki [glob]',
+      aliases: ['mtow'],
+      describe: 'convert from "[markdown](style)" to "[[wiki-style]]" internal links.',
+      builder: (yargs: yargs.Argv) => yargs
+        .option('format', {
+          alias: 'F',
+          type: 'string',
+          describe: 'how to parse markdown links -- "filename", "relative" urls, or "absolute" urls',
+          default: 'filename',
+        })
+        .option('kind', {
+          alias: 'k',
+          type: 'string',
+          describe: `kind of references to convert\n(kinds: ${REL_KINDS.join(', ')}; default is "rel")`,
+          default: 'ref',
+        }),
+      handler: (argv: ArgumentsCamelCase) =>
+        mkdnToWiki(argv.glob as string, argv),
+    })
+
+    .command({
+      command: 'wikitomkdn [glob]',
+      aliases: ['wtom'],
+      describe: 'convert from "[[wiki-style]]" to "[markdown](style)" internal links.',
+      builder: (yargs: yargs.Argv) => yargs
+        .option('format', {
+          alias: 'F',
+          type: 'string',
+          describe: 'how to format the resulting markdown links -- "filename", "relative" urls, or "absolute" urls',
+          default: 'filename',
+        })
+        .option('kind', {
+          alias: 'k',
+          type: 'string',
+          describe: `kind of references to convert\n(kinds: ${REL_KINDS.join(', ')}; default is "rel")`,
+          default: 'ref',
+        }),
+      handler: (argv: ArgumentsCamelCase) =>
+        wikiToMkdn(argv.glob as string, argv),
     })
 
     .command({
