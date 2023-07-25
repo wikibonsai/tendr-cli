@@ -20,6 +20,8 @@ $ yarn build
 
 ## run unit tests
 
+Note: Be very careful with tests as they perform operations on real files generated at runtime. This means if variables like `cwd` (current working directory) aren't set properly, you may perform cli operations on project files themselves during test runs.
+
 ```bash
 $ yarn test
 ```
