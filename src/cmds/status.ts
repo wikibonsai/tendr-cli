@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+
 import glob from 'glob';
 import chalk from 'chalk';
 import { table } from 'table';
@@ -32,7 +33,7 @@ function isEmpty(refs: string[]): boolean {
   return (refs.length === 1) && (refs[0] === EMPTY);
 }
 
-export function status(filename: string, semtree: SemTree | string, opts: any) {
+export function status(filename: string, semtree: SemTree | string | undefined, opts: any) {
   // console.log('status\nargs: ', filename, 'opts: ', opts);
   ////
   // vars
@@ -160,7 +161,7 @@ export function status(filename: string, semtree: SemTree | string, opts: any) {
                                                                         && (path.basename(fp, MD) !== filename)
                                                                       );
     /* eslint-enable indent */
-    if (!thoseFilePaths) { console.error('unable to find filenames'); return; }
+    if (!thoseFilePaths) { console.error(chalk.red('unable to find filenames')); return; }
     // attr
     if (backattr) {
       output.push(chalk.green('  ATTRS'));

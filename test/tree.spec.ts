@@ -1,55 +1,27 @@
-import assert from 'node:assert/strict';
 import sinon from 'sinon';
 
 import fs from 'fs';
 import path from 'path';
-import yargs from 'yargs';
 
-import type { CommandTestCase } from './types';
-import { tendr } from '../src/tendr';
+import type { TestMocks } from './types';
+import { runCmdTest } from './runner';
 
 
 const cwd: string = path.dirname(new URL(import.meta.url).pathname);
 const testCwd: string = path.join(cwd, 'fixtures');
 let fakeConsoleLog: any;
+let fakeConsoleWarn: any;
 let fakeConsoleError: any;
 let fakeProcessCwd: any;
-let testOutput: string;
 
-const testCmd = (test: CommandTestCase) => () => {
-  // go //
-  const argv: yargs.Argv = tendr(test.input);
-  // assert //
-  // command
-  // @ts-expect-error: Property '_' does not exist on type '{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; } | Promise<{ [x: string]: unknown; format: string; "list-format": string; ... 4 more ...; $0: string; }>'.\nProperty '_' does not exist on type 'Promise<{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; }>'.ts(2339)
-  assert.deepStrictEqual(argv.argv._, test.cmd);
-  // arguments
-  if (test.args) {
-    for (const key of Object.keys(test.args)) {
-      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
-      // @ts-expect-error: previous test should validate keys
-      assert.strictEqual(argv.argv[key], test.args[key]);             // value
-    }
-  }
-  // options
-  if (test.opts) {
-    for (const key of Object.keys(test.opts)) {
-      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
-      // @ts-expect-error: previous test should validate keys
-      assert.strictEqual(argv.argv[key], test.opts[key]);             // value
-    }
-  }
-  // console output
-  if (fakeConsoleLog.called) {
-    testOutput = fakeConsoleLog.getCall(0).args[0];
-    assert.strictEqual(testOutput, test.output);
-  } else if (fakeConsoleError.called) {
-    testOutput = fakeConsoleError.getCall(0).args[0];
-    assert.strictEqual(testOutput, test.output);
-  } else {
-    console.error('console not called');
-    assert.fail();
-  }
+const SHOW_RESULT: boolean = true;
+
+const mocks: TestMocks = {
+  fakeProcessCwd,
+  fakeConsoleLog,
+  fakeConsoleWarn,
+  fakeConsoleError,
+  testCwd,
 };
 
 describe('tree', () => {
@@ -101,18 +73,18 @@ prefix = "i."
     fs.writeFileSync(path.join(testCwd, 'fname-g.md'), fnameG);
     // fake "current working directory"
     process.cwd = () => testCwd;
-    fakeProcessCwd = sinon.spy(process, 'cwd');
+    mocks.fakeProcessCwd = sinon.spy(process, 'cwd');
     // suppress console
     console.log = (msg) => msg + '\n';
+    console.warn = (msg) => msg + '\n';
     console.error = (msg) => msg + '\n';
     // fake console
-    fakeConsoleLog = sinon.spy(console, 'log');
-    fakeConsoleError = sinon.spy(console, 'error');
+    mocks.fakeConsoleLog = sinon.spy(console, 'log');
+    mocks.fakeConsoleWarn = sinon.spy(console, 'warn');
+    mocks.fakeConsoleError = sinon.spy(console, 'error');
   });
 
   afterEach(() => {
-    console.info('Output Result:\n' + testOutput);
-    testOutput = '';
     if (fs.existsSync('config.toml')) {
       fs.rmSync('config.toml');
     }
@@ -122,16 +94,17 @@ prefix = "i."
     if (fs.existsSync(testCwd)) {
       fs.rmSync(testCwd, { recursive: true });
     }
-    fakeConsoleLog.restore();
-    fakeConsoleError.restore();
-    fakeProcessCwd.restore();
+    mocks.fakeConsoleLog.restore();
+    mocks.fakeConsoleWarn.restore();
+    mocks.fakeConsoleError.restore();
+    mocks.fakeProcessCwd.restore();
   });
 
   describe('tree', () => {
 
     describe('default', () => {
 
-      it('single index file', testCmd({
+      it('single index file', runCmdTest(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
@@ -148,7 +121,7 @@ prefix = "i."
 \x1B[2m\x1B[22m    \x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m
 \x1B[32m\x1B[39m`,
-      }));
+      }, SHOW_RESULT));
 
       describe('multiple index files', () => {
 
@@ -164,7 +137,7 @@ prefix = "i."
           fs.rmSync(path.join(testCwd, 'i.branch.md'));
         });
 
-        it('multiple index files', testCmd({
+        it('multiple index files', runCmdTest(mocks, {
           input: ['tree'],
           cmd: ['tree'],
           args: {},
@@ -183,7 +156,7 @@ prefix = "i."
 \x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[33mi.branch\x1B[39m
 \x1B[33m\x1B[39m        \x1B[33m└── \x1B[39m\x1B[2mfname-j\x1B[22m
 \x1B[2m\x1B[22m`,
-        }));
+        }, SHOW_RESULT));
 
       });
 
@@ -213,7 +186,7 @@ path   = "/custom-index/"
         fs.renameSync(path.join(testCwd, 'i.bonsai.md'), path.join(testCwd, 'custom-index', 'custom-bonsai.md'));
       });
 
-      it('config + doctypes (root from dir, not prefix)', testCmd({
+      it('config + doctypes (root from dir, not prefix)', runCmdTest(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
@@ -268,7 +241,7 @@ path   = "/custom-index/"
         }
       });
 
-      it('config + doctypes', testCmd({
+      it('config + doctypes', runCmdTest(mocks, {
         input: ['tree', '-c', './custom-config.toml', '-d', 'custom-doctypes.toml'],
         cmd: ['tree'],
         args: {},
@@ -310,7 +283,7 @@ path   = "/custom-index/"
         fs.renameSync(path.join(testCwd, 'i.bonsai.md'), path.join(testCwd, 'index', 'i.bonsai.md'));
       });
 
-      it('config + doctypes', testCmd({
+      it('config + doctypes', runCmdTest(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
@@ -355,7 +328,7 @@ path   = "/custom-index/"
         }
       });
 
-      it('root filename + index files glob', testCmd({
+      it('root filename + index files glob', runCmdTest(mocks, {
         input: ['tree', '-r', 'custom-bonsai', '-g', 'custom-index/**/*'],
         cmd: ['tree'],
         args: {},
@@ -397,7 +370,7 @@ path   = "/custom-index/"
           fs.writeFileSync(path.join(testCwd, 'fname-a'), metadata, 'utf8');
         });
 
-        it('caml', testCmd({
+        it('caml', runCmdTest(mocks, {
           input: ['tree'],
           cmd: ['tree'],
           args: {},
@@ -435,7 +408,7 @@ title: a title
           fs.writeFileSync(path.join(testCwd, 'fname-a'), metadata, 'utf8');
         });
 
-        it('yaml', testCmd({
+        it('yaml', runCmdTest(mocks, {
           input: ['tree'],
           cmd: ['tree'],
           args: {},
@@ -458,9 +431,15 @@ title: a title
 
     });
 
-    describe('error', () => {
+    describe('warn (execute, but warn user)', () => {
 
-      it('no root', testCmd({
+      // todo
+
+    });
+
+    describe('error (do not execute)', () => {
+
+      it('no root', runCmdTest(mocks, {
         input: ['tree', '-r', 'no-root'],
         cmd: ['tree'],
         args: {},
@@ -468,10 +447,11 @@ title: a title
           root: 'no-root',
           r: 'no-root',
         },
-        output: 'unable to find root with name: "no-root"',
+        warn: '\x1B[33munable to find root with name: "no-root"\x1B[39m',
+        error: '\x1B[31munable to build tree\x1B[39m',
       }));
 
-      it('no index files', testCmd({
+      it('no index files', runCmdTest(mocks, {
         input: ['tree', '-g', 'no-index/**/*'],
         cmd: ['tree'],
         args: {},
@@ -479,7 +459,8 @@ title: a title
           glob: 'no-index/**/*',
           g: 'no-index/**/*',
         },
-        output: 'no index files found at location: "no-index/**/*"',
+        warn: '\x1B[33mno index files found at location: "no-index/**/*"\x1B[39m',
+        error: '\x1B[31munable to build tree\x1B[39m',
       }));
 
       describe('invalid tree', () => {
@@ -489,12 +470,12 @@ title: a title
           fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- [[fname-a]]\n');
         });
 
-        it('duplicates found', testCmd({
+        it('duplicates found', runCmdTest(mocks, {
           input: ['tree'],
           cmd: ['tree'],
           args: {},
           opts: {},
-          output:
+          error:
 `Tree did not build, duplicate nodes found:
 
 fname-a

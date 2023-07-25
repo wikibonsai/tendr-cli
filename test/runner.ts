@@ -1,44 +1,127 @@
-// import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';
 
-// import fs from 'fs';
-// import path from 'path';
+import fs from 'fs';
+import path from 'path';
+import chalk from 'chalk';
+import yargs from 'yargs';
 
-// import type { CommandTestCase, TestHelpers } from './types';
-// import { tendr } from '../src/lib/tendr';
-// import { MD } from '../src/lib/const';
+import type { CommandTestCase, TestMocks } from './types';
+import { tendr } from '../src/tendr';
+import { MD } from '../src/util/const';
+import * as prompt from '../src/util/prompt';
 
 
-// // todo:
-// //  - run tests through this common runner
-// //  - 'helpers' is coming in as 'undefined'
-
-// export const testCmd = (helpers: TestHelpers, test: CommandTestCase) => () => {
-//   tendr.parse(test.cmd);
-//   // in
-//   assert.deepStrictEqual(tendr.args, test.args);
-//   const cmd: any = tendr.commands.find((cmd) => cmd.name() === helpers.cmdName);
-//   assert.deepStrictEqual(cmd.opts(), test.opts ? test.opts : {});
-//   // out
-//   assert.strictEqual(helpers.fakeConsoleLog.called, true);
-//   if (helpers.fakeConsoleLog.called) {
-//     assert.strictEqual(helpers.fakeConsoleLog.getCall(0).args[0], test.output);
-//   } else if (helpers.fakeConsoleError.called) {
-//     assert.strictEqual(helpers.fakeConsoleError.getCall(0).args[0], test.output);
-//   } else {
-//     console.error('console not called');
-//     assert.fail();
-//   }
-//   // file changes (if there were any)
-//   if (test.contents) {
-//     for (const fname of Object.keys(test.contents)) {
-//       const expdContent: string = test.contents[fname];
-//       const testFilePath: string = path.join(helpers.fakeCwd, fname + MD);
-//       if (!fs.existsSync(testFilePath)) {
-//         console.error(`could not find file at: ${testFilePath}`);
-//         assert.fail();
-//       }
-//       const actlContent: string = fs.readFileSync(testFilePath, 'utf8');
-//       assert.strictEqual(expdContent, actlContent);
-//     }
-//   }
-// };
+export const runCmdTest = (
+  mocks: TestMocks,
+  test: CommandTestCase,
+  showRes: boolean = false,
+) => () => {
+  // setup //
+  let actlOutput: string | undefined;
+  let actlError: string | undefined;
+  let actlWarn: string | undefined;
+  // stubbing 'confirm.action()' from 'src/util/confirm.ts'
+  const stubPrompt: any = {
+    abort: () => prompt.abort(),
+    // explicitly redefine 'confirm' so wwe don't need to mock 'readlineSync'
+    confirm: (action: string) => {
+      // this log text should match the text in 'confirm.ts'
+      console.log(`are you sure you want to ${action}? [y/n]\n`);
+      return test.aborted ? false : true;
+    },
+  };
+  if (mocks.testFilePath && test.icontent) {
+    fs.writeFileSync(mocks.testFilePath, test.icontent as string);
+  }
+  // go //
+  const argv: yargs.Argv = tendr(test.input, stubPrompt);
+  // grab output from 'argv.argv' so command isn't called multiple times.
+  const res: any = argv.argv;
+  // assert //
+  // command
+  assert.deepStrictEqual(res._, test.cmd);
+  // arguments
+  if (test.args) {
+    for (const key of Object.keys(test.args)) {
+      assert.strictEqual(Object.keys(res).includes(key), true); // key
+      assert.strictEqual(res[key], test.args[key]);             // value
+    }
+  }
+  // options
+  if (test.opts) {
+    for (const key of Object.keys(test.opts)) {
+      assert.strictEqual(Object.keys(res).includes(key), true); // key
+      assert.strictEqual(res[key], test.opts[key]);             // value
+    }
+  }
+  // confirmation prompt
+  // these console log assertions are triggered in 'stubConfirm' above
+  if (test.confirm) {
+    const actlPrompt: string = mocks.fakeConsoleLog.getCall(0).args[0];
+    assert.strictEqual(actlPrompt, test.confirm);
+  }
+  // aborted
+  if (test.aborted) {
+    const actlPrompt: string = mocks.fakeConsoleLog.getCall(1).args[0];
+    assert.strictEqual(actlPrompt, prompt.PROMPT_ABORT);
+  // executed
+  } else {
+    // console output
+    if (test.output) {
+      // if a confirmation prompt was displayed, output will be at index 1
+      const callNo: number = test.confirm ? 1 : 0;
+      actlOutput = mocks.fakeConsoleLog.getCall(callNo).args[0];
+      assert.strictEqual(actlOutput, test.output);
+    }
+    // console warn
+    if (test.warn) {
+      actlWarn = mocks.fakeConsoleWarn.getCall(0).args[0];
+      assert.strictEqual(actlWarn, test.warn);
+    } else {
+      if (mocks.fakeConsoleWarn?.called) {
+        console.info(chalk.red('unexpected console warning: ', mocks.fakeConsoleWarn.getCall(0).args[0]));
+        assert.fail();
+      }
+    }
+    // console error
+    if (test.error) {
+      actlError = mocks.fakeConsoleError.getCall(0).args[0];
+      assert.strictEqual(actlError, test.error);
+    } else {
+      if (mocks.fakeConsoleError?.called) {
+        console.info(chalk.red('unexpected console error: ', mocks.fakeConsoleError.getCall(0).args[0]));
+        assert.fail();
+      }
+    }
+    // file changes
+    if (test.contents) {
+      if (!test.contents) { assert.fail(); }
+      for (const fname of Object.keys(test.contents)) {
+        const expdContent: string = test.contents[fname];
+        const testFilePath: string = path.join(mocks.testCwd, fname + MD);
+        if (!fs.existsSync(testFilePath)) {
+          console.info(`could not find file at: ${testFilePath}`);
+          assert.fail();
+        }
+        const actlContent: string = fs.readFileSync(testFilePath, 'utf8');
+        assert.strictEqual(expdContent, actlContent);
+      }
+    }
+    // file content changes
+    if (mocks.testFilePath && test.ocontent) {
+      const content: string = fs.readFileSync(mocks.testFilePath, 'utf8');
+      assert.strictEqual(content, test.ocontent);
+    }
+  }
+  if (showRes) {
+    if (actlOutput) {
+      console.info('Output Result:\n' + actlOutput);
+    }
+    if (actlWarn) {
+      console.info('Warn Result:\n' + actlWarn);
+    }
+    if (actlError) {
+      console.info('Error Result:\n' + actlError);
+    }
+  }
+};

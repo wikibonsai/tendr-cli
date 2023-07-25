@@ -1,67 +1,43 @@
-import assert from 'node:assert/strict';
 import sinon from 'sinon';
 
 import fs from 'fs';
 import path from 'path';
-import yargs from 'yargs';
 
-import type { CommandTestCase } from './types';
-import { tendr } from '../src/tendr';
+import type { TestMocks } from './types';
+import { runCmdTest } from './runner';
 
 
 let fakeProcessCwd: any;
+let fakeConsoleLog: any;
 const cwd: string = path.dirname(new URL(import.meta.url).pathname);
 const testCwd: string = path.join(cwd, 'fixtures');
-let testFilePath: string;
+const testFilePath: string = path.join(testCwd, 'conv.md');
 
-const testConv = (test: CommandTestCase) => () => {
-  ////
-  // setup
-  fs.writeFileSync(testFilePath, test.icontent as string);
-  ////
-  // go
-  const argv: yargs.Argv = tendr(test.input);
-  // assert
-  // command
-  // @ts-expect-error: Property '_' does not exist on type '{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; } | Promise<{ [x: string]: unknown; format: string; "list-format": string; ... 4 more ...; $0: string; }>'.\nProperty '_' does not exist on type 'Promise<{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; }>'.ts(2339)
-  assert.deepStrictEqual(argv.argv._, test.cmd);
-  // arguments
-  if (test.args) {
-    for (const key of Object.keys(test.args)) {
-      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
-      // @ts-expect-error: previous test should validate keys
-      assert.strictEqual(argv.argv[key], test.args[key]);             // value
-    }
-  }
-  // options
-  if (test.opts) {
-    for (const key of Object.keys(test.opts)) {
-      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
-      // @ts-expect-error: previous test should validate keys
-      assert.strictEqual(argv.argv[key], test.opts[key]);             // value
-    }
-  }
-  // content
-  const content: string = fs.readFileSync(testFilePath, 'utf8');
-  assert.strictEqual(content, test.ocontent);
+const mocks: TestMocks = {
+  fakeProcessCwd,
+  fakeConsoleLog,
+  testCwd,
+  testFilePath,
 };
 
-describe('conversion', () => {
+describe('convert', () => {
 
   beforeEach(() => {
-    // fake "current working directory"
-    process.cwd = () => path.join(cwd, 'fixtures');
-    testFilePath = path.join(testCwd, 'conv.md');
     if (!fs.existsSync(testCwd)) {
       // populate test files
       fs.mkdirSync(testCwd);
     }
     // fake 'process.cwd()'
-    fakeProcessCwd = sinon.spy(process, 'cwd');
+    process.cwd = () => testCwd;
+    mocks.fakeProcessCwd = sinon.spy(process, 'cwd');
+    // fake console.log
+    console.log = (msg) => msg + '\n';
+    mocks.fakeConsoleLog = sinon.spy(console, 'log');
   });
 
   afterEach(() => {
-    fakeProcessCwd.restore();
+    mocks.fakeProcessCwd.restore();
+    mocks.fakeConsoleLog.restore();
   });
 
   describe('links', () => {
@@ -80,174 +56,9 @@ describe('conversion', () => {
       fs.rmSync(testCwd, { recursive: true });
     });
 
-    describe('wiki -> mkdn', () => {
-
-      it('empty', testConv({
-        icontent: 'no links here!',
-        input: ['wikitomkdn'],
-        cmd: ['wikitomkdn'],
-        ocontent: 'no links here!',
-      }));
-
-      describe('attr', () => {
-
-        beforeEach(() => {
-          const fnameB: string = '';
-          // populate test files
-          if (!fs.existsSync(testCwd)) {
-            // populate test files
-            fs.mkdirSync(testCwd);
-          }
-          fs.writeFileSync(path.join(testCwd, 'fname-b.md'), fnameB);
-        });
-
-        it('single', testConv({
-          icontent: ':attrtype:: [[fname-a]]\n',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: ':attrtype:: [fname-a](/fname-a)\n',
-        }));
-
-        it('list; comma', testConv({
-          icontent: ':attrtype:: [[fname-a]], [[fname-b]]\n',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: ':attrtype:: [fname-a](/fname-a), [fname-b](/fname-b)\n',
-        }));
-
-        it.skip('list; comma; preserve whitespace', testConv({
-          icontent: ':attrtype::[[fname-a]] ,  [[fname-b]]\n',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: ':attrtype::[fname-a](/fname-a) ,  [fname-b](/fname-b)\n',
-        }));
-
-        it('list; mkdn', testConv({
-          icontent: ':attrtype::\n- [[fname-a]]\n- [[fname-b]]\n',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: ':attrtype::\n- [fname-a](/fname-a)\n- [fname-b](/fname-b)\n',
-        }));
-
-      });
-
-      describe('link', () => {
-
-        it('filename format', testConv({
-          icontent: 'here is a link: [[fname-a]]',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: 'here is a link: [fname-a](/fname-a)',
-        }));
-
-        it('filename format; slugify', testConv({
-          icontent: 'here is a link: [[FName A]]',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: 'here is a link: [FName A](/fname-a)',
-        }));
-
-        it('label', testConv({
-          icontent: 'here is a link: [[fname-a|label]]',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: 'here is a link: [label](/fname-a)',
-        }));
-
-        it('zombie (defaults to filename format)', testConv({
-          icontent: 'here is a link: [[zombie]]',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: 'here is a link: [zombie](/zombie)',
-        }));
-
-        describe.skip('uri format', () => {
-
-          // todo: simply stubbing the uris is proving exceedingly difficult...
-          beforeEach(() => {
-            // fake file uris
-            // stub
-            // urisStub = sinon.stub(util, 'getFileUris').returns([
-            //   '/test/fixtures/fname-a.md'
-            // ]);
-            // mock
-            // function mockGetFileUris() {
-            //   return ['/test/fixtures/fname-a.md'];
-            // }
-            // originalGetFileUris = getFileUris;
-            // getFileUris = mockGetFileUris;
-            // fake
-            // urisStub = sinon.fake.returns(['file1', 'file2', 'file3']); // Custom implementation for the spy
-            // getFileUrisSpy = sinon.replace(util, 'getFileUris', urisStub);
-            // spy
-            // sinon.replace(util, 'getFileUris', urisStub);
-            // urisStub = sinon.spy(util.getFileUris);
-          });
-
-          afterEach(() => {
-            // stub
-            // urisStub.restore();
-            // mock
-            // getFileUris = originalGetFileUris;
-            // spy
-            // getFileUrisSpy.restore();
-          });
-
-          it('relative path format', testConv({
-            icontent: 'here is a link: [[fname-a]]',
-            input: ['wikitomkdn', '-F', 'relative'],
-            cmd: ['wikitomkdn'],
-            ocontent: 'here is a link: [fname-a](/fixtures/fname-a)',
-          }));
-
-          it('absolute path format', testConv({
-            icontent: 'here is a link: [[fname-a]]',
-            input: ['wikitomkdn', '-F', 'absolute'],
-            cmd: ['wikitomkdn'],
-            ocontent: 'here is a link: [fname-a](/test/fixtures/fname-a)',
-          }));
-
-        });
-
-      });
-
-      describe('embed', () => {
-
-        it('markdown', testConv({
-          icontent: 'here is an embed: ![[fname-a]]',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: 'here is an embed: [fname-a](/fname-a)',
-        }));
-
-        it('image', testConv({
-          icontent: '![[img.png]]',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: '![](/img.png)',
-        }));
-
-        it.skip('audio', testConv({
-          icontent: '![[aud.mp3]]',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: '![](/aud.mp3)',
-        }));
-
-        it.skip('video', testConv({
-          icontent: '![[vid.mp4]]',
-          input: ['wikitomkdn'],
-          cmd: ['wikitomkdn'],
-          ocontent: '![](/vid.mp4)',
-        }));
-
-      });
-
-    });
-
     describe('mkdn -> wiki', () => {
 
-      it('empty', testConv({
+      it('empty', runCmdTest(mocks, {
         icontent: 'no links here!',
         input: ['mkdntowiki'],
         cmd: ['mkdntowiki'],
@@ -266,31 +77,35 @@ describe('conversion', () => {
           fs.writeFileSync(path.join(testCwd, 'fname-b.md'), fnameB);
         });
 
-        it('single', testConv({
+        it('single', runCmdTest(mocks, {
           icontent: ':attrtype:: [fname-a](/fname-a)\n',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: ':attrtype:: [[fname-a]]\n',
         }));
 
-        it('list; comma', testConv({
+        it('list; comma', runCmdTest(mocks, {
           icontent: ':attrtype:: [fname-a](/fname-a), [fname-b](/fname-b)\n',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: ':attrtype:: [[fname-a]], [[fname-b]]\n',
         }));
 
-        it.skip('list; comma; preserve whitespace', testConv({
+        it.skip('list; comma; preserve whitespace', runCmdTest(mocks, {
           icontent: ':attrtype::[fname-a](/fname-a) ,  [fname-b](/fname-b)\n',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: ':attrtype::[[fname-a]] ,  [[fname-b]]\n',
         }));
 
-        it('list; mkdn', testConv({
+        it('list; mkdn', runCmdTest(mocks, {
           icontent: ':attrtype::\n- [fname-a](/fname-a)\n- [fname-b](/fname-b)\n',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: ':attrtype::\n- [[fname-a]]\n- [[fname-b]]\n',
         }));
 
@@ -298,31 +113,35 @@ describe('conversion', () => {
 
       describe('link', () => {
 
-        it('filename format', testConv({
+        it('filename format', runCmdTest(mocks, {
           icontent: 'here is a link: [fname-a](/fname-a)',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: 'here is a link: [[fname-a]]',
         }));
 
-        it.skip('filename format; unslugify', testConv({
+        it.skip('filename format; unslugify', runCmdTest(mocks, {
           icontent: 'here is a link: [fname-a](/fname-a)',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: 'here is a link: [[FName A]]',
         }));
 
-        it('label', testConv({
+        it('label', runCmdTest(mocks, {
           icontent: '[label](/fname-a)',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: '[[fname-a|label]]',
         }));
 
-        it('zombie (defaults to filename format)', testConv({
+        it('zombie (defaults to filename format)', runCmdTest(mocks, {
           icontent: 'here is a link: [zombie](/zombie)',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: 'here is a link: [[zombie]]',
         }));
 
@@ -358,17 +177,19 @@ describe('conversion', () => {
             // getFileUrisSpy.restore();
           });
 
-          it('relative path format', testConv({
+          it('relative path format', runCmdTest(mocks, {
             icontent: 'here is a link: [fname-a](/fixtures/fname-a)',
             input: ['mkdntowiki', '-F', 'relative'],
             cmd: ['mkdntowiki'],
+            confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
             ocontent: 'here is a link: [[fname-a]]',
           }));
 
-          it('absolute path format', testConv({
+          it('absolute path format', runCmdTest(mocks, {
             icontent: 'here is a link: [fname-a](/test/fixtures/fname-a)',
             input: ['mkdntowiki', '-F', 'absolute'],
             cmd: ['mkdntowiki'],
+            confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
             ocontent: 'here is a link: [[fname-a]]',
           }));
 
@@ -378,32 +199,215 @@ describe('conversion', () => {
 
       describe('embed', () => {
 
-        it.skip('markdown', testConv({
+        it.skip('markdown', runCmdTest(mocks, {
           icontent: '![](/fname-a)',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: '![[fname-a]]',
         }));
 
-        it('image', testConv({
+        it('image', runCmdTest(mocks, {
           icontent: '![](/img.png)',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: '![[img.png]]',
         }));
 
-        it.skip('audio', testConv({
+        it.skip('audio', runCmdTest(mocks, {
           icontent: '![](/aud.mp3)',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: '![[aud.mp3]]',
         }));
 
-        it.skip('video', testConv({
+        it.skip('video', runCmdTest(mocks, {
           icontent: '![](/vid.mp4)',
           input: ['mkdntowiki'],
           cmd: ['mkdntowiki'],
+          confirm: 'are you sure you want to convert [markdown](links) to [[wikirefs]]? [y/n]\n',
           ocontent: '![[vid.mp4]]',
+        }));
+
+      });
+
+    });
+
+    describe('wiki -> mkdn', () => {
+
+      it('empty', runCmdTest(mocks, {
+        icontent: 'no links here!',
+        input: ['wikitomkdn'],
+        cmd: ['wikitomkdn'],
+        ocontent: 'no links here!',
+      }));
+
+      describe('attr', () => {
+
+        beforeEach(() => {
+          const fnameB: string = '';
+          // populate test files
+          if (!fs.existsSync(testCwd)) {
+            // populate test files
+            fs.mkdirSync(testCwd);
+          }
+          fs.writeFileSync(path.join(testCwd, 'fname-b.md'), fnameB);
+        });
+
+        it('single', runCmdTest(mocks, {
+          icontent: ':attrtype:: [[fname-a]]\n',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: ':attrtype:: [fname-a](/fname-a)\n',
+        }));
+
+        it('list; comma', runCmdTest(mocks, {
+          icontent: ':attrtype:: [[fname-a]], [[fname-b]]\n',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: ':attrtype:: [fname-a](/fname-a), [fname-b](/fname-b)\n',
+        }));
+
+        it.skip('list; comma; preserve whitespace', runCmdTest(mocks, {
+          icontent: ':attrtype::[[fname-a]] ,  [[fname-b]]\n',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: ':attrtype::[fname-a](/fname-a) ,  [fname-b](/fname-b)\n',
+        }));
+
+        it('list; mkdn', runCmdTest(mocks, {
+          icontent: ':attrtype::\n- [[fname-a]]\n- [[fname-b]]\n',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: ':attrtype::\n- [fname-a](/fname-a)\n- [fname-b](/fname-b)\n',
+        }));
+
+      });
+
+      describe('link', () => {
+
+        it('filename format', runCmdTest(mocks, {
+          icontent: 'here is a link: [[fname-a]]',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: 'here is a link: [fname-a](/fname-a)',
+        }));
+
+        it('filename format; slugify', runCmdTest(mocks, {
+          icontent: 'here is a link: [[FName A]]',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: 'here is a link: [FName A](/fname-a)',
+        }));
+
+        it('label', runCmdTest(mocks, {
+          icontent: 'here is a link: [[fname-a|label]]',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: 'here is a link: [label](/fname-a)',
+        }));
+
+        it('zombie (defaults to filename format)', runCmdTest(mocks, {
+          icontent: 'here is a link: [[zombie]]',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: 'here is a link: [zombie](/zombie)',
+        }));
+
+        describe.skip('uri format', () => {
+
+          // todo: simply stubbing the uris is proving exceedingly difficult...
+          beforeEach(() => {
+            // fake file uris
+            // stub
+            // urisStub = sinon.stub(util, 'getFileUris').returns([
+            //   '/test/fixtures/fname-a.md'
+            // ]);
+            // mock
+            // function mockGetFileUris() {
+            //   return ['/test/fixtures/fname-a.md'];
+            // }
+            // originalGetFileUris = getFileUris;
+            // getFileUris = mockGetFileUris;
+            // fake
+            // urisStub = sinon.fake.returns(['file1', 'file2', 'file3']); // Custom implementation for the spy
+            // getFileUrisSpy = sinon.replace(util, 'getFileUris', urisStub);
+            // spy
+            // sinon.replace(util, 'getFileUris', urisStub);
+            // urisStub = sinon.spy(util.getFileUris);
+          });
+
+          afterEach(() => {
+            // stub
+            // urisStub.restore();
+            // mock
+            // getFileUris = originalGetFileUris;
+            // spy
+            // getFileUrisSpy.restore();
+          });
+
+          it('relative path format', runCmdTest(mocks, {
+            icontent: 'here is a link: [[fname-a]]',
+            input: ['wikitomkdn', '-F', 'relative'],
+            cmd: ['wikitomkdn'],
+            confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+            ocontent: 'here is a link: [fname-a](/fixtures/fname-a)',
+          }));
+
+          it('absolute path format', runCmdTest(mocks, {
+            icontent: 'here is a link: [[fname-a]]',
+            input: ['wikitomkdn', '-F', 'absolute'],
+            cmd: ['wikitomkdn'],
+            confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+            ocontent: 'here is a link: [fname-a](/test/fixtures/fname-a)',
+          }));
+
+        });
+
+      });
+
+      describe('embed', () => {
+
+        it('markdown', runCmdTest(mocks, {
+          icontent: 'here is an embed: ![[fname-a]]',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: 'here is an embed: [fname-a](/fname-a)',
+        }));
+
+        it('image', runCmdTest(mocks, {
+          icontent: '![[img.png]]',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: '![](/img.png)',
+        }));
+
+        it.skip('audio', runCmdTest(mocks, {
+          icontent: '![[aud.mp3]]',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: '![](/aud.mp3)',
+        }));
+
+        it.skip('video', runCmdTest(mocks, {
+          icontent: '![[vid.mp4]]',
+          input: ['wikitomkdn'],
+          cmd: ['wikitomkdn'],
+          confirm: 'are you sure you want to convert [[wikirefs]] to [markdown](links)? [y/n]\n',
+          ocontent: '![](/vid.mp4)',
         }));
 
       });
@@ -416,7 +420,7 @@ describe('conversion', () => {
 
     describe('yaml -> caml', () => {
 
-      it('empty', testConv({
+      it('empty', runCmdTest(mocks, {
         icontent: 'no yaml here!',
         input: ['yamltocaml'],
         cmd: ['yamltocaml'],
@@ -425,7 +429,7 @@ describe('conversion', () => {
 
       describe('single', () => {
 
-        it('null', testConv({
+        it('null', runCmdTest(mocks, {
           icontent:
 `---
 empty: null
@@ -438,7 +442,7 @@ empty: null
 `,
         }));
 
-        it('bool', testConv({
+        it('bool', runCmdTest(mocks, {
           icontent:
 `---
 success: true
@@ -451,7 +455,7 @@ success: true
 `,
         }));
 
-        it('int', testConv({
+        it('int', runCmdTest(mocks, {
           icontent:
 `---
 id: 12345
@@ -464,7 +468,7 @@ id: 12345
 `,
         }));
 
-        it('float', testConv({
+        it('float', runCmdTest(mocks, {
           icontent:
 `---
 value: 12.345
@@ -477,7 +481,7 @@ value: 12.345
 `,
         }));
 
-        it('string', testConv({
+        it('string', runCmdTest(mocks, {
           icontent:
 `---
 tldr: a file that has attributes which should be converted.
@@ -490,7 +494,7 @@ tldr: a file that has attributes which should be converted.
 `,
         }));
 
-        it('string; quotes (double)', testConv({
+        it('string; quotes (double)', runCmdTest(mocks, {
           icontent:
 `---
 tldr: "a file that has attributes, which should be converted."
@@ -505,7 +509,7 @@ tldr: "a file that has attributes, which should be converted."
 
         it.skip('string; quotes (double); generated caml string loses quotes', () => { return; });
 
-        it('time', testConv({
+        it('time', runCmdTest(mocks, {
           icontent:
 `---
 time: 2022-11-24 20:00:00 +08:00
@@ -525,7 +529,7 @@ time: 2022-11-24 20:00:00 +08:00
       describe.skip('list; comma-separated', () => { return; });
       describe.skip('list; mkdn-separated', () => { return; });
 
-      it('leave nested objects in yaml format', testConv({
+      it('leave nested objects in yaml format', runCmdTest(mocks, {
         icontent:
 `---
 tldr: a file that has attributes which should be converted.
@@ -554,7 +558,7 @@ nest-2:
 
     describe('caml -> yaml', () => {
 
-      it('empty', testConv({
+      it('empty', runCmdTest(mocks, {
         icontent: 'no caml here!',
         input: ['camltoyaml'],
         cmd: ['camltoyaml'],
@@ -563,7 +567,7 @@ nest-2:
 
       describe('single', () => {
 
-        it('null', testConv({
+        it('null', runCmdTest(mocks, {
           icontent:
 `: empty :: null
 `,
@@ -576,7 +580,7 @@ empty: null
 `,
         }));
 
-        it('bool', testConv({
+        it('bool', runCmdTest(mocks, {
           icontent:
 `: success :: true
 `,
@@ -589,7 +593,7 @@ success: true
 `,
         }));
 
-        it('int', testConv({
+        it('int', runCmdTest(mocks, {
           icontent:
 `: id :: 12345
 `,
@@ -602,7 +606,7 @@ id: 12345
 `,
         }));
 
-        it('float', testConv({
+        it('float', runCmdTest(mocks, {
           icontent:
 `: value :: 12.345
 `,
@@ -615,7 +619,7 @@ value: 12.345
 `,
         }));
 
-        it('string', testConv({
+        it('string', runCmdTest(mocks, {
           icontent:
 `: tldr  :: a file that has attributes which should be converted.
 `,
@@ -628,7 +632,7 @@ tldr: a file that has attributes which should be converted.
 `,
         }));
 
-        it('string; quotes (double)', testConv({
+        it('string; quotes (double)', runCmdTest(mocks, {
           icontent:
 `: tldr  :: "a file that has attributes, which should be converted."
 `,
@@ -643,7 +647,7 @@ tldr: '"a file that has attributes, which should be converted."'
 
         it.skip('string; quotes (double); todo: generated yaml adds single quotes', () => { return; });
 
-        it('time', testConv({
+        it('time', runCmdTest(mocks, {
           icontent:
 `: time :: 2022-11-24 20:00:00 +08:00
 `,

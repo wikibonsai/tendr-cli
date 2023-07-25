@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-
+import chalk from 'chalk';
 import type { ArgumentsCamelCase } from 'yargs';
 import yargs from 'yargs';
 
@@ -9,9 +9,9 @@ import { SemTree } from 'semtree';
 import { CONFIG_PATH, DOCTYPE_PATH } from './util/const';
 import type { InitTree } from './util/tree';
 import { buildTree } from './util/tree';
+import * as prompt from './util/prompt';
 
 import { REL_KINDS, status } from './cmds/status';
-
 import { camlToYaml, mkdnToWiki, wikiToMkdn, yamlToCaml } from './cmds/convert';
 // import { list } from './cmds/list';
 import { rename } from './cmds/rename';
@@ -36,7 +36,7 @@ export function getPkgObj() {
 // ... list
 // | or
 
-export const tendr = (argv: string[]): yargs.Argv => {
+export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
   const pkg: any = getPkgObj();
   return yargs(argv)
     .scriptName('tendr')
@@ -102,6 +102,8 @@ export const tendr = (argv: string[]): yargs.Argv => {
         const semtree: SemTree | undefined = buildTree(payload);
         if (semtree instanceof SemTree) {
           tree(semtree, argv);
+        } else {
+          console.error(chalk.red('unable to build tree'));
         }
       },
     })
@@ -137,8 +139,20 @@ export const tendr = (argv: string[]): yargs.Argv => {
       command: 'rename <old-fname> <new-fname>',
       aliases: ['rn'],
       describe: 'rename a file and all of its references.',
-      handler: (argv: ArgumentsCamelCase) =>
-        rename(argv.oldFname as string, argv.newFname as string, argv),
+      builder: (yargs: yargs.Argv) => yargs
+        .option('force', {
+          alias: 'f',
+          type: 'boolean',
+          describe: 'skip verification prompt and perform operation',
+          default: false,
+        }),
+      handler: (argv: ArgumentsCamelCase) => {
+        if (argv.force || p.confirm(`rename "${argv.oldFname}" to "${argv.newFname}"`)) {
+          rename(argv.oldFname as string, argv.newFname as string, argv);
+        } else {
+          p.abort();
+        }
+      }
     })
 
     .command({
@@ -146,14 +160,25 @@ export const tendr = (argv: string[]): yargs.Argv => {
       aliases: ['rt'],
       describe: 'rename reference type and all its occurrences.',
       builder: (yargs: yargs.Argv) => yargs
+        .option('force', {
+          alias: 'f',
+          type: 'boolean',
+          describe: 'skip verification prompt and perform operation',
+          default: false,
+        })
         .option('kind', {
           alias: 'k',
           type: 'string',
           describe: 'kind of entity to rename (kinds: "reftype", "attrtype", "linktype"; default is "reftype")',
           default: 'reftype',
         }),
-      handler: (argv: ArgumentsCamelCase) =>
-        retype(argv.oldType as string, argv.newType as string, argv),
+      handler: (argv: ArgumentsCamelCase) => {
+        if (argv.force || p.confirm(`retype "${argv.oldType}" to "${argv.newType}"`)) {
+          retype(argv.oldType as string, argv.newType as string, argv);
+        } else {
+          p.abort();
+        }
+      }
     })
 
   // convert
@@ -181,6 +206,12 @@ export const tendr = (argv: string[]): yargs.Argv => {
       aliases: ['mtow'],
       describe: 'convert from "[markdown](style)" to "[[wiki-style]]" internal links.',
       builder: (yargs: yargs.Argv) => yargs
+        .option('force', {
+          alias: 'f',
+          type: 'boolean',
+          describe: 'skip verification prompt and perform operation',
+          default: false,
+        })
         .option('format', {
           alias: 'F',
           type: 'string',
@@ -193,8 +224,13 @@ export const tendr = (argv: string[]): yargs.Argv => {
           describe: `kind of references to convert\n(kinds: ${REL_KINDS.join(', ')}; default is "rel")`,
           default: 'ref',
         }),
-      handler: (argv: ArgumentsCamelCase) =>
-        mkdnToWiki(argv.glob as string, argv),
+      handler: (argv: ArgumentsCamelCase) => {
+        if (argv.force || p.confirm('convert [markdown](links) to [[wikirefs]]')) {
+          mkdnToWiki(argv.glob as string, argv);
+        } else {
+          p.abort();
+        }
+      }
     })
 
     .command({
@@ -202,6 +238,12 @@ export const tendr = (argv: string[]): yargs.Argv => {
       aliases: ['wtom'],
       describe: 'convert from "[[wiki-style]]" to "[markdown](style)" internal links.',
       builder: (yargs: yargs.Argv) => yargs
+        .option('force', {
+          alias: 'f',
+          type: 'boolean',
+          describe: 'skip verification prompt and perform operation',
+          default: false,
+        })
         .option('format', {
           alias: 'F',
           type: 'string',
@@ -214,16 +256,33 @@ export const tendr = (argv: string[]): yargs.Argv => {
           describe: `kind of references to convert\n(kinds: ${REL_KINDS.join(', ')}; default is "rel")`,
           default: 'ref',
         }),
-      handler: (argv: ArgumentsCamelCase) =>
-        wikiToMkdn(argv.glob as string, argv),
+      handler: (argv: ArgumentsCamelCase) => {
+        if (argv.force || p.confirm('convert [[wikirefs]] to [markdown](links)')) {
+          wikiToMkdn(argv.glob as string, argv);
+        } else {
+          p.abort();
+        }
+      }
     })
 
     .command({
       command: 'camltoyaml [glob]',
       aliases: ['ctoy'],
       describe: 'convert from "caml" to "yaml" style attributes.',
-      handler: (argv: ArgumentsCamelCase) =>
-        camlToYaml(argv.glob as string, argv),
+      builder: (yargs: yargs.Argv) => yargs
+        .option('force', {
+          alias: 'f',
+          type: 'boolean',
+          describe: 'skip verification prompt and perform operation',
+          default: false,
+        }),
+      handler: (argv: ArgumentsCamelCase) => {
+        if (argv.force || p.confirm('convert attributes from caml to yaml')) {
+          camlToYaml(argv.glob as string, argv);
+        } else {
+          p.abort();
+        }
+      }
     })
 
     .command({
@@ -232,6 +291,12 @@ export const tendr = (argv: string[]): yargs.Argv => {
       describe: 'convert from "yaml" to "caml" style attributes.',
       // builder: (yargs: yargs.CommandBuilder<Record<string, any>, Record<string, any>>) => yargs
       builder: (yargs: yargs.Argv) => yargs
+        .option('force', {
+          alias: 'f',
+          type: 'boolean',
+          describe: 'skip verification prompt and perform operation',
+          default: false,
+        })
         .option('format', {
           alias: 'F',
           type: 'string',
@@ -250,7 +315,12 @@ export const tendr = (argv: string[]): yargs.Argv => {
           describe: 'do not use colon prefix in caml output',
           default: true,
         }),
-      handler: (argv: ArgumentsCamelCase) =>
-        yamlToCaml(argv.glob as string, argv),
+      handler: (argv: ArgumentsCamelCase) => {
+        if (argv.force || p.confirm('convert attributes from yaml to caml')) {
+          yamlToCaml(argv.glob as string, argv);
+        } else {
+          p.abort();
+        }
+      }
     });
 };

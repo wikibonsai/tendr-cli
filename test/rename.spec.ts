@@ -1,58 +1,21 @@
-import assert from 'node:assert/strict';
 import sinon from 'sinon';
 
 import fs from 'fs';
 import path from 'path';
-import yargs from 'yargs';
 
-import { tendr } from '../src/tendr';
-import { MD } from '../src/util/const';
-import { CommandTestCase } from './types';
+import { TestMocks } from './types';
+import { runCmdTest } from './runner';
 
 
+let fakeProcessCwd: any;
+let fakeConsoleLog: any;
 const cwd: string = path.dirname(new URL(import.meta.url).pathname);
 const testCwd: string = path.join(cwd, 'fixtures');
-let fakeConsoleLog: any;
-// for some reason eslint can't see the use of this var as a sinon spy
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let fakeProcessCwd: any;
 
-const testCmdRename = (test: CommandTestCase) => () => {
-  // go //
-  const argv: yargs.Argv = tendr(test.input);
-  // in
-  // assert //
-  // command
-  // @ts-expect-error: Property '_' does not exist on type '{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; } | Promise<{ [x: string]: unknown; format: string; "list-format": string; ... 4 more ...; $0: string; }>'.\nProperty '_' does not exist on type 'Promise<{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; }>'.ts(2339)
-  assert.deepStrictEqual(argv.argv._, test.cmd);
-  // arguments
-  if (test.args) {
-    for (const key of Object.keys(test.args)) {
-      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
-      // @ts-expect-error: previous test should validate keys
-      assert.strictEqual(argv.argv[key], test.args[key]);             // value
-    }
-  }
-  // options
-  if (test.opts) {
-    for (const key of Object.keys(test.opts)) {
-      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
-      // @ts-expect-error: previous test should validate keys
-      assert.strictEqual(argv.argv[key], test.opts[key]);             // value
-    }
-  }
-  if (!test.contents) { assert.fail(); }
-  // file changes
-  for (const fname of Object.keys(test.contents)) {
-    const expdContent: string = test.contents[fname];
-    const testFilePath: string = path.join(testCwd, fname + MD);
-    if (!fs.existsSync(testFilePath)) {
-      console.error(`could not find file at: ${testFilePath}`);
-      assert.fail();
-    }
-    const actlContent: string = fs.readFileSync(testFilePath, 'utf8');
-    assert.strictEqual(expdContent, actlContent);
-  }
+const mocks: TestMocks = {
+  fakeProcessCwd,
+  fakeConsoleLog,
+  testCwd,
 };
 
 describe('rename', () => {
@@ -101,24 +64,25 @@ describe('rename', () => {
     fs.writeFileSync(path.join(testCwd, 'fname-g.md'), fnameG);
     // fake "current working directory"
     process.cwd = () => testCwd;
-    fakeProcessCwd = sinon.spy(process, 'cwd');
+    mocks.fakeProcessCwd = sinon.spy(process, 'cwd');
     // fake console.log
     console.log = (msg) => msg + '\n';
-    fakeConsoleLog = sinon.spy(console, 'log');
+    mocks.fakeConsoleLog = sinon.spy(console, 'log');
   });
 
   afterEach(() => {
     fs.rmSync(testCwd, { recursive: true });
-    fakeConsoleLog.restore();
+    mocks.fakeConsoleLog.restore();
   });
 
-  it('base; file + all refs', testCmdRename({
+  it('base; file + all refs', runCmdTest(mocks, {
     input: ['rename', 'fname-a', 'new-name'],
     cmd: ['rename'],
     args: {
       ['old-fname']: 'fname-a',
       ['new-fname']: 'new-name',
     },
+    confirm: 'are you sure you want to rename "fname-a" to "new-name"? [y/n]\n',
     output:
 `\x1B[32mUPDATED FILES:\x1B[39m
   fname-b
@@ -159,6 +123,75 @@ describe('rename', () => {
 `,
     },
   }));
+
+  it('aborted', runCmdTest(mocks, {
+    input: ['rename', 'fname-a', 'new-name'],
+    cmd: ['rename'],
+    args: {
+      ['old-fname']: 'fname-a',
+      ['new-fname']: 'new-name',
+    },
+    confirm: 'are you sure you want to rename "fname-a" to "new-name"? [y/n]\n',
+    aborted: true,
+  }));
+
+  describe('options', () => {
+
+    it('force', runCmdTest(mocks, {
+      input: ['rename', 'fname-a', 'new-name', '-f'],
+      cmd: ['rename'],
+      args: {
+        ['old-fname']: 'fname-a',
+        ['new-fname']: 'new-name',
+      },
+      output:
+`\x1B[32mUPDATED FILES:\x1B[39m
+  fname-b
+  fname-c
+  fname-d
+  fname-e
+  fname-g`,
+      contents: {
+        'new-name':
+`
+:reftype::[[fname-b]]
+:attrtype::[[fname-c]]
+
+:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
+
+[[fname-e]]
+
+[[no-doc]]
+`,
+        'fname-b': `
+:attrtype::[[new-name]]
+`,
+        'fname-c': `
+:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[new-name]] and some text to illustrate that this is a typed wikilink!
+`,
+        'fname-d': `
+[[new-name]]
+`,
+        'fname-e': `
+[[new-name|label]]
+`,
+        'fname-f': `
+[[no-doc]]
+`,
+        'fname-g': `
+![[new-name]]
+`,
+      },
+    }));
+
+  });
+
+  describe('warn (execute, but warn user)', () => {
+
+    // todo
+
+  });
 
   describe('error', () => {
 

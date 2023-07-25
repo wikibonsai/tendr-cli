@@ -1,57 +1,25 @@
-import assert from 'node:assert/strict';
 import sinon from 'sinon';
 
 import fs from 'fs';
 import path from 'path';
-import yargs from 'yargs';
 
-import type { CommandTestCase } from './types';
-import { tendr } from '../src/tendr';
+import type { TestMocks } from './types';
+import { runCmdTest } from './runner';
 
 
-const cwd: string = path.dirname(new URL(import.meta.url).pathname);
-const testCwd: string = path.join(cwd, 'fixtures');
+let fakeProcessCwd: any;
 let fakeConsoleLog: any;
 let fakeConsoleError: any;
-let fakeProcessCwd: any;
-let testOutput: string;
+const cwd: string = path.dirname(new URL(import.meta.url).pathname);
+const testCwd: string = path.join(cwd, 'fixtures');
 
-const testCmd = (test: CommandTestCase) => () => {
-  // go //
-  const argv: yargs.Argv = tendr(test.input);
-  // console.warn(argv.argv);
-  // assert //
-  // command
-  // @ts-expect-error: Property '_' does not exist on type '{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; } | Promise<{ [x: string]: unknown; format: string; "list-format": string; ... 4 more ...; $0: string; }>'.\nProperty '_' does not exist on type 'Promise<{ [x: string]: unknown; format: string; "list-format": string; listFormat: string; "no-prefix": boolean; noPrefix: boolean; _: (string | number)[]; $0: string; }>'.ts(2339)
-  assert.deepStrictEqual(argv.argv._, test.cmd);
-  // arguments
-  if (test.args) {
-    for (const key of Object.keys(test.args)) {
-      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
-      // @ts-expect-error: previous test should validate keys
-      assert.strictEqual(argv.argv[key], test.args[key]);             // value
-    }
-  }
-  // options
-  if (test.opts) {
-    for (const key of Object.keys(test.opts)) {
-      assert.strictEqual(Object.keys(argv.argv).includes(key), true); // key
-      // @ts-expect-error: previous test should validate keys
-      assert.strictEqual(argv.argv[key], test.opts[key]);             // value
-    }
-  }
-  // console output
-  assert.strictEqual(fakeConsoleLog.called, true);
-  if (fakeConsoleLog.called) {
-    testOutput = fakeConsoleLog.getCall(0).args[0];
-    assert.strictEqual(testOutput, test.output);
-  } else if (fakeConsoleError.called) {
-    testOutput = fakeConsoleError.getCall(0).args[0];
-    assert.strictEqual(testOutput, test.output);
-  } else {
-    console.error('console not called');
-    assert.fail();
-  }
+const SHOW_RESULT: boolean = true;
+
+const mocks: TestMocks = {
+  fakeProcessCwd,
+  fakeConsoleLog,
+  fakeConsoleError,
+  testCwd,
 };
 
 describe('status', () => {
@@ -119,23 +87,23 @@ describe('status', () => {
     fs.writeFileSync(path.join(testCwd, 'fname-g.md'), fnameG);
     // fake "current working directory"
     process.cwd = () => testCwd;
-    fakeProcessCwd = sinon.spy(process, 'cwd');
-    // fake console.log
+    mocks.fakeProcessCwd = sinon.spy(process, 'cwd');
+    // suppress console
     console.log = (msg) => msg + '\n';
-    fakeConsoleLog = sinon.spy(console, 'log');
-    fakeConsoleError = sinon.spy(console, 'error');
+    console.error = (msg) => msg + '\n';
+    // fake console.log
+    mocks.fakeConsoleLog = sinon.spy(console, 'log');
+    mocks.fakeConsoleError = sinon.spy(console, 'error');
   });
 
   afterEach(() => {
-    console.info('Output Result:\n' + testOutput);
-    testOutput = '';
     fs.rmSync(testCwd, { recursive: true });
-    fakeConsoleLog.restore();
-    fakeConsoleError.restore();
-    fakeProcessCwd.restore();
+    mocks.fakeConsoleLog.restore();
+    mocks.fakeConsoleError.restore();
+    mocks.fakeProcessCwd.restore();
   });
 
-  it('base; all rels', testCmd({
+  it('base; all rels', runCmdTest(mocks, {
     input: ['status', 'fname-a'],
     cmd: ['status'],
     args: { filename: 'fname-a' },
@@ -164,11 +132,11 @@ describe('status', () => {
 \x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m     \x1B[2m│\x1B[22m • fname-f  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m        \x1B[2m│\x1B[22m
 \x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
 `,
-  }));
+  }, SHOW_RESULT));
 
   describe('kind', () => {
 
-    it('refs; all refs (attrs + links + embeds)', testCmd({
+    it('refs; all refs (attrs + links + embeds)', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'ref'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -192,7 +160,7 @@ describe('status', () => {
 `,
     }));
 
-    it('attrs', testCmd({
+    it('attrs', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'attr'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -207,9 +175,9 @@ describe('status', () => {
 \x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-c \x1B[2m│\x1B[22m
 \x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
 `,
-    }));
+    }, SHOW_RESULT));
 
-    it('attrs; list', testCmd({
+    it('attrs; list', runCmdTest(mocks, {
       input: ['status', 'fname-g', '-k', 'attr'],
       cmd: ['status'],
       args: { filename: 'fname-g' },
@@ -228,7 +196,7 @@ describe('status', () => {
 `,
     }));
 
-    it('links', testCmd({
+    it('links', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'link'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -245,13 +213,13 @@ describe('status', () => {
 \x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m • i.bonsai \x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m
 \x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
 `,
-    }));
+    }, SHOW_RESULT));
 
   });
 
   describe('fore', () => {
 
-    it('fore; equivalent to forerefs', testCmd({
+    it('fore; equivalent to forerefs', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'fore'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -272,9 +240,9 @@ describe('status', () => {
 \x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m        \x1B[2m│\x1B[22m
 \x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
 `,
-    }));
+    }, SHOW_RESULT));
 
-    it('forerefs; equivalent to fore', testCmd({
+    it('forerefs; equivalent to fore', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'foreref'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -297,7 +265,7 @@ describe('status', () => {
 `,
     }));
 
-    it('foreattrs', testCmd({
+    it('foreattrs', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'foreattr'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -314,7 +282,7 @@ describe('status', () => {
 `,
     }));
 
-    it('forelinks', testCmd({
+    it('forelinks', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'forelink'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -332,7 +300,7 @@ describe('status', () => {
 `,
     }));
 
-    it('foreembeds', testCmd({
+    it('foreembeds', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'foreembed'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -346,13 +314,13 @@ describe('status', () => {
 \x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m      \x1B[2m│\x1B[22m
 \x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
 `,
-    }));
+    }, SHOW_RESULT));
 
   });
 
   describe('back', () => {
 
-    it('back; equivalent to backrefs', testCmd({
+    it('back; equivalent to backrefs', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'back'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -373,9 +341,9 @@ describe('status', () => {
 \x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m • fname-f  \x1B[2m│\x1B[22m
 \x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
 `,
-    }));
+    }, SHOW_RESULT));
 
-    it('backrefs; equivalent to back', testCmd({
+    it('backrefs; equivalent to back', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'backref'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -398,7 +366,7 @@ describe('status', () => {
 `,
     }));
 
-    it('backattrs', testCmd({
+    it('backattrs', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'backattr'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -414,7 +382,7 @@ describe('status', () => {
 `,
     }));
 
-    it('backlinks', testCmd({
+    it('backlinks', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'backlink'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -433,7 +401,7 @@ describe('status', () => {
 `,
     }));
 
-    it('backembeds', testCmd({
+    it('backembeds', runCmdTest(mocks, {
       input: ['status', 'fname-a', '-k', 'backembed'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -453,7 +421,7 @@ describe('status', () => {
 
   describe('zombie', () => {
 
-    it('zombie (target file does not exist); rels do not exist', testCmd({
+    it('zombie (target file does not exist); rels do not exist', runCmdTest(mocks, {
       input: ['status', 'no-doc-no-rels'],
       cmd: ['status'],
       args: { filename: 'no-doc-no-rels' },
@@ -478,7 +446,7 @@ describe('status', () => {
 `,
     }));
 
-    it('zombie (target file does not exist); fams exist', testCmd({
+    it('zombie (target file does not exist); fams exist', runCmdTest(mocks, {
       input: ['status', 'fname-i'],
       cmd: ['status'],
       args: { filename: 'fname-i' },
@@ -504,7 +472,7 @@ describe('status', () => {
 `,
     }));
 
-    it('zombie (target file does not exist); refs exist', testCmd({
+    it('zombie (target file does not exist); refs exist', runCmdTest(mocks, {
       input: ['status', 'no-doc'],
       cmd: ['status'],
       args: { filename: 'no-doc' },
@@ -531,9 +499,16 @@ describe('status', () => {
 
   });
 
-  describe.skip('error', () => {
 
-    it('problem with fs.readFileSync() of target file', testCmd({
+  describe.skip('warn (execute, but warn user)', () => {
+
+    // todo
+
+  });
+
+  describe.skip('error (do not execute)', () => {
+
+    it('problem with fs.readFileSync() of target file', runCmdTest(mocks, {
       input: ['status', ''],
       cmd: ['status'],
       args: { filename: '' },
@@ -541,21 +516,21 @@ describe('status', () => {
       output: '',
     }));
 
-    it('problem with wikirefs.scan(); attr', testCmd({
+    it('problem with wikirefs.scan(); attr', runCmdTest(mocks, {
       input: ['status', ''],
       cmd: ['status'],
       args: { filename: '' },
       output: '',
     }));
 
-    it('problem with wikirefs.scan(); link', testCmd({
+    it('problem with wikirefs.scan(); link', runCmdTest(mocks, {
       input: ['status', ''],
       cmd: ['status'],
       args: { filename: '' },
       output: '',
     }));
 
-    it('problem with wikirefs.scan(); embed', testCmd({
+    it('problem with wikirefs.scan(); embed', runCmdTest(mocks, {
       input: ['status', ''],
       cmd: ['status'],
       args: { filename: '' },
