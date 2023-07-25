@@ -127,9 +127,7 @@ export const tendr = (argv: string[]): yargs.Argv => {
           globIndexUris: argv.glob as string | undefined
         };
         const semtree: SemTree | undefined = buildTree(payload);
-        if (semtree instanceof SemTree) {
-          status(argv.filename as string, semtree, argv);
-        }
+        status(argv.filename as string, semtree, argv);
       }
     })
 

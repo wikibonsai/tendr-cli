@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import glob from 'glob';
+import chalk from 'chalk';
 import matter from 'gray-matter';
 import * as caml from 'caml-mkdn';
 
@@ -78,7 +79,7 @@ export function getRootFileName(configPath: string, root: string | undefined): s
   if ((files.length === 1) && files[0].indexOf(rootName) > -1) {
     return rootName;
   }
-  console.error('unable to find root with name: ' + '"' + rootName + '"');
+  console.warn(chalk.yellow('unable to find root with name: ' + '"' + rootName + '"'));
 }
 
 export function getIndexFileUris(doctypePath: string, indexGlob: string | undefined): string[] | undefined {
@@ -88,7 +89,7 @@ export function getIndexFileUris(doctypePath: string, indexGlob: string | undefi
     try {
       fileUris = glob.sync(path.join(process.cwd(), indexGlob + MD));
       if (fileUris.length === 0) {
-        console.error('no index files found at location: ' + '"' + indexGlob + '"');
+        console.warn(chalk.yellow('no index files found at location: ' + '"' + indexGlob + '"'));
         return;
       }
     } catch (err) {
