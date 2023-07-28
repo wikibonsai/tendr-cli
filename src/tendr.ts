@@ -7,6 +7,7 @@ import yargs from 'yargs';
 import { SemTree } from 'semtree';
 
 import { CONFIG_PATH, DOCTYPE_PATH } from './util/const';
+import { getDocTypes } from './util/config';
 import type { InitTree } from './util/tree';
 import { buildTree } from './util/tree';
 import * as prompt from './util/prompt';
@@ -113,8 +114,14 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
     .command({
       command: 'status <filename>',
       aliases: ['stat'],
-      describe: 'show status of file relationships',
+      describe: 'show status of file relationships.',
       builder: (yargs: yargs.Argv) => yargs
+        .option('doctype', {
+          alias: 'd',
+          type: 'string',
+          describe: 'relative path to doctype file, including filename; defaults to "t.doc.toml"',
+          default: DOCTYPE_PATH,
+        })
         .option('kind', {
           alias: 'k',
           type: 'string',
@@ -126,10 +133,11 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           configUri: argv.config as string,
           doctypeUri: argv.doctype as string,
           rootFileName: argv.root as string | undefined,
-          globIndexUris: argv.glob as string | undefined
+          globIndexUris: argv.glob as string | undefined,
         };
         const semtree: SemTree | undefined = buildTree(payload);
-        status(argv.filename as string, semtree, argv);
+        const doctypes: any[] = getDocTypes(payload.doctypeUri);
+        status(argv.filename as string, semtree, doctypes, argv);
       }
     })
 

@@ -9,8 +9,9 @@ import * as caml from 'caml-mkdn';
 import { SemTree } from 'semtree';
 
 import { getConfig, getDocTypes } from './config';
-import { INDEX_GLOB, MD, ROOT_NAME } from './const';
-import { getFileUris, resolveDocType } from './util';
+import { MD } from './const';
+import { getFileUris } from './util';
+import * as doctype from './doctype';
 
 
 export interface InitTree {
@@ -25,6 +26,9 @@ export interface Node {
   ancestors: string[];
   children: string[];
 }
+
+export const INDEX_GLOB: string = './index/**/*';
+export const ROOT_NAME : string = 'i.bonsai';
 
 export function buildTree(payload: InitTree): SemTree | undefined {
   const rootFileName: string | undefined = getRootFileName(payload.configUri, payload.rootFileName);
@@ -101,8 +105,8 @@ export function getIndexFileUris(doctypePath: string, indexGlob: string | undefi
   const doctypes: any = getDocTypes(doctypePath);
   if (doctypes.index) {
     getFileUris().forEach((uri: string) => {
-      const doctype: string = resolveDocType(uri, doctypes);
-      if (doctype === 'index') {
+      const dtype: string = doctype.resolve(uri, doctypes);
+      if (dtype === 'index') {
         fileUris.push(uri);
       }
     });
