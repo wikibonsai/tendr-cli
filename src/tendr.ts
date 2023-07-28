@@ -197,11 +197,11 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
         .option('kind', {
           alias: 'k',
           type: 'string',
-          describe: 'kind of entity to rename (kinds: "reftype", "attrtype", "linktype"; default is "reftype")',
-          default: 'reftype',
+          describe: 'kind of entity to rename (kinds: "ref", "attr", "link"; default is "ref")',
+          default: 'ref',
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        if (argv.force || p.confirm(`retype ${argv.kind} "${argv.oldType}" to "${argv.newType}"`)) {
+        if (argv.force || p.confirm(`retype ${argv.kind}type "${argv.oldType}" to "${argv.newType}"`)) {
           retyperef(argv.oldType as string, argv.newType as string, argv);
         } else {
           p.abort();

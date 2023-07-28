@@ -110,7 +110,7 @@ describe('retyperef', () => {
   describe('kind', () => {
 
     it('ref; attr + link', runCmdTest(mocks, {
-      input: ['retyperef', 'old-reftype', 'new-reftype', '-k', 'reftype'],
+      input: ['retyperef', 'old-reftype', 'new-reftype', '-k', 'ref'],
       cmd: ['retyperef'],
       args: {
         ['old-type']: 'old-reftype',
@@ -150,7 +150,7 @@ describe('retyperef', () => {
     }));
 
     it('attr', runCmdTest(mocks, {
-      input: ['retyperef', 'old-attrtype', 'new-attrtype', '-k', 'attrtype'],
+      input: ['retyperef', 'old-attrtype', 'new-attrtype', '-k', 'attr'],
       cmd: ['retyperef'],
       args: {
         ['old-type']: 'old-attrtype',
@@ -191,7 +191,7 @@ describe('retyperef', () => {
     }));
 
     it('link', runCmdTest(mocks, {
-      input: ['retyperef', 'old-linktype', 'new-linktype', '-k', 'linktype'],
+      input: ['retyperef', 'old-linktype', 'new-linktype', '-k', 'link'],
       cmd: ['retyperef'],
       args: {
         ['old-type']: 'old-linktype',

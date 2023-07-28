@@ -14,6 +14,8 @@ export function retypedoc(oldType: string, newType: string, opts: any) {
 
 export function retyperef(oldType: string, newType: string, opts: any) {
   // console.log('retype\nargs: ', oldType, newType, 'opts: ', opts);
+  // append 'type' to kind shorthand
+  opts.kind = opts.kind + 'type';
   const output: string[] = [chalk.green('UPDATED FILES:')];
   const outputError: string [] = [chalk.red('UPDATE FAILED: ')];
   const cwd: string = process.cwd();
