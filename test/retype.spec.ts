@@ -18,7 +18,7 @@ const mocks: TestMocks = {
   testCwd,
 };
 
-describe('retype', () => {
+describe('retyperef', () => {
 
   beforeEach(() => {
     const fnameA: string = `
@@ -68,14 +68,14 @@ describe('retype', () => {
   });
 
   it('base; equivalent to ref', runCmdTest(mocks, {
-    input: ['retype', 'old-reftype', 'new-reftype'],
-    cmd: ['retype'],
+    input: ['retyperef', 'old-reftype', 'new-reftype'],
+    cmd: ['retyperef'],
     args: {
       ['old-type']: 'old-reftype',
       ['new-type']: 'new-reftype',
     },
     opts: {},
-    confirm: 'are you sure you want to retype "old-reftype" to "new-reftype"? [y/n]\n',
+    confirm: 'are you sure you want to retype reftype "old-reftype" to "new-reftype"? [y/n]\n',
     output:
 `\x1B[32mUPDATED FILES:\x1B[39m
   fname-a
@@ -110,14 +110,14 @@ describe('retype', () => {
   describe('kind', () => {
 
     it('ref; attr + link', runCmdTest(mocks, {
-      input: ['retype', 'old-reftype', 'new-reftype', '-k', 'reftype'],
-      cmd: ['retype'],
+      input: ['retyperef', 'old-reftype', 'new-reftype', '-k', 'reftype'],
+      cmd: ['retyperef'],
       args: {
         ['old-type']: 'old-reftype',
         ['new-type']: 'new-reftype',
       },
       opts: { kind: 'reftype' },
-      confirm: 'are you sure you want to retype "old-reftype" to "new-reftype"? [y/n]\n',
+      confirm: 'are you sure you want to retype reftype "old-reftype" to "new-reftype"? [y/n]\n',
       output:
 `\x1B[32mUPDATED FILES:\x1B[39m
   fname-a
@@ -150,14 +150,14 @@ describe('retype', () => {
     }));
 
     it('attr', runCmdTest(mocks, {
-      input: ['retype', 'old-attrtype', 'new-attrtype', '-k', 'attrtype'],
-      cmd: ['retype'],
+      input: ['retyperef', 'old-attrtype', 'new-attrtype', '-k', 'attrtype'],
+      cmd: ['retyperef'],
       args: {
         ['old-type']: 'old-attrtype',
         ['new-type']: 'new-attrtype',
       },
       opts: { kind: 'attrtype' },
-      confirm: 'are you sure you want to retype "old-attrtype" to "new-attrtype"? [y/n]\n',
+      confirm: 'are you sure you want to retype attrtype "old-attrtype" to "new-attrtype"? [y/n]\n',
       output:
 `\x1B[32mUPDATED FILES:\x1B[39m
   fname-a
@@ -191,14 +191,14 @@ describe('retype', () => {
     }));
 
     it('link', runCmdTest(mocks, {
-      input: ['retype', 'old-linktype', 'new-linktype', '-k', 'linktype'],
-      cmd: ['retype'],
+      input: ['retyperef', 'old-linktype', 'new-linktype', '-k', 'linktype'],
+      cmd: ['retyperef'],
       args: {
         ['old-type']: 'old-linktype',
         ['new-type']: 'new-linktype',
       },
       opts: { kind: 'linktype' },
-      confirm: 'are you sure you want to retype "old-linktype" to "new-linktype"? [y/n]\n',
+      confirm: 'are you sure you want to retype linktype "old-linktype" to "new-linktype"? [y/n]\n',
       output:
 `\x1B[32mUPDATED FILES:\x1B[39m
   fname-a
@@ -234,14 +234,14 @@ describe('retype', () => {
   });
 
   it('none to update', runCmdTest(mocks, {
-    input: ['retype', 'no-type', 'new-no-type'],
-    cmd: ['retype'],
+    input: ['retyperef', 'no-type', 'new-no-type'],
+    cmd: ['retyperef'],
     args: {
       ['old-type']: 'no-type',
       ['new-type']: 'new-no-type',
     },
     opts: {},
-    confirm: 'are you sure you want to retype "no-type" to "new-no-type"? [y/n]\n',
+    confirm: 'are you sure you want to retype reftype "no-type" to "new-no-type"? [y/n]\n',
     output:
 `\x1B[32mUPDATED FILES:\x1B[39m
 \x1B[2m  none\x1B[22m`,

@@ -8,7 +8,11 @@ import * as wikirefs from 'wikirefs';
 import { MD } from '../util/const';
 
 
-export function retype(oldType: string, newType: string, opts: any) {
+export function retypedoc(oldType: string, newType: string, opts: any) {
+  console.log(chalk.yellow('`retypedoc` is not yet impelemented. 😱'));
+}
+
+export function retyperef(oldType: string, newType: string, opts: any) {
   // console.log('retype\nargs: ', oldType, newType, 'opts: ', opts);
   const output: string[] = [chalk.green('UPDATED FILES:')];
   const outputError: string [] = [chalk.red('UPDATE FAILED: ')];

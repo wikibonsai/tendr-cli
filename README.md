@@ -37,23 +37,25 @@ usage: tendr <command>
 cli tools for markdown-based digital gardening.
 
 Commands:
-  tendr tree                            print full knowledge bonsai
-  tendr status <filename>               show status of file relationships
+  tendr tree                             print full knowledge bonsai.
+  tendr status <filename>                show status of file relationships.
                                                                  [aliases: stat]
-  tendr rename <old-fname> <new-fname>  rename a file and all of its references.
-                                                                   [aliases: rn]
-  tendr retype <old-type> <new-type>    rename reference type and all its occurr
-                                        ences.                     [aliases: rt]
-  tendr mkdntowiki [glob]               convert from "[markdown](style)" to "[[w
-                                        iki-style]]" internal links.
+  tendr rename <old-fname> <new-fname>   rename a file and all of its references
+                                         .                         [aliases: rn]
+  tendr retypedoc <old-type> <new-type>  rename document type and update all occ
+                                         urrences.         [aliases: rtdoc, rtd]
+  tendr retyperef <old-type> <new-type>  rename reference type and all its occur
+                                         rences.           [aliases: rtref, rtr]
+  tendr mkdntowiki [glob]                convert from "[markdown](style)" to "[[
+                                         wiki-style]]" internal links.
                                                                  [aliases: mtow]
-  tendr wikitomkdn [glob]               convert from "[[wiki-style]]" to "[markd
-                                        own](style)" internal links.
+  tendr wikitomkdn [glob]                convert from "[[wiki-style]]" to "[mark
+                                         down](style)" internal links.
                                                                  [aliases: wtom]
-  tendr camltoyaml [glob]               convert from "caml" to "yaml" style attr
-                                        ibutes.                  [aliases: ctoy]
-  tendr yamltocaml [glob]               convert from "yaml" to "caml" style attr
-                                        ibutes.                  [aliases: ytoc]
+  tendr camltoyaml [glob]                convert from "caml" to "yaml" style att
+                                         ributes.                [aliases: ctoy]
+  tendr yamltocaml [glob]                convert from "yaml" to "caml" style att
+                                         ributes.                [aliases: ytoc]
 
 Options:
   --version  Show version number                                       [boolean]
@@ -141,20 +143,20 @@ Options:
   --help     Show help                                                 [boolean]
 ```
 
-### `retype`
+### `retyperef`
 
 note: keep in mind this will **not** retype caml primitive properties! this is for wikirefs only.
 
 Example:
 
 ```
-$ tendr retype <old-type> <new-type>
+$ tendr retyperef <old-type> <new-type>
 ```
 
 Manual:
 
 ```
-tendr retype <old-type> <new-type>
+tendr retyperef <old-type> <new-type>
 
 rename reference type and all its occurrences.
 

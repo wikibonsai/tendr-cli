@@ -15,7 +15,7 @@ import { REL_KINDS, status } from './cmds/status';
 import { camlToYaml, mkdnToWiki, wikiToMkdn, yamlToCaml } from './cmds/convert';
 // import { list } from './cmds/list';
 import { rename } from './cmds/rename';
-import { retype } from './cmds/retype';
+import { retypedoc, retyperef } from './cmds/retype';
 import { tree } from './cmds/tree';
 
 
@@ -156,8 +156,28 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
     })
 
     .command({
-      command: 'retype <old-type> <new-type>',
-      aliases: ['rt'],
+      command: 'retypedoc <old-type> <new-type>',
+      aliases: ['rtdoc', 'rtd'],
+      describe: 'rename document type and update all occurrences.',
+      builder: (yargs: yargs.Argv) => yargs
+        .option('force', {
+          alias: 'f',
+          type: 'boolean',
+          describe: 'skip verification prompt and perform operation',
+          default: false,
+        }),
+      handler: (argv: ArgumentsCamelCase) => {
+        if (argv.force || p.confirm(`retype doctype "${argv.oldType}" to "${argv.newType}"`)) {
+          retypedoc(argv.oldType as string, argv.newType as string, argv);
+        } else {
+          p.abort();
+        }
+      }
+    })
+
+    .command({
+      command: 'retyperef <old-type> <new-type>',
+      aliases: ['rtref', 'rtr'],
       describe: 'rename reference type and all its occurrences.',
       builder: (yargs: yargs.Argv) => yargs
         .option('force', {
@@ -173,8 +193,8 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           default: 'reftype',
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        if (argv.force || p.confirm(`retype "${argv.oldType}" to "${argv.newType}"`)) {
-          retype(argv.oldType as string, argv.newType as string, argv);
+        if (argv.force || p.confirm(`retype ${argv.kind} "${argv.oldType}" to "${argv.newType}"`)) {
+          retyperef(argv.oldType as string, argv.newType as string, argv);
         } else {
           p.abort();
         }
