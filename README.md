@@ -64,7 +64,8 @@ Options:
 
 ## Commands
 
-### `list`
+Note: Commands that perform anything other than read operations will display a confirmation prompt before executing. This may typically be skipped with the force flag (`-f`).
+
 
 Generates a status report. Runs on all files in current directory and all subdirectories.
 
