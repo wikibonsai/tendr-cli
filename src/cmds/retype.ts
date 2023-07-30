@@ -8,6 +8,7 @@ import * as wikirefs from 'wikirefs';
 import { MD } from '../util/const';
 
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function retypedoc(oldType: string, newType: string, opts: any) {
   console.log(chalk.yellow('`retypedoc` is not yet impelemented. 😱'));
 }

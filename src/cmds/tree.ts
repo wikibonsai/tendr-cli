@@ -6,6 +6,7 @@ import { Node } from '../util/tree';
 import { getFileNames } from '../util/util';
 
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function tree(semtree: SemTree, opts: any) {
   // generate filenames for printTree() function below
   const allFileNames: string[] = getFileNames();
