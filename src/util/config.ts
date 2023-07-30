@@ -24,7 +24,7 @@ function get(uri: string | undefined, uriDefault: string = CONFIG_PATH): any {
   try {
     content = fs.readFileSync(useUri, 'utf8');
   } catch (e) {
-    // console.warn(chalk.red(e));
+    console.warn(chalk.yellow(e));
     return {};
   }
   // process data

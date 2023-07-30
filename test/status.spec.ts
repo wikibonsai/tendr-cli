@@ -25,6 +25,10 @@ const mocks: TestMocks = {
 describe('status', () => {
 
   beforeEach(() => {
+    const config: string = 
+`[garden]
+root    = 'i.bonsai'
+`;
     const doctypes: string = 
 `
 [default]
@@ -82,6 +86,7 @@ path   = "/"
     if (!fs.existsSync(path.join(testCwd, 'index'))) {
       fs.mkdirSync(path.join(testCwd, 'index'));
     }
+    fs.writeFileSync('config.toml', config);
     fs.writeFileSync('t.doc.toml', doctypes);
     fs.writeFileSync(path.join(testCwd, 'index', 'i.bonsai.md'), bonsai);
     fs.writeFileSync(path.join(testCwd, 'fname-a.md'), fnameA);
@@ -107,6 +112,12 @@ path   = "/"
   afterEach(() => {
     if (fs.existsSync(testCwd)) {
       fs.rmSync(testCwd, { recursive: true });
+    }
+    if (fs.existsSync('config.toml')) {
+      fs.rmSync('config.toml');
+    }
+    if (fs.existsSync('t.doc.toml')) {
+      fs.rmSync('t.doc.toml');
     }
     mocks.fakeConsoleLog.restore();
     mocks.fakeConsoleWarn.restore();
@@ -791,6 +802,7 @@ path   = "/"
         cmd: ['status'],
         args: { filename: 'fname-a' },
         opts: {},
+        warn: '\x1B[33mError: ENOENT: no such file or directory, open \'./t.doc.toml\'\x1B[39m',
         output:
 `\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
 \x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m \x1B[2m│\x1B[22m
