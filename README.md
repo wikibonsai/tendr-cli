@@ -98,7 +98,7 @@ Options:
   -g, --glob     glob to index files                                    [string]
 ```
 
-### `status`
+### `status`, `stat`
 
 Example:
 
@@ -123,7 +123,7 @@ Options:
                  is "rel")                             [string] [default: "rel"]
 ```
 
-### `rename`
+### `rename`, `rn`
 
 Example:
 
@@ -143,7 +143,7 @@ Options:
   --help     Show help                                                 [boolean]
 ```
 
-### `retyperef`
+### `retyperef`, `rtref`, `rtr`
 
 note: keep in mind this will **not** retype caml primitive properties! this is for wikirefs only.
 
@@ -167,7 +167,7 @@ Options:
                  pe"; default is "reftype")        [string] [default: "reftype"]
 ```
 
-### `mkdntowiki`
+### `mkdntowiki`, `mtow`
 
 Example:
 
@@ -194,7 +194,7 @@ Options:
                  is "rel")                             [string] [default: "ref"]
 ```
 
-### `wikitomkdn`
+### `wikitomkdn`, `wtom`
 
 Example:
 
@@ -221,13 +221,11 @@ Options:
                  is "rel")                             [string] [default: "ref"]
 ```
 
-### `camltoyaml`
+### `camltoyaml`, `ctoy`
 
 Example:
 
 ```
-// caml -> yaml
-
 $ tendr camltoyaml [glob]
 ```
 
@@ -243,13 +241,11 @@ Options:
   --help     Show help                                                 [boolean]
 ```
 
-### `yamltocaml`
+### `yamltocaml`, `ytoc`
 
 Example:
 
 ```
-// yaml -> caml
-
 $ tendr yamltocaml [glob]
 ```
 
