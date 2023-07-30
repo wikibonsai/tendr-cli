@@ -5,7 +5,8 @@ import matter from 'gray-matter';
 import * as caml from 'caml-mkdn';
 
 
-export function resolve(uri: string, doctypes: any): string {
+export function resolve(uri: string, doctypes: any): string | undefined {
+  let doctype: string | undefined;
   const filename: string = path.basename(uri, path.extname(uri));
   // order of precedence:
   // prefix > attr metadata > directory
@@ -13,7 +14,7 @@ export function resolve(uri: string, doctypes: any): string {
     // if prefix match
     if ((opts as any).prefix) {
       if (filename.indexOf(doctypes.index.prefix) === 0) {
-        return type;
+        doctype = type;
       }
     }
     // if attr match
@@ -23,10 +24,10 @@ export function resolve(uri: string, doctypes: any): string {
     // todo: get default metadata from config
     if (camlData || yamlData) {
       if (Object.keys(camlData).includes(type)) {
-        return type;
+        doctype = type;
       }
       if (Object.keys(yamlData).includes(type)) {
-        return type;
+        doctype = type;
       }
     }
     // if directory match
@@ -34,9 +35,9 @@ export function resolve(uri: string, doctypes: any): string {
       const cwd: string = process.cwd();
       const typeUri: string = path.join(cwd, (opts as any).path);
       if (uri.indexOf(typeUri) === 0) {
-        return type;
+        doctype = type;
       }
     }
   }
-  return 'default';
+  return doctype;
 }

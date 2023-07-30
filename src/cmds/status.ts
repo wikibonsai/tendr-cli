@@ -44,7 +44,7 @@ function isEmpty(refs: Record<string, string[]> | string[]): boolean {
 export function status(
   filename: string,
   semtree: SemTree | string | undefined,
-  doctypes: any,
+  doctypes: any[]| undefined,
   opts: any,
 ): void {
   // console.log('status\nargs: ', filename, 'opts: ', opts);
@@ -69,6 +69,7 @@ export function status(
   const listGlob: string = cwd + '/**/*' + MD;
   const gardenFilePaths: string[] = glob.sync(listGlob);
   const allFileNames: string[] = gardenFilePaths.map((fp) => path.basename(fp, MD));
+  const hasTree: boolean = (semtree instanceof SemTree);
   /* eslint-disable indent */
   ////
   // file
@@ -85,7 +86,8 @@ export function status(
     let ancestors: string[] = [];
     let children: string[] = [];
     let node: Node | undefined;
-    if (semtree instanceof SemTree) {
+    if (hasTree) {
+      // @ts-expect-error: 'hasTree' performs type-check above
       node = semtree.tree.find((node) => node.text === filename);
       if (ancestor) {
         ancestors = node ? node.ancestors : [];
@@ -213,7 +215,6 @@ export function status(
                                   .flatMap((value: any) => value[1].map((res: any) => [res.type[0], path.basename(value[0], MD)]));
       /* eslint-enable indent */
       } catch (e: any) {
-        console.info(chalk.red(e));
         console.error(chalk.red(e));
         return;
       }
@@ -354,7 +355,7 @@ export function status(
   }
 
   // tree table
-  if (fam) {
+  if (hasTree && fam) {
     if (ancestor) { // && (node !== undefined)) {
       const ancestorValue: string = (ancestors.length > 0) ? ancestors.join(' > ') : EMPTY;
       treeTableData.push([chalk.yellow('ANCESTORS'), ancestorValue]);

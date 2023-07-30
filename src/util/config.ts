@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import chalk from 'chalk';
 import toml from '@iarna/toml';
 import * as yaml from 'js-yaml';
 
@@ -15,24 +16,18 @@ export function getDocTypes(uri?: string | undefined): any {
   return get(uri, DOCTYPE_PATH);
 }
 
-function get(uri?: string | undefined, kind: string = CONFIG_PATH): any {
-  let extKind: string;
+function get(uri: string | undefined, uriDefault: string = CONFIG_PATH): any {
   let content: string;
-  if (uri === undefined) {
-    extKind = 'toml';
-    try {
-      content = fs.readFileSync(kind, 'utf8');
-    } catch (e) {
-      return {};
-    }
-  } else {
-    extKind = path.extname(uri);
-    try {
-      content = fs.readFileSync(uri, 'utf8');
-    } catch (e) {
-      return {};
-    }
+  const useUri: string = uri || uriDefault;
+  const extKind: string = path.extname(useUri);
+  // extract content
+  try {
+    content = fs.readFileSync(useUri, 'utf8');
+  } catch (e) {
+    // console.warn(chalk.red(e));
+    return {};
   }
+  // process data
   if (extKind === '.toml') {
     const tomlData: any = toml.parse(content);
     if ((tomlData !== undefined) && (tomlData !== null)) { return tomlData; }

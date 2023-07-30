@@ -105,7 +105,7 @@ export function getIndexFileUris(doctypePath: string, indexGlob: string | undefi
   const doctypes: any = getDocTypes(doctypePath);
   if (doctypes.index) {
     getFileUris().forEach((uri: string) => {
-      const dtype: string = doctype.resolve(uri, doctypes);
+      const dtype: string | undefined = doctype.resolve(uri, doctypes);
       if (dtype === 'index') {
         fileUris.push(uri);
       }

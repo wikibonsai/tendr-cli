@@ -136,7 +136,7 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           globIndexUris: argv.glob as string | undefined,
         };
         const semtree: SemTree | undefined = buildTree(payload);
-        const doctypes: any[] = getDocTypes(payload.doctypeUri);
+        const doctypes: any[] | undefined = getDocTypes(payload.doctypeUri);
         status(argv.filename as string, semtree, doctypes, argv);
       }
     })
