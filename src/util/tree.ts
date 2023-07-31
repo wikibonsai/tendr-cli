@@ -104,18 +104,20 @@ export function getIndexFileUris(doctypePath: string, indexGlob: string | undefi
   // ...from doctype
   const doctypes: any = getDocTypes(doctypePath);
   if (doctypes.index) {
-    getFileUris().forEach((uri: string) => {
+    const gardenFileUris: string[] = getFileUris();
+    gardenFileUris.forEach((uri: string) => {
       const dtype: string | undefined = doctype.resolve(uri, doctypes);
       if (dtype === 'index') {
         fileUris.push(uri);
       }
     });
     if (fileUris.length === 0) {
-      console.error('no index files found from doctype payload: ' + doctypes);
+      console.error('no index files found from doctype payload: ' + JSON.stringify(doctypes));
       return;
     }
   }
-  // ...from base default (e.g. './index/' dir)
+  // check base default (e.g. './index/')
+  // if no 'index' doctype provided
   if (fileUris.length === 0) {
     fileUris = glob.sync(path.join(process.cwd(), INDEX_GLOB + MD));
   }
