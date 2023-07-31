@@ -66,12 +66,39 @@ Options:
 
 Note: Commands that perform anything other than read operations will display a confirmation prompt before executing. This may typically be skipped with the force flag (`-f`).
 
+### `lint` (⚠️ todo)
 
-Generates a status report. Runs on all files in current directory and all subdirectories.
+Example:
+
+```
+$ tendr lint
+```
+
+Sample output:
+
+todo
+
+Manual:
+
+todo
+
+### `list`, `ls` (⚠️ todo)
+
+List garden information. Runs on all files in current directory and all subdirectories.
+
+Example:
 
 ```
 $ tendr list
 ```
+
+Sample output:
+
+todo
+
+Manual:
+
+todo
 
 ### `tree`
 
