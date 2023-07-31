@@ -43,7 +43,7 @@
     "readline-sync": "^1.4.10",
     "semtree": "^0.0.2",
     "table": "^6.8.1",
-    "wikirefs": "^0.0.2",
+    "wikirefs": "^0.0.3",
     "yargs": "^17.6.1"
   },
   "devDependencies": {
