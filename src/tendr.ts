@@ -69,7 +69,7 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
     .command({
       command: 'tree',
       // aliases: [''],
-      describe: 'print full knowledge bonsai',
+      describe: 'print full knowledge bonsai.',
       builder: (yargs: yargs.Argv) => yargs
         .option('config', {
           alias: 'c',
