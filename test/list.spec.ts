@@ -6,7 +6,7 @@
 
 // let fakeConsoleLog: any;
 
-// describe.skip('stat', () => {
+// describe.skip('list', () => {
 
 //   beforeEach(() => {
 //     console.warn = (msg) => msg + '\n';
