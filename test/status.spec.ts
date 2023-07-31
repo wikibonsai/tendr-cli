@@ -788,22 +788,74 @@ path   = "/"
 
     });
 
-    describe('doctype failure', () => {
+    describe('doctype', () => {
 
-      beforeEach(() => {
-        const doctypeUri: string = 't.doc.toml';
-        if (fs.existsSync(doctypeUri)) {
-          fs.rmSync(doctypeUri);
-        }
+      describe('with placeholder', () => {
+
+        beforeEach(() => {
+          const doctypes: string = 
+`
+[default]
+path   = "/"
+
+[event]
+prefix = "evt.:date"
+`;
+          const eventFile: string = 'this event happened on February seventh, 2020.';
+          fs.writeFileSync('t.doc.toml', doctypes);
+          fs.writeFileSync(path.join(testCwd, 'evt.2020-02-07.md'), eventFile);
+        });
+
+        it('":date"', runCmdTest(mocks, {
+          input: ['status', 'evt.2020-02-07'],
+          cmd: ['status'],
+          args: { filename: 'evt.2020-02-07' },
+          opts: {},
+          output:
+`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
+\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                          \x1B[2m│\x1B[22m
+\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
+\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m evt.2020-02-07 \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m event \x1B[2m│\x1B[22m
+\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
+\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
+\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m         \x1B[2m│\x1B[22m
+\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
+\x1B[2m│\x1B[22m \x1B[33mANCESTORS\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m \x1B[2m│\x1B[22m
+\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
+\x1B[2m│\x1B[22m \x1B[33mCHILDREN\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m \x1B[2m│\x1B[22m
+\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
+\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
+\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m              \x1B[2m│\x1B[22m
+\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
+\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m \x1B[2m│\x1B[22m
+\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
+\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
+\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
+\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
+\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
+\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
+\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
+`,
+        }));
+
       });
 
-      it('do not display doctype', runCmdTest(mocks, {
-        input: ['status', 'fname-a'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: {},
-        warn: '\x1B[33mError: ENOENT: no such file or directory, open \'./t.doc.toml\'\x1B[39m',
-        output:
+      describe('failure', () => {
+
+        beforeEach(() => {
+          const doctypeUri: string = 't.doc.toml';
+          if (fs.existsSync(doctypeUri)) {
+            fs.rmSync(doctypeUri);
+          }
+        });
+
+        it('do not display doctype', runCmdTest(mocks, {
+          input: ['status', 'fname-a'],
+          cmd: ['status'],
+          args: { filename: 'fname-a' },
+          opts: {},
+          warn: '\x1B[33mError: ENOENT: no such file or directory, open \'./t.doc.toml\'\x1B[39m',
+          output:
 `\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
 \x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m \x1B[2m│\x1B[22m
 \x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
@@ -837,7 +889,9 @@ path   = "/"
 \x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m • fname-f            \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m                   \x1B[2m│\x1B[22m
 \x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
 `,
-      }, SHOW_RESULT));
+        }, SHOW_RESULT));
+
+      });
 
     });
 
