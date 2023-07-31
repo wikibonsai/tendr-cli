@@ -345,20 +345,23 @@ export function status(
   const webTableData: any[] = [];
 
   // file table
+  let fileRow: string[] = [];
   if (thisFilePath === undefined) {
-    fileTableData.push([chalk.red('NO FILE'), chalk.dim(filename)]);
+    fileRow = [chalk.red('NO FILE'), chalk.dim(filename)];
   } else {
-    fileTableData.push([chalk.green('FILE'), filename]);
+    fileRow = [chalk.green('FILE'), filename];
   }
   if (dtype !== undefined) {
-    fileTableData[fileTableData.length - 1] = fileTableData[fileTableData.length - 1].concat([chalk.green('DOCTYPE'), dtype]);
+    fileRow = fileRow.concat([chalk.green('DOCTYPE'), dtype]);
   }
+  fileTableData.push(fileRow);
 
   // tree table
   if (hasTree && fam) {
-    if (ancestor) { // && (node !== undefined)) {
+    if (ancestor) {
       const ancestorValue: string = (ancestors.length > 0) ? ancestors.join(' > ') : EMPTY;
-      treeTableData.push([chalk.yellow('ANCESTORS'), ancestorValue]);
+      const formattedAncestors: string = ancestorValue.replace(/(.{60})/g, '$1\n');
+      treeTableData.push([chalk.yellow('ANCESTORS'), formattedAncestors]);
     }
     if (child) {
       const childValue: string = (children.length > 0) ? '• ' + children.join('\n• ') : EMPTY;
