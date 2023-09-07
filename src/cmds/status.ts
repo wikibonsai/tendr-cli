@@ -65,8 +65,6 @@ export function status(
   const ref      : boolean = (kind === 'rel') || (kind === 'ref') || (foreattr || forelink || foreembed || backattr || backlink || backembed);
   // table vars
   const config: any = {
-    // configure below...
-    spanningCells: [],
     border: {
       topBody: chalk.dim('─'),
       topJoin: chalk.dim('┬'),
@@ -109,7 +107,6 @@ export function status(
     dtype = doctype.resolve(thisFilePath, doctypes);
   }
   // build table
-  const fileSpanningCells: any[] = [];
   const fileTableData: any[] = [];
   let fileRow: string[] = [];
   if (thisFilePath === undefined) {
@@ -123,7 +120,6 @@ export function status(
   fileTableData.push(fileRow);
   ////
   // fam/tree
-  const treeSpanningCells: any[] = [];
   const treeTableData: any[] = [];
   if (fam) {
     // data
@@ -157,7 +153,6 @@ export function status(
   /* eslint-enable indent */
   ////
   // ref/web
-  const webSpanningCells: any[] = [];
   const webTableData: any[] = [];
   if (ref) {
     // data
@@ -421,15 +416,15 @@ export function status(
     }
   }
   // print table
-  const fileText: string = (fileTableData.length > 0) ? table(fileTableData, { ...config, spanningCells: fileSpanningCells, header: {
+  const fileText: string = (fileTableData.length > 0) ? table(fileTableData, { ...config, header: {
     alignment: 'left',
     content: chalk.bold('📄 RELs for...'),
   }}) : '';
-  const treeText: string = (treeTableData.length > 0) ? table(treeTableData, { ...config, spanningCells: treeSpanningCells, header: {
+  const treeText: string = (treeTableData.length > 0) ? table(treeTableData, { ...config, header: {
     alignment: 'left',
     content: chalk.bold('🌳 FAM'),
   } }) : '';
-  const webText: string = (webTableData.length > 0) ? table(webTableData, { ...config, spanningCells: webSpanningCells, header: {
+  const webText: string = (webTableData.length > 0) ? table(webTableData, { ...config, header: {
     alignment: 'left',
     content: chalk.bold('🕸️ REF'),
   } }) : '';
