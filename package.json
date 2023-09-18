@@ -30,7 +30,7 @@
     "rebuild": "yarn clean && yarn build",
     "lint": "eslint ./src ./test --ext .ts",
     "pretest": "yarn rebuild",
-    "test": "c8 mocha",
+    "test": "mocha",
     "tendr": "node --experimental-specifier-resolution=node --loader=ts-node/esm -r ts-node/register ./src/cli.ts"
   },
   "dependencies": {
@@ -62,7 +62,6 @@
     "@types/yargs": "^17.0.13",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
-    "c8": "^8.0.1",
     "del-cli": "^5.0.0",
     "eslint": "^8.27.0",
     "mocha": "^10.0.0",
