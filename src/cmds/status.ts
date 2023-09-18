@@ -174,33 +174,24 @@ export async function status(
             for (const fnameData of data.filenames) {
               const type: string = data.type[0];
               const fname: string = fnameData[0];
+              const tableTxt: string = allFileNames.includes(fname) ? fname : chalk.dim(fname);
               if (!Object.keys(foreattrs).includes(type)) {
                 foreattrs[type] = [];
               }
-              if (allFileNames.includes(fname)) {
-                foreattrs[type].push(fname);
-              } else {
-                foreattrs[type].push(chalk.dim(fname));
-              }
+              foreattrs[type].push(tableTxt);
             }
           // link
           } else if (forelink && (data.kind === wikirefs.CONST.WIKI.LINK)) {
             const fname: string = path.basename(data.filename[0], MD);
             const type: string = data.type[0];
             const item: string = (type === undefined) ? fname : fname + ' (' + type + ')';
-            if (allFileNames.includes(fname)) {
-              forelinks.push(item);
-            } else {
-              forelinks.push(chalk.dim(item));
-            }
+            const tableTxt: string = allFileNames.includes(fname) ? item : chalk.dim(item);
+            forelinks.push(tableTxt);
           // embed
           } else if (foreembed && (data.kind === wikirefs.CONST.WIKI.EMBED)) {
             const fname: string = path.basename(data.filename[0], MD);
-            if (allFileNames.includes(fname)) {
-              foreembeds.push(fname);
-            } else {
-              foreembeds.push(chalk.dim(fname));
-            }
+            const tableTxt: string = allFileNames.includes(fname) ? fname : chalk.dim(fname);
+            foreembeds.push(tableTxt);
           } else {
             // do nothing
           }
@@ -227,32 +218,23 @@ export async function status(
           if (backattr && (data.kind === wikirefs.CONST.WIKI.ATTR)) {
             const type: string = data.type[0];
             const fname: string = path.basename(thatFilePath, MD);
+            const tableTxt: string = allFileNames.includes(fname) ? fname : chalk.dim(fname);
             if (!Object.keys(backattrs).includes(type)) {
               backattrs[type] = [];
             }
-            if (allFileNames.includes(fname)) {
-              backattrs[type].push(fname);
-            } else {
-              backattrs[type].push(chalk.dim(fname));
-            }
+            backattrs[type].push(tableTxt);
           // link
           } else if (backlink && (data.kind === wikirefs.CONST.WIKI.LINK)) {
             const fname: string = path.basename(thatFilePath, MD);
             const type: string = data.type[0];
             const item: string = (type === undefined) ? fname : fname + ' (' + type + ')';
-            if (allFileNames.includes(fname)) {
-              backlinks.push(item);
-            } else {
-              backlinks.push(chalk.dim(item));
-            }
+            const tableTxt: string = allFileNames.includes(fname) ? item : chalk.dim(item);
+            backlinks.push(tableTxt);
           // embed
           } else if (backembed && (data.kind === wikirefs.CONST.WIKI.EMBED)) {
             const fname: string = path.basename(thatFilePath, MD);
-            if (allFileNames.includes(fname)) {
-              backembeds.push(fname);
-            } else {
-              backembeds.push(chalk.dim(fname));
-            }
+            const tableTxt: string = allFileNames.includes(fname) ? fname : chalk.dim(fname);
+            backembeds.push(tableTxt);
           } else {
             // do nothing
           }
@@ -260,6 +242,8 @@ export async function status(
       }
     }
   })();
+  // 'fore' and 'back' data are calculated before constructing the actual 'ref' table,
+  // so we know how many rows/columns we're working with.
   const webJob: Promise<void> = (async () => {
     if (ref) {
       return Promise.all([
