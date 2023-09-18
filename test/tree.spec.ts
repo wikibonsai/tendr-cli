@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import type { TestMocks } from './types';
-import { runCmdTest } from './runner';
+import { runCmdTestSync } from './runner';
 
 
 const cwd: string = path.dirname(new URL(import.meta.url).pathname);
@@ -102,7 +102,7 @@ prefix = "i."
 
   describe('default', () => {
 
-    it('single index file', runCmdTest(mocks, {
+    it('single index file', runCmdTestSync(mocks, {
       input: ['tree'],
       cmd: ['tree'],
       args: {},
@@ -135,7 +135,7 @@ prefix = "i."
         fs.rmSync(path.join(testCwd, 'i.branch.md'));
       });
 
-      it('multiple index files', runCmdTest(mocks, {
+      it('multiple index files', runCmdTestSync(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
@@ -184,7 +184,7 @@ path   = "/custom-index/"
       fs.renameSync(path.join(testCwd, 'i.bonsai.md'), path.join(testCwd, 'custom-index', 'custom-bonsai.md'));
     });
 
-    it('config + doctypes (root from dir, not prefix)', runCmdTest(mocks, {
+    it('config + doctypes (root from dir, not prefix)', runCmdTestSync(mocks, {
       input: ['tree'],
       cmd: ['tree'],
       args: {},
@@ -239,7 +239,7 @@ path   = "/custom-index/"
       }
     });
 
-    it('config + doctypes', runCmdTest(mocks, {
+    it('config + doctypes', runCmdTestSync(mocks, {
       input: ['tree', '-c', './custom-config.toml', '-d', 'custom-doctypes.toml'],
       cmd: ['tree'],
       args: {},
@@ -281,7 +281,7 @@ path   = "/custom-index/"
       fs.renameSync(path.join(testCwd, 'i.bonsai.md'), path.join(testCwd, 'index', 'i.bonsai.md'));
     });
 
-    it('config + doctypes', runCmdTest(mocks, {
+    it('config + doctypes', runCmdTestSync(mocks, {
       input: ['tree'],
       cmd: ['tree'],
       args: {},
@@ -327,7 +327,7 @@ path   = "/custom-index/"
       }
     });
 
-    it('root filename + index files glob', runCmdTest(mocks, {
+    it('root filename + index files glob', runCmdTestSync(mocks, {
       input: ['tree', '-r', 'custom-bonsai', '-g', 'custom-index/**/*'],
       cmd: ['tree'],
       args: {},
@@ -370,7 +370,7 @@ path   = "/custom-index/"
         fs.writeFileSync(path.join(testCwd, 'fname-a'), metadata, 'utf8');
       });
 
-      it('caml', runCmdTest(mocks, {
+      it('caml', runCmdTestSync(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
@@ -408,7 +408,7 @@ title: a title
         fs.writeFileSync(path.join(testCwd, 'fname-a'), metadata, 'utf8');
       });
 
-      it('yaml', runCmdTest(mocks, {
+      it('yaml', runCmdTestSync(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
@@ -439,7 +439,7 @@ title: a title
 
   describe('error (do not execute)', () => {
 
-    it('no root', runCmdTest(mocks, {
+    it('no root', runCmdTestSync(mocks, {
       input: ['tree', '-r', 'no-root'],
       cmd: ['tree'],
       args: {},
@@ -451,7 +451,7 @@ title: a title
       error: '\x1B[31munable to build tree\x1B[39m',
     }));
 
-    it('no index files', runCmdTest(mocks, {
+    it('no index files', runCmdTestSync(mocks, {
       input: ['tree', '-g', 'no-index/**/*'],
       cmd: ['tree'],
       args: {},
@@ -470,7 +470,7 @@ title: a title
         fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- [[fname-a]]\n');
       });
 
-      it('duplicates found', runCmdTest(mocks, {
+      it('duplicates found', runCmdTestSync(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},

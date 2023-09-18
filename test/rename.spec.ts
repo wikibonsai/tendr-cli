@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { TestMocks } from './types';
-import { runCmdTest } from './runner';
+import { runCmdTestSync } from './runner';
 
 
 let fakeProcessCwd: any;
@@ -75,7 +75,7 @@ describe('rename', () => {
     mocks.fakeConsoleLog.restore();
   });
 
-  it('base; file + all refs', runCmdTest(mocks, {
+  it('base; file + all refs', runCmdTestSync(mocks, {
     input: ['rename', 'fname-a', 'new-name'],
     cmd: ['rename'],
     args: {
@@ -124,7 +124,7 @@ describe('rename', () => {
     },
   }));
 
-  it('aborted', runCmdTest(mocks, {
+  it('aborted', runCmdTestSync(mocks, {
     input: ['rename', 'fname-a', 'new-name'],
     cmd: ['rename'],
     args: {
@@ -137,7 +137,7 @@ describe('rename', () => {
 
   describe('options', () => {
 
-    it('force', runCmdTest(mocks, {
+    it('force', runCmdTestSync(mocks, {
       input: ['rename', 'fname-a', 'new-name', '-f'],
       cmd: ['rename'],
       args: {

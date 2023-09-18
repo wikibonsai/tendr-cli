@@ -9,7 +9,7 @@ import { SemTree } from 'semtree';
 import { CONFIG_PATH, DOCTYPE_PATH } from './util/const';
 import { getDocTypes } from './util/config';
 import type { InitTree } from './util/tree';
-import { buildTree } from './util/tree';
+import { buildTree, buildTreeSync } from './util/tree';
 import * as prompt from './util/prompt';
 
 import { REL_KINDS, status } from './cmds/status';
@@ -100,7 +100,7 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           rootFileName: argv.root as string | undefined,
           globIndexUris: argv.glob as string | undefined
         };
-        const semtree: SemTree | undefined = buildTree(payload);
+        const semtree: SemTree | undefined = buildTreeSync(payload);
         if (semtree instanceof SemTree) {
           tree(semtree, argv);
         } else {
@@ -128,16 +128,20 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           describe: `kind of relationships to list\n(kinds: ${REL_KINDS.join(', ')}; default is "rel")`,
           default: 'rel',
         }),
-      handler: (argv: ArgumentsCamelCase) => {
+      handler: async (argv: ArgumentsCamelCase) => {
         const payload: InitTree = {
           configUri: argv.config as string,
           doctypeUri: argv.doctype as string,
           rootFileName: argv.root as string | undefined,
           globIndexUris: argv.glob as string | undefined,
         };
-        const semtree: SemTree | undefined = buildTree(payload);
-        const doctypes: any[] | undefined = getDocTypes(payload.doctypeUri);
-        status(argv.filename as string, semtree, doctypes, argv);
+        try {
+          const semtree: Promise<SemTree | undefined> = buildTree(payload);
+          const doctypes: any[] | undefined = getDocTypes(payload.doctypeUri);
+          return status(argv.filename as string, semtree, doctypes, argv);
+        } catch (e) {
+          console.error(e);
+        }
       }
     })
 

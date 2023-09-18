@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { TestMocks } from './types';
-import { runCmdTest } from './runner';
+import { runCmdTestSync } from './runner';
 
 
 let fakeProcessCwd: any;
@@ -67,7 +67,7 @@ describe('retyperef', () => {
     mocks.fakeConsoleLog.restore();
   });
 
-  it('base; equivalent to ref', runCmdTest(mocks, {
+  it('base; equivalent to ref', runCmdTestSync(mocks, {
     input: ['retyperef', 'old-reftype', 'new-reftype'],
     cmd: ['retyperef'],
     args: {
@@ -109,7 +109,7 @@ describe('retyperef', () => {
 
   describe('kind', () => {
 
-    it('ref; attr + link', runCmdTest(mocks, {
+    it('ref; attr + link', runCmdTestSync(mocks, {
       input: ['retyperef', 'old-reftype', 'new-reftype', '-k', 'ref'],
       cmd: ['retyperef'],
       args: {
@@ -149,7 +149,7 @@ describe('retyperef', () => {
       },
     }));
 
-    it('attr', runCmdTest(mocks, {
+    it('attr', runCmdTestSync(mocks, {
       input: ['retyperef', 'old-attrtype', 'new-attrtype', '-k', 'attr'],
       cmd: ['retyperef'],
       args: {
@@ -190,7 +190,7 @@ describe('retyperef', () => {
       },
     }));
 
-    it('link', runCmdTest(mocks, {
+    it('link', runCmdTestSync(mocks, {
       input: ['retyperef', 'old-linktype', 'new-linktype', '-k', 'link'],
       cmd: ['retyperef'],
       args: {
@@ -233,7 +233,7 @@ describe('retyperef', () => {
 
   });
 
-  it('none to update', runCmdTest(mocks, {
+  it('none to update', runCmdTestSync(mocks, {
     input: ['retyperef', 'no-type', 'new-no-type'],
     cmd: ['retyperef'],
     args: {

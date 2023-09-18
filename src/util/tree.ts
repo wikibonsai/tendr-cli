@@ -30,7 +30,15 @@ export interface Node {
 export const INDEX_GLOB: string = './index/**/*';
 export const ROOT_NAME : string = 'i.bonsai';
 
-export function buildTree(payload: InitTree): SemTree | undefined {
+export async function buildTree(payload: InitTree): Promise<SemTree | undefined> {
+  try {
+    return Promise.resolve(buildTreeSync(payload));
+  } catch (e) {
+    return Promise.reject(e);
+  }
+}
+
+export function buildTreeSync(payload: InitTree): SemTree | undefined {
   const rootFileName: string | undefined = getRootFileName(payload.configUri, payload.rootFileName);
   if (rootFileName === undefined) { return; }
   const indexFileUris: string[] | undefined = getIndexFileUris(payload.doctypeUri, payload.globIndexUris);
