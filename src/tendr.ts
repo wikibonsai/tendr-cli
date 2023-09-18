@@ -145,7 +145,7 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
       }
     })
 
-  // refactor
+  // refactor links across garden
 
     .command({
       command: 'rename <old-fname> <new-fname>',

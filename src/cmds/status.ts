@@ -285,8 +285,9 @@ export async function status(
         if (backembeds.length === 0) {
           backembeds.push(EMPTY);
         }
+        ////
         // build table
-        // label row
+        // label
         const labelRow: string[] = [''];
         if (backattr || backlink || backembed) {
           labelRow.push(chalk.blue('BACK'));
@@ -295,7 +296,7 @@ export async function status(
           labelRow.push(chalk.blue('FORE'));
         }
         webTableData.push(labelRow);
-        // attr row
+        // attr
         if (backattr || foreattr) {
           const attrRow: string[] = [chalk.blue('ATTR')];
           if (backattr) {
@@ -314,7 +315,7 @@ export async function status(
           }
           webTableData.push(attrRow);
         }
-        // link row
+        // link
         if (backlink || forelink) {
           const linkRow: string[] = [chalk.blue('LINK')];
           if (backlink) {
@@ -329,7 +330,7 @@ export async function status(
           }
           webTableData.push(linkRow);
         }
-        // embed row
+        // embed
         if (backembed || foreembed) {
           const embedRow: string[] = [chalk.blue('EMBED')];
           if (backembed) {
