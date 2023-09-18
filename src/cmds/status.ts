@@ -163,74 +163,46 @@ export async function status(
   const backattrs: Record<string, string[]> = {};
   const backlinks: string[] = [];
   const backembeds: string[] = [];
-  if (thisFilePath === undefined) {
-    foreattrs[EMPTY] = [];
-    forelinks.push(EMPTY);
-    foreembeds.push(EMPTY);
-  }
   // fore
   const webForeJob: Promise<void> = (async () => {
     if (ref && fore && (thisFilePath !== undefined)) {
       return fs.promises.readFile(thisFilePath, 'utf-8').then((res: string) => {
-        const data: any[] = wikirefs.scan(res);
-        // attr
-        if (foreattr) {
-          /* eslint-disable indent */
-          const wikiattrs: [string, string[]][] = data.filter((i: any) => i.kind === wikirefs.CONST.WIKI.ATTR)
-                                                      .map((d: any) => [d.type[0], d.filenames.map((fileInfo: any) => fileInfo[0])]);
-          /* eslint-enable indent */
-          if (wikiattrs.length === 0) {
-            foreattrs[EMPTY] = [];
-          } else {
-            for (const wa of wikiattrs) {
-              const type: string = wa[0];
-              const fnames: string[] = wa[1];
-              foreattrs[type] = [];
-              for (const fn of fnames) {
-                if (allFileNames.includes(fn)) {
-                  foreattrs[type].push(fn);
-                } else {
-                  foreattrs[type].push(chalk.dim(fn));
-                }
+        const thisData: any[] = wikirefs.scan(res);
+        for (const data of thisData) {
+          // attr
+          if (foreattr && (data.kind === wikirefs.CONST.WIKI.ATTR)) {
+            for (const fnameData of data.filenames) {
+              const type: string = data.type[0];
+              const fname: string = fnameData[0];
+              if (!Object.keys(foreattrs).includes(type)) {
+                foreattrs[type] = [];
               }
-            }
-          }
-        }
-        // link
-        if (forelink) {
-          /* eslint-disable indent */
-          const wikilinks: [string, string | undefined][] = data.filter((i: any) => i.kind === wikirefs.CONST.WIKI.LINK)
-                                                                .map((d: any) => [d.filename[0], d.type ? d.type[0] : undefined]);
-          /* eslint-enable indent */
-          if (wikilinks.length === 0) {
-            forelinks.push(EMPTY);
-          } else {
-            for (const wl of wikilinks) {
-              const item: string = (wl[1] === undefined) ? wl[0] : wl[0] + ' (' + wl[1] + ')';
-              if (allFileNames.includes(wl[0])) {
-                forelinks.push(item);
+              if (allFileNames.includes(fname)) {
+                foreattrs[type].push(fname);
               } else {
-                forelinks.push(chalk.dim(item));
+                foreattrs[type].push(chalk.dim(fname));
               }
             }
-          }
-        }
-        // embed
-        if (foreembed) {
-          /* eslint-disable indent */
-          const wikiembeds: string[] = data.filter((i: any) => i.kind === wikirefs.CONST.WIKI.EMBED)
-                                            .map((d: any) => d.filename[0]);
-          /* eslint-enable indent */
-          if (wikiembeds.length === 0) {
-            foreembeds.push(EMPTY);
+          // link
+          } else if (forelink && (data.kind === wikirefs.CONST.WIKI.LINK)) {
+            const fname: string = path.basename(data.filename[0], MD);
+            const type: string = data.type[0];
+            const item: string = (type === undefined) ? fname : fname + ' (' + type + ')';
+            if (allFileNames.includes(fname)) {
+              forelinks.push(item);
+            } else {
+              forelinks.push(chalk.dim(item));
+            }
+          // embed
+          } else if (foreembed && (data.kind === wikirefs.CONST.WIKI.EMBED)) {
+            const fname: string = path.basename(data.filename[0], MD);
+            if (allFileNames.includes(fname)) {
+              foreembeds.push(fname);
+            } else {
+              foreembeds.push(chalk.dim(fname));
+            }
           } else {
-            for (const we of wikiembeds) {
-              if (allFileNames.includes(we)) {
-                foreembeds.push(we);
-              } else {
-                foreembeds.push(chalk.dim(we));
-              }
-            }
+            // do nothing
           }
         }
       });
@@ -295,6 +267,15 @@ export async function status(
         webBackJob,
       ]).then(() => {
         // empty data check
+        if (Object.keys(foreattrs).length == 0) {
+          foreattrs[EMPTY] = [];
+        }
+        if (forelinks.length === 0) {
+          forelinks.push(EMPTY);
+        }
+        if (foreembeds.length === 0) {
+          foreembeds.push(EMPTY);
+        }
         if (Object.keys(backattrs).length == 0) {
           backattrs[EMPTY] = [];
         }
