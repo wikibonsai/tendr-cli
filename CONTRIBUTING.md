@@ -1,22 +1,6 @@
 # Contributing
 
-## clone
-
-```bash
-$ git clone https://github.com/wikibonsai/tendr-cli
-```
-
-## install
-
-```bash
-$ yarn install
-```
-
-## build
-
-```bash
-$ yarn build
-```
+Same contributing guidelines as the [WikiBonsai](https://github.com/wikibonsai/wikibonsai/tree/main/CONTRIBUTING.md), but there are some extra testing details below...
 
 ## run unit tests
 
