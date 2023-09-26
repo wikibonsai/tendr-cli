@@ -4,7 +4,9 @@
 // https://github.com/landakram/micromark-extension-wiki-link/blob/master/rollup.config.js
 
 // package.json
-import pkg from './package.json' assert { type: 'json' };
+// todo: upgrade rollup; use esm
+// import pkg from './package.json' assert { type: 'json' };
+import pkg from './package.json';
 
 // rollup plugins
 import ts from 'rollup-plugin-ts';
