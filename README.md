@@ -3,9 +3,9 @@
 [![A WikiBonsai Project](https://img.shields.io/badge/%F0%9F%8E%8B-A%20WikiBonsai%20Project-brightgreen)](https://github.com/wikibonsai/wikibonsai)
 [![NPM package](https://img.shields.io/npm/v/tendr-cli)](https://npmjs.org/package/tendr-cli)
 
-<div style="width:100%; display: flex; justify-content: center;">
+<p align="center">
   <img src="./tendr.svg" width="300" height="300"/>
-</div>
+</p>
 
 > ⚠️ 🌱 This project is newly sprouted! So please consider it a beta: Remember to backup all data and please use version control.
 
