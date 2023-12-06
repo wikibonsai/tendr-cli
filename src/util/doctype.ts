@@ -5,6 +5,7 @@ import matter from 'gray-matter';
 import * as caml from 'caml-mkdn';
 
 import * as config from './config';
+import { TYPE } from './const';
 
 
 export function resolve(uri: string, doctypes: any): string | undefined {
@@ -31,15 +32,15 @@ export function resolve(uri: string, doctypes: any): string | undefined {
     const yamlData: any = matter(fileContent).data;
     // todo: get default metadata from config
     if (camlData || yamlData) {
-      if (Object.keys(camlData).includes(type)) {
+      if (Object.keys(camlData).includes(TYPE) && (camlData[TYPE] == type)) {
         return type;
       }
-      if (Object.keys(yamlData).includes(type)) {
+      if (Object.keys(yamlData).includes(TYPE) && yamlData[TYPE] == type) {
         return type;
       }
     }
     ////
-    // directory match
+    // dir match
     if ((opts as any).path) {
       const cwd: string = process.cwd();
       const typeUri: string = path.join(cwd, (opts as any).path);

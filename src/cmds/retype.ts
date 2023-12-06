@@ -5,7 +5,8 @@ import chalk from 'chalk';
 
 import * as wikirefs from 'wikirefs';
 
-import { MD } from '../util/const';
+import { MD, TYPE } from '../util/const';
+import { resolve } from '../util/doctype';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -14,8 +15,8 @@ export function retypedoc(oldType: string, newType: string, opts: any) {
 }
 
 export function retyperef(oldType: string, newType: string, opts: any) {
-  // console.log('retype\nargs: ', oldType, newType, 'opts: ', opts);
-  // append 'type' to kind shorthand
+  // console.log('retyperef\nargs: ', oldType, newType, 'opts: ', opts);
+  // append "type" to 'kind' shorthand to match wikirefs constants
   opts.kind = opts.kind + 'type';
   const output: string[] = [chalk.green('UPDATED FILES:')];
   const outputError: string [] = [chalk.red('UPDATE FAILED: ')];
