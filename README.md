@@ -64,7 +64,9 @@ Options:
 
 ## Commands
 
-Note: Commands that perform anything other than read operations will display a confirmation prompt before executing. This may typically be skipped with the force flag (`-f`).
+Note:
+- Commands expect markdown files using the `.md` extension.
+- Commands that perform anything other than read operations will display a confirmation prompt before executing. This may typically be skipped with the force flag (`-f`).
 
 ### `lint` (⚠️ todo)
 
