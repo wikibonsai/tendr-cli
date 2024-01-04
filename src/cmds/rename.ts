@@ -35,7 +35,9 @@ export function rename(oldFname: string, newFname: string, opts?: any) {
   let thisNewFilePath: string;
   // rename file
   for (const thisFilePath of vaultFilePaths) {
-    if ((path.basename(thisFilePath, MD) === oldFname) || path.basename(thisFilePath, MD).match(oldSrchPat)) {
+    if ((path.basename(thisFilePath, MD) === oldFname)
+      || (opts.regex && path.basename(thisFilePath, MD).match(oldSrchPat))
+    ) {
       if (!opts.regex) {
         oldFnameString = oldFname;
         newFnameString = newFname;
@@ -48,7 +50,6 @@ export function rename(oldFname: string, newFname: string, opts?: any) {
         fileNameUpdates.push([oldFnameString, newFnameString]);
       }
       try {
-        // rename file
         fs.renameSync(thisFilePath, thisNewFilePath);
         outputFnames.push('  ' + oldFnameString + ' -> ' + newFnameString);
         // replace old filename with new filename

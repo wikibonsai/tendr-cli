@@ -250,6 +250,13 @@ describe('rename', () => {
         },
       }));
 
+      describe.skip('warn', () => {
+
+        // todo
+        it.skip('first argument is a valid regex expression without regex option', () => { return ;});
+    
+      });
+
     });
 
     it('force', runCmdTestSync(mocks, {
