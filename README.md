@@ -223,8 +223,16 @@ tendr rename <old-fname> <new-fname>
 rename a file and all of its references.
 
 Options:
-  --version  Show version number                                       [boolean]
-  --help     Show help                                                 [boolean]
+      --version  Show version number                                   [boolean]
+      --help     Show help                                             [boolean]
+  -r, --regex    usage: rename <regex> <replace-string>; use regex replacement i
+                 nstead of string replacement -- this will rename all filenames
+                 containing matches to the regex pattern; the regex argument wil
+                 l be replaced by the string argument. (use quotes around regex
+                 if the terminal is preemptively executing it)
+                                                      [boolean] [default: false]
+  -f, --force    skip verification prompt and perform operation
+                                                      [boolean] [default: false]
 ```
 
 ### `retyperef`, `rtref`, `rtr`

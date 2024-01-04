@@ -6,47 +6,87 @@ import chalk from 'chalk';
 import * as wikirefs from 'wikirefs';
 
 import { MD } from '../util/const';
+import { isValidRegex } from '../util/util';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function rename(oldFname: string, newFname: string, opts?: any) {
   // console.log('rename\nargs: ', oldFname, newFname, 'opts: ', opts);
-  const output: string[] = [chalk.green('UPDATED FILES:')];
+  ////
+  // setup
+  if (opts.regex) {
+    // validate regex
+    if (!isValidRegex(oldFname)) {
+      console.error(chalk.red('"oldFname" is not a valid regex'));
+      return;
+    }
+  }
+  const oldSrchPat: string | RegExp = opts.regex ? new RegExp(oldFname, 'g') : oldFname;
+  const outputFnames: string[] = [chalk.green('UPDATED FILENAMES:')];
+  const outputFiles: string[] = [chalk.green('UPDATED FILE CONTENT:')];
   const outputError: string [] = [chalk.red('UPDATE FAILED: ')];
   const cwd: string = process.cwd();
   const fullGlob: string = cwd + '/**/*' + MD;
   const vaultFilePaths: string[] = glob.sync(fullGlob);
-  const thisOldFilePath: string | undefined = vaultFilePaths.find((f) => path.basename(f, MD) === oldFname);
+  const updatedVaultFilePaths: string[] = [];
+  const fileNameUpdates: string[][] = [];
+  let oldFnameString: string | undefined;
+  let newFnameString: string | undefined;
+  let thisNewFilePath: string;
   // rename file
-  if (thisOldFilePath === undefined) {
-    console.log(chalk.red(`Cannot find filename: ${oldFname}`));
-    return;
-  } else {
-    const thisNewFilepath: string = thisOldFilePath.replace(oldFname + MD, newFname + MD);
-    try {
-      fs.renameSync(thisOldFilePath, thisNewFilepath);
-    } catch (e: any) {
-      console.error(chalk.red(e));
-      return;
+  for (const thisFilePath of vaultFilePaths) {
+    if ((path.basename(thisFilePath, MD) === oldFname) || path.basename(thisFilePath, MD).match(oldSrchPat)) {
+      if (!opts.regex) {
+        oldFnameString = oldFname;
+        newFnameString = newFname;
+        thisNewFilePath = thisFilePath.replace(oldFname + MD, newFname + MD);
+      } else {
+        // construct 'oldFnameString'
+        oldFnameString = path.basename(thisFilePath, MD);
+        newFnameString = oldFnameString.replace(oldSrchPat, newFname);
+        thisNewFilePath = thisFilePath.substring(0, thisFilePath.length - oldFnameString.length - MD.length) + newFnameString + MD;
+        fileNameUpdates.push([oldFnameString, newFnameString]);
+      }
+      try {
+        // rename file
+        fs.renameSync(thisFilePath, thisNewFilePath);
+        outputFnames.push('  ' + oldFnameString + ' -> ' + newFnameString);
+        // replace old filename with new filename
+        updatedVaultFilePaths.push(thisNewFilePath);
+      } catch (e: any) {
+        outputError.push(chalk.red('  [FILENAME]' + e));
+        return;
+      }
+    } else {
+      updatedVaultFilePaths.push(thisFilePath);
     }
-    const oldIndex: number = vaultFilePaths.indexOf(thisOldFilePath);
-    vaultFilePaths[oldIndex] = thisNewFilepath;
   }
   // rename all [[wiki]] occurrences in file
-  for (const thisFilePath of vaultFilePaths) {
+  for (const thisFilePath of updatedVaultFilePaths) {
     const oldContent: string = fs.readFileSync(thisFilePath, 'utf8');
-    const newContent: string = wikirefs.renameFileName(oldFname, newFname, oldContent);
+    let newContent: string;
+    if (!opts.regex) {
+      newContent = wikirefs.renameFileName(oldFname, newFname, oldContent);
+    } else {
+      let editContent: string = oldContent;
+      for (const [oldFnameStr, newFnameStr] of fileNameUpdates) {
+        editContent = wikirefs.renameFileName(oldFnameStr, newFnameStr, editContent);
+      }
+      newContent = editContent;
+    }
     // update content
     try {
       fs.writeFileSync(thisFilePath, newContent, 'utf8');
       // add to output if there was an update
       if (oldContent !== newContent) {
-        output.push('  ' + path.basename(thisFilePath, MD));
+        outputFiles.push('  ' + path.basename(thisFilePath, MD));
       }
     } catch (e: any) {
-      outputError.push(chalk.red('  ' + e));
+      outputError.push(chalk.red('  [FILE CONTENT]' + e));
     }
   }
-  output.concat(outputError);
+  const output: string[] = (outputError.length > 1)
+    ? outputFnames.concat(outputFiles).concat(outputError)
+    : outputFnames.concat(outputFiles);
   console.log(output.join('\n'));
 }

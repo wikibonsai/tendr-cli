@@ -9,6 +9,7 @@ import type { CommandTestCase, TestMocks } from './types';
 import { tendr } from '../src/tendr';
 import { MD } from '../src/util/const';
 import * as prompt from '../src/util/prompt';
+import { ls } from '../src/util/util';
 
 
 const DEBUG: boolean = false;
@@ -119,6 +120,7 @@ export const runCmdTest = async (
         const testFilePath: string = path.join(mocks.testCwd, fname + MD);
         if (!await fs.promises.stat(testFilePath)) {
           console.debug(`could not find file at: ${testFilePath}`);
+          console.debug(chalk.red('LS CONTENTS:'), ls(mocks.testCwd));
           assert.fail();
         }
         const actlContent: string = await fs.promises.readFile(testFilePath, 'utf8');
@@ -229,7 +231,7 @@ export const runCmdTestSync = (
       assert.strictEqual(actlWarn, test.warn);
     } else {
       if (mocks.fakeConsoleWarn?.called) {
-        console.info(chalk.red('unexpected console warning: ', mocks.fakeConsoleWarn.getCall(0).args[0]));
+        console.debug(chalk.red('unexpected console warning: ', mocks.fakeConsoleWarn.getCall(0).args[0]));
         assert.fail();
       }
     }
@@ -239,7 +241,7 @@ export const runCmdTestSync = (
       assert.strictEqual(actlError, test.error);
     } else {
       if (mocks.fakeConsoleError?.called) {
-        console.info(chalk.red('unexpected console error: ', mocks.fakeConsoleError.getCall(0).args[0]));
+        console.debug(chalk.red('unexpected console error: ', mocks.fakeConsoleError.getCall(0).args[0]));
         assert.fail();
       }
     }
@@ -250,7 +252,8 @@ export const runCmdTestSync = (
         const expdContent: string = test.contents[fname];
         const testFilePath: string = path.join(mocks.testCwd, fname + MD);
         if (!fs.existsSync(testFilePath)) {
-          console.info(`could not find file at: ${testFilePath}`);
+          console.debug(`could not find file at: ${testFilePath}`);
+          console.debug(chalk.red('LS CONTENTS:'), ls(mocks.testCwd));
           assert.fail();
         }
         const actlContent: string = fs.readFileSync(testFilePath, 'utf8');

@@ -152,6 +152,12 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
       aliases: ['rn'],
       describe: 'rename a file and all of its references.',
       builder: (yargs: yargs.Argv) => yargs
+        .option('regex', {
+          alias: 'r',
+          type: 'boolean',
+          describe: 'usage: rename <regex> <replace-string>; use regex replacement instead of string replacement -- this will rename all filenames containing matches to the regex pattern; the regex argument will be replaced by the string argument. (use quotes around regex if the terminal is preemptively executing it)',
+          default: false,
+        })
         .option('force', {
           alias: 'f',
           type: 'boolean',

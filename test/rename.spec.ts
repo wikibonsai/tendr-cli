@@ -84,7 +84,9 @@ describe('rename', () => {
     },
     confirm: 'are you sure you want to rename "fname-a" to "new-name"? [y/n]\n',
     output:
-`\x1B[32mUPDATED FILES:\x1B[39m
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-a -> new-name
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
   fname-b
   fname-c
   fname-d
@@ -137,6 +139,119 @@ describe('rename', () => {
 
   describe('options', () => {
 
+    describe('regex', () => {
+
+      it('single file', runCmdTestSync(mocks, {
+        input: ['rename', '(a)$', 'new', '-r'],
+        cmd: ['rename'],
+        args: {
+          ['old-fname']: '(a)$',
+          ['new-fname']: 'new',
+        },
+        confirm: 'are you sure you want to rename "(a)$" to "new"? [y/n]\n',
+        output:
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-a -> fname-new
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  fname-b
+  fname-c
+  fname-d
+  fname-e
+  fname-g`,
+        contents: {
+          'fname-new':
+`
+:reftype::[[fname-b]]
+:attrtype::[[fname-c]]
+
+:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
+
+[[fname-e]]
+
+[[no-doc]]
+`,
+          'fname-b': `
+:attrtype::[[fname-new]]
+`,
+          'fname-c': `
+:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[fname-new]] and some text to illustrate that this is a typed wikilink!
+`,
+          'fname-d': `
+[[fname-new]]
+`,
+          'fname-e': `
+[[fname-new|label]]
+`,
+          'fname-f': `
+[[no-doc]]
+`,
+          'fname-g': `
+![[fname-new]]
+`,
+        },
+      }));
+
+      it('multiple files\' content', runCmdTestSync(mocks, {
+        input: ['rename', '^(fname)', 'new', '-r'],
+        cmd: ['rename'],
+        args: {
+          ['old-fname']: '^(fname)',
+          ['new-fname']: 'new',
+        },
+        confirm: 'are you sure you want to rename "^(fname)" to "new"? [y/n]\n',
+        output:
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-a -> new-a
+  fname-b -> new-b
+  fname-c -> new-c
+  fname-d -> new-d
+  fname-e -> new-e
+  fname-f -> new-f
+  fname-g -> new-g
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  new-a
+  new-b
+  new-c
+  new-d
+  new-e
+  new-g`,
+        contents: {
+          'new-a':
+`
+:reftype::[[new-b]]
+:attrtype::[[new-c]]
+
+:linktype::[[new-d]] and some text to illustrate that this is a typed wikilink!
+
+[[new-e]]
+
+[[no-doc]]
+`,
+          'new-b': `
+:attrtype::[[new-a]]
+`,
+          'new-c': `
+:reftype::[[new-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[new-a]] and some text to illustrate that this is a typed wikilink!
+`,
+          'new-d': `
+[[new-a]]
+`,
+          'new-e': `
+[[new-a|label]]
+`,
+          'new-f': `
+[[no-doc]]
+`,
+          'new-g': `
+![[new-a]]
+`,
+        },
+      }));
+
+    });
+
     it('force', runCmdTestSync(mocks, {
       input: ['rename', 'fname-a', 'new-name', '-f'],
       cmd: ['rename'],
@@ -145,7 +260,9 @@ describe('rename', () => {
         ['new-fname']: 'new-name',
       },
       output:
-`\x1B[32mUPDATED FILES:\x1B[39m
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-a -> new-name
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
   fname-b
   fname-c
   fname-d
