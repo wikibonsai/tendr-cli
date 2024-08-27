@@ -113,18 +113,16 @@ $ tendr tree
 Sample output:
 
 ```
-i.bonsai
-└── fname-a
-    ├── fname-b
-    |   └── fname-f
-    ├── fname-c
-    |   ├── fname-g
-    |   ├── fname-h
-    |   └── fname-i
-    ├── fname-d
-    ├── fname-e
-    └── i.branch
-        └── fname-j
+bk.how-to-read-a-book
+├── demanding-reader
+|   └── active-reading
+|       ├── reading-comprehension
+|       └── the-art-of-reading
+└── 4-levels-of-reading
+    ├── elementary-reading
+    ├── inspectional-reading
+    ├── analytical-reading
+    └── syntopical-reading
 ```
 
 Manual:
