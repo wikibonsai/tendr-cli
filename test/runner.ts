@@ -61,6 +61,9 @@ export const runCmdTest = async (
   assert.deepStrictEqual(res._, test.cmd);
   // arguments
   if (test.args) {
+    if (DEBUG) {
+      console.debug('test.args: ', test.args);
+    }
     for (const key of Object.keys(test.args)) {
       assert.strictEqual(Object.keys(res).includes(key), true); // key
       assert.strictEqual(res[key], test.args[key]);             // value
@@ -68,6 +71,9 @@ export const runCmdTest = async (
   }
   // options
   if (test.opts) {
+    if (DEBUG) {
+      console.debug('test.opts: ', test.opts);
+    }
     for (const key of Object.keys(test.opts)) {
       assert.strictEqual(Object.keys(res).includes(key), true); // key
       assert.strictEqual(res[key], test.opts[key]);             // value
@@ -76,17 +82,26 @@ export const runCmdTest = async (
   // confirmation prompt
   // these console log assertions are triggered in 'stubConfirm' above
   if (test.confirm) {
+    if (DEBUG) {
+      console.debug('test.confirm: ', test.confirm);
+    }
     const actlPrompt: string = mocks.fakeConsoleLog.getCall(0).args[0];
     assert.strictEqual(actlPrompt, test.confirm);
   }
   // aborted
   if (test.aborted) {
+    if (DEBUG) {
+      console.debug('test.aborted: ', test.aborted);
+    }
     const actlPrompt: string = mocks.fakeConsoleLog.getCall(1).args[0];
     assert.strictEqual(actlPrompt, prompt.PROMPT_ABORT);
   // executed
   } else {
     // console output
     if (test.output) {
+      if (DEBUG) {
+        console.debug('test.output: ', test.output);
+      }
       // if a confirmation prompt was displayed, output will be at index 1
       const callNo: number = test.confirm ? 1 : 0;
       actlOutput = mocks.fakeConsoleLog.getCall(callNo).args[0];
@@ -94,26 +109,41 @@ export const runCmdTest = async (
     }
     // console warn
     if (test.warn) {
+      if (DEBUG) {
+        console.debug('test.warn: ', test.warn);
+      }
       actlWarn = mocks.fakeConsoleWarn.getCall(0).args[0];
       assert.strictEqual(actlWarn, test.warn);
     } else {
       if (mocks.fakeConsoleWarn?.called) {
+        if (DEBUG) {
+          console.debug('mocks.fakeConsoleWarn: ', mocks.fakeConsoleWarn);
+        }
         console.debug(chalk.red('unexpected console warning: ', mocks.fakeConsoleWarn.getCall(0).args[0]));
         assert.fail();
       }
     }
     // console error
     if (test.error) {
+      if (DEBUG) {
+        console.debug('test.error: ', test.error);
+      }
       actlError = mocks.fakeConsoleError.getCall(0).args[0];
       assert.strictEqual(actlError, test.error);
     } else {
       if (mocks.fakeConsoleError?.called) {
+        if (DEBUG) {
+          console.debug('mocks.fakeConsoleError: ', mocks.fakeConsoleError);
+        }
         console.debug(chalk.red('unexpected console error: ', mocks.fakeConsoleError.getCall(0).args[0]));
         assert.fail();
       }
     }
     // file changes
     if (test.contents) {
+      if (DEBUG) {
+        console.debug('test.contents: ', test.contents);
+      }
       if (!test.contents) { assert.fail(); }
       for (const fname of Object.keys(test.contents)) {
         const expdContent: string = test.contents[fname];
@@ -129,6 +159,9 @@ export const runCmdTest = async (
     }
     // file content changes
     if (mocks.testFilePath && test.ocontent) {
+      if (DEBUG) {
+        console.debug('test.ocontent: ', test.ocontent);
+      }
       const content: string = await fs.promises.readFile(mocks.testFilePath, 'utf8');
       assert.strictEqual(content, test.ocontent);
     }
