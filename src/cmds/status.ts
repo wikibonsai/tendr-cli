@@ -125,13 +125,13 @@ export async function status(
     if (fam) {
       return semtree.then((res: SemTree | undefined) => {
         // data
-        const hasTree: boolean = (res instanceof SemTree);
+        const hasTree: boolean = (res !== undefined);
         let ancestors: string[] = [];
         let children: string[] = [];
         let node: Node | undefined;
         if (hasTree) {
           // @ts-expect-error: 'hasTree' performs type-check above
-          node = res.tree.find((node) => node.text === filename);
+          node = res.nodes.find((node) => node.text === filename);
           if (ancestor) {
             ancestors = node ? node.ancestors : [];
           }

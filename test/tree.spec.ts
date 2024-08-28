@@ -433,7 +433,109 @@ title: a title
 
   describe('warn (execute, but warn user)', () => {
 
-    // todo
+    describe('orphan index/trunk files', () => {
+
+      beforeEach(() => {
+        // add unlinked trunk file
+        fs.writeFileSync(path.join(testCwd, 'i.trunk-1.md'), '- [[fname-1]]\n');
+        fs.writeFileSync(path.join(testCwd, 'i.trunk-2.md'), '- [[fname-2]]\n');
+      });
+
+      it('found', runCmdTestSync(mocks, {
+        input: ['tree'],
+        cmd: ['tree'],
+        args: {},
+        opts: {},
+        warn: '',
+        output:
+        //   '\x1B[33m'
+        // + 'orphan trunk files found:\n'
+        // + '\n'
+        // + '- unused-trunk-file\n'
+        // + '\x1B[39m\n'
+          '\x1B[33mi.bonsai\x1B[39m\n'
+        + '\x1B[33m\x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-a\x1B[39m\n'
+        + '\x1B[32m\x1B[39m    \x1B[33m├── \x1B[39m\x1B[32mfname-b\x1B[39m\n'
+        + '\x1B[32m\x1B[39m    \x1B[33m|   \x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-f\x1B[39m\n'
+        + '\x1B[32m\x1B[39m    \x1B[33m├── \x1B[39m\x1B[32mfname-c\x1B[39m\n'
+        + '\x1B[32m\x1B[39m    \x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-g\x1B[39m\n'
+        + '\x1B[32m\x1B[39m    \x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[2mfname-h\x1B[22m\n'
+        + '\x1B[2m\x1B[22m    \x1B[33m|   \x1B[39m\x1B[33m└── \x1B[39m\x1B[2mfname-i\x1B[22m\n'
+        + '\x1B[2m\x1B[22m    \x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m\n'
+        + '\x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m\n'
+        + '\x1B[32m\x1B[39m',
+      }));
+
+    });
+
+    describe('- markdown bullet', () => {
+
+      beforeEach(() => {
+        // append entity with missing markdown bullet to root file
+        fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '[[no-mkdn-bullet]]\n');
+      });
+
+      it('missing', runCmdTestSync(mocks, {
+        input: ['tree'],
+        cmd: ['tree'],
+        args: {},
+        opts: {},
+        // warn:
+        // '\x1B[33m'
+        // + 'semtree.lint():  missing markdown bullet found:\n'
+        // + '\n'
+        // + '- File "i.bonsai" Line 10: "  [[no-mkdn-bullet]]"\n'
+        // + '\x1B[39m\n'
+        output:
+          '\x1B[33mi.bonsai\x1B[39m\n'
+        + '\x1B[33m\x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-a\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-b\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m|   \x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-f\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-c\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-g\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[2mfname-h\x1B[22m\n'
+        + '\x1B[2m\x1B[22m\x1B[33m|   \x1B[39m\x1B[33m|   \x1B[39m\x1B[33m└── \x1B[39m\x1B[2mfname-i\x1B[22m\n'
+        + '\x1B[2m\x1B[22m\x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m└── \x1B[39m\x1B[2mno-mkdn-bullet\x1B[22m\n'
+        + '\x1B[2m\x1B[22m',
+      }));
+
+    });
+
+    describe('[[wikilink]]', () => {
+
+      beforeEach(() => {
+        // append entity with missing wikilink to root file
+        fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- no-wikilink\n');
+      });
+
+      it('missing', runCmdTestSync(mocks, {
+        input: ['tree'],
+        cmd: ['tree'],
+        args: {},
+        opts: {},
+        // warn:
+        // '\x1B[33m'
+        // + 'semtree.lint():  missing wikilink found:\n'
+        // + '\n'
+        // + '- File "i.bonsai" Line 10: "  - no-wikilink"\n',
+        output:
+          '\x1B[33mi.bonsai\x1B[39m\n'
+        + '\x1B[33m\x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-a\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-b\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m|   \x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-f\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-c\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-g\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[2mfname-h\x1B[22m\n'
+        + '\x1B[2m\x1B[22m\x1B[33m|   \x1B[39m\x1B[33m|   \x1B[39m\x1B[33m└── \x1B[39m\x1B[2mfname-i\x1B[22m\n'
+        + '\x1B[2m\x1B[22m\x1B[33m|   \x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m\n'
+        + '\x1B[32m\x1B[39m\x1B[33m└── \x1B[39m\x1B[2mno-wikilink\x1B[22m\n'
+        + '\x1B[2m\x1B[22m',
+      }));
+
+    });
 
   });
 
@@ -463,25 +565,49 @@ title: a title
       error: '\x1B[31munable to build tree\x1B[39m',
     }));
 
-    describe('invalid tree', () => {
+    describe('tree errors', () => {
 
-      beforeEach(() => {
-        // append duplicate wikilink to root file
-        fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- [[fname-a]]\n');
+      describe('duplicates', () => {
+
+        beforeEach(() => {
+          // append duplicate wikilink to root file
+          fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- [[fname-a]]\n');
+        });
+
+        it('found', runCmdTestSync(mocks, {
+          input: ['tree'],
+          cmd: ['tree'],
+          args: {},
+          opts: {},
+          error:
+            'semtree.lint(): duplicate entity names found:\n'
+          + '\n'
+          + '- "fname-a"\n'
+          + '  - File "i.bonsai" Line 1\n'
+          + '  - File "i.bonsai" Line 10\n'
+        }));
+
       });
 
-      it('duplicates found', runCmdTestSync(mocks, {
-        input: ['tree'],
-        cmd: ['tree'],
-        args: {},
-        opts: {},
-        error:
-`Tree did not build, duplicate nodes found:
+      describe('improper indentation', () => {
 
-fname-a
+        beforeEach(() => {
+          // append entity with improper indentaiton to root file
+          fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), ' - [[bad-indentation]]\n');
+        });
+    
+        it('found', runCmdTestSync(mocks, {
+          input: ['tree'],
+          cmd: ['tree'],
+          args: {},
+          opts: {},
+          error:
+            'semtree.lint(): improper indentation found:\n'
+          + '\n'
+          + '- File "i.bonsai" Line 10 (inconsistent indentation): " - [[bad-indentation]]"\n'
+        }));
 
-`,
-      }));
+      });
 
     });
 

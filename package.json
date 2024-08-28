@@ -41,7 +41,7 @@
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
     "readline-sync": "^1.4.10",
-    "semtree": "^0.0.2",
+    "semtree": "^0.0.9",
     "table": "^6.8.1",
     "wikirefs": "^0.0.4",
     "yargs": "^17.6.1"
@@ -65,12 +65,14 @@
     "@typescript-eslint/parser": "^5.42.1",
     "del-cli": "^5.0.0",
     "eslint": "^8.27.0",
+    "esm": "^3.2.25",
     "mocha": "^10.0.0",
     "rollup": "2.70.1",
     "rollup-plugin-preserve-shebangs": "^0.2.0",
     "rollup-plugin-ts": "^3.0.2",
     "sinon": "^14.0.1",
     "ts-node": "^10.7.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^4.9.3"
   },
   "keywords": [

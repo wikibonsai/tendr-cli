@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import type { ArgumentsCamelCase } from 'yargs';
 import yargs from 'yargs';
 
-import { SemTree } from 'semtree';
+import type { SemTree } from 'semtree';
 
 import { CONFIG_PATH, DOCTYPE_PATH } from './util/const';
 import { getDocTypes } from './util/config';
@@ -101,7 +101,7 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           globIndexUris: argv.glob as string | undefined
         };
         const semtree: SemTree | undefined = buildTreeSync(payload);
-        if (semtree instanceof SemTree) {
+        if (semtree) {
           tree(semtree, argv);
         } else {
           console.error(chalk.red('unable to build tree'));

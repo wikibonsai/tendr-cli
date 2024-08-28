@@ -3,10 +3,9 @@ import path from 'path';
 
 import glob from 'glob';
 import chalk from 'chalk';
-import matter from 'gray-matter';
-import * as caml from 'caml-mkdn';
 
-import { SemTree } from 'semtree';
+import type { SemTree } from 'semtree';
+import * as semtree from 'semtree';
 
 import { getConfig, getDocTypes } from './config';
 import { MD } from './const';
@@ -44,30 +43,25 @@ export function buildTreeSync(payload: InitTree): SemTree | undefined {
   const indexFileUris: string[] | undefined = getIndexFileUris(payload.doctypeUri, payload.globIndexUris);
   if (indexFileUris === undefined) { return; }
   // build tree data
-  const treeData: Record<string, string> = {};
-  indexFileUris.forEach((uri: string) => {
+  const treeData: Record<string, string> = indexFileUris.reduce((map, uri) => {
     try {
-      const fileContent: string = fs.readFileSync(uri, 'utf-8').toString();
-      const contentNoCAML: any = caml.load(fileContent).content;
-      const attrLessContent: any = matter(contentNoCAML).content;
       const filename: string = path.basename(uri, path.extname(uri));
-      treeData[filename] = attrLessContent;
+      const fileContent: string = fs.readFileSync(uri, 'utf-8').toString();
+      map[filename] = fileContent;
     } catch (e) {
       console.warn(e);
     }
-  });
+    return map;
+  }, {} as Record<string, string>);
   if (Object.keys(treeData).length === 0) {
     console.error('error with tree data payload -- result was empty');
   }
   try {
-    const semtree: SemTree = new SemTree({
-      // semtree options...
-    });
-    const msg: string = semtree.parse(treeData, rootFileName);
-    if (typeof msg === 'string') {
-      console.error(msg);
+    const tree: SemTree | string = semtree.create(rootFileName, treeData);
+    if (typeof tree === 'string') {
+      console.error(tree);
     } else {
-      return semtree;
+      return tree;
     }
   } catch (e) {
     console.error(e);
