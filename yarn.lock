@@ -3200,10 +3200,10 @@ section-matter@^1.0.0:
     extend-shallow "^2.0.1"
     kind-of "^6.0.0"
 
-semtree@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/semtree/-/semtree-0.0.9.tgz#c1e7045078762d78b48c08f5814a1280e377c66e"
-  integrity sha512-x5UmElZ6fVf03XapflK6SKia9atEqVUPf/E21Ot3AsqJr8HKL615YHKg7B5CDkTvnIAGmFkbsGRyDVLYihU3ow==
+semtree@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/semtree/-/semtree-0.0.10.tgz#af649c7c7623c1418e0e5190098a568774699e52"
+  integrity sha512-yHaT1XWfGRfptP1A40p9MbsCtX9Gn96tv+PVAIp+Wjw09dr0s4FR43qseEdDVbLh6MaIRbtGRgb6IKCz78QlGA==
   dependencies:
     caml-mkdn "^0.0.2"
     gray-matter "^4.0.3"

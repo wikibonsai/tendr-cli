@@ -37,6 +37,7 @@ usage: tendr <command>
 cli tools for markdown-based digital gardening.
 
 Commands:
+  tendr lint                             lint garden files.
   tendr tree                             print full knowledge bonsai.
   tendr status <filename>                show status of file relationships.
                                                                  [aliases: stat]
@@ -68,7 +69,7 @@ Note:
 - Commands expect markdown files using the `.md` extension.
 - Commands that perform anything other than read operations will display a confirmation prompt before executing. This may typically be skipped with the force flag (`-f`).
 
-### `lint` (⚠️ todo)
+### `lint`
 
 Example:
 
@@ -78,11 +79,52 @@ $ tendr lint
 
 Sample output:
 
-todo
+```
+// success
+
+✅ all clean
+```
+
+```
+// warnings
+
+⚠️ lint warnings:
+
+semtree.lint(): orphan trunk files found:
+
+- i.orphan-trunk-1
+- i.orphan-trunk-2
+```
+
+```
+// errors
+
+❌ lint errors:
+
+semtree.lint(): duplicate entity names found:
+
+- "duplicate-filename"
+  - File "i.bonsai" Line 1
+  - File "i.bonsai" Line 4
+```
 
 Manual:
 
-todo
+```
+tendr lint
+
+lint garden files.
+
+Options:
+      --version  Show version number                                   [boolean]
+      --help     Show help                                             [boolean]
+  -c, --config   relative path to config file, including filename; defaults to "
+                 ./config.toml"              [string] [default: "./config.toml"]
+  -d, --doctype  relative path to doctype file, including filename; defaults to
+                 "t.doc.toml"                 [string] [default: "./t.doc.toml"]
+  -r, --root     filename for root of tree                              [string]
+  -g, --glob     glob to index files                                    [string]
+```
 
 ### `list`, `ls` (⚠️ todo)
 

@@ -14,6 +14,7 @@ import * as prompt from './util/prompt';
 
 import { REL_KINDS, status } from './cmds/status';
 import { camlToYaml, mkdnToWiki, wikiToMkdn, yamlToCaml } from './cmds/convert';
+import { lint } from './cmds/lint';
 // import { list } from './cmds/list';
 import { rename } from './cmds/rename';
 import { retypedoc, retyperef } from './cmds/retype';
@@ -50,6 +51,45 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
     // .epilogue('cli tools for markdown-based digital gardening')
 
   // garden level
+
+    .command({
+      command: 'lint',
+      // aliases: [''],
+      describe: 'lint garden files',
+      builder: (yargs: yargs.Argv) => yargs
+        .option('config', {
+          alias: 'c',
+          type: 'string',
+          describe: 'relative path to config file, including filename; defaults to "./config.toml"',
+          default: CONFIG_PATH,
+        })
+        .option('doctype', {
+          alias: 'd',
+          type: 'string',
+          describe: 'relative path to doctype file, including filename; defaults to "t.doc.toml"',
+          default: DOCTYPE_PATH,
+        })
+        .option('root', {
+          alias: 'r',
+          type: 'string',
+          describe: 'filename for root of tree',
+        })
+        .option('glob', {
+          alias: 'g',
+          type: 'string',
+          describe: 'glob to index files',
+        }),
+      handler: (argv: ArgumentsCamelCase) => {
+        const payload: InitTree = {
+          configUri: argv.config as string,
+          doctypeUri: argv.doctype as string,
+          rootFileName: argv.root as string | undefined,
+          globIndexUris: argv.glob as string | undefined
+        };
+        const lintMsg: string = lint(payload);
+        console.log(lintMsg);
+      },
+    })
 
   // todo
   // .command({
