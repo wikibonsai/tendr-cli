@@ -14,173 +14,18 @@ import { ls } from '../src/util/util';
 
 const DEBUG: boolean = false;
 
+
 export const runCmdTest = async (
   mocks: TestMocks,
   test: CommandTestCase,
   showRes: boolean = false,
 ): Promise<void> => {
-  if (DEBUG) {
-    console.debug('=== entering async runner ===');
-    console.debug('for test: ', test);
+  try {
+    runCmdTestSync(mocks, test, showRes);
+    return Promise.resolve();
+  } catch (e) {
+    return Promise.reject(e);
   }
-  if (DEBUG) {
-    console.debug('=== setup ===');
-  }
-  // setup //
-  let actlOutput: string | undefined;
-  let actlError: string | undefined;
-  let actlWarn: string | undefined;
-  // stubbing 'confirm.action()' from 'src/util/confirm.ts'
-  const stubPrompt: any = {
-    abort: () => prompt.abort(),
-    // explicitly redefine 'confirm' so wwe don't need to mock 'readlineSync'
-    confirm: (action: string) => {
-      // this log text should match the text in 'confirm.ts'
-      console.debug(`are you sure you want to ${action}? [y/n]\n`);
-      return test.aborted ? false : true;
-    },
-  };
-  if (mocks.testFilePath && test.icontent) {
-    await fs.promises.writeFile(mocks.testFilePath, test.icontent as string);
-  }
-  // go //
-  if (DEBUG) {
-    console.debug('=== go ===');
-  }
-  const argv: yargs.Argv = tendr(test.input, stubPrompt);
-  if (DEBUG) {
-    console.debug('"argv" processed');
-  }
-  // grab output from 'argv.argv' so command isn't called multiple times.
-  const res: any = await argv.argv;
-  if (DEBUG) {
-    console.debug('"argv" copied: ', res);
-  }
-  // assert //
-  // command
-  assert.deepStrictEqual(res._, test.cmd);
-  // arguments
-  if (test.args) {
-    if (DEBUG) {
-      console.debug('test.args: ', test.args);
-    }
-    for (const key of Object.keys(test.args)) {
-      assert.strictEqual(Object.keys(res).includes(key), true); // key
-      assert.strictEqual(res[key], test.args[key]);             // value
-    }
-  }
-  // options
-  if (test.opts) {
-    if (DEBUG) {
-      console.debug('test.opts: ', test.opts);
-    }
-    for (const key of Object.keys(test.opts)) {
-      assert.strictEqual(Object.keys(res).includes(key), true); // key
-      assert.strictEqual(res[key], test.opts[key]);             // value
-    }
-  }
-  // confirmation prompt
-  // these console log assertions are triggered in 'stubConfirm' above
-  if (test.confirm) {
-    if (DEBUG) {
-      console.debug('test.confirm: ', test.confirm);
-    }
-    const actlPrompt: string = mocks.fakeConsoleLog.getCall(0).args[0];
-    assert.strictEqual(actlPrompt, test.confirm);
-  }
-  // aborted
-  if (test.aborted) {
-    if (DEBUG) {
-      console.debug('test.aborted: ', test.aborted);
-    }
-    const actlPrompt: string = mocks.fakeConsoleLog.getCall(1).args[0];
-    assert.strictEqual(actlPrompt, prompt.PROMPT_ABORT);
-  // executed
-  } else {
-    // console output
-    if (test.output) {
-      if (DEBUG) {
-        console.debug('test.output: ', test.output);
-      }
-      // if a confirmation prompt was displayed, output will be at index 1
-      const callNo: number = test.confirm ? 1 : 0;
-      actlOutput = mocks.fakeConsoleLog.getCall(callNo).args[0];
-      assert.strictEqual(actlOutput, test.output);
-    }
-    // console warn
-    if (test.warn) {
-      if (DEBUG) {
-        console.debug('test.warn: ', test.warn);
-      }
-      actlWarn = mocks.fakeConsoleWarn.getCall(0).args[0];
-      assert.strictEqual(actlWarn, test.warn);
-    } else {
-      if (mocks.fakeConsoleWarn?.called) {
-        if (DEBUG) {
-          console.debug('mocks.fakeConsoleWarn: ', mocks.fakeConsoleWarn);
-        }
-        console.debug(chalk.red('unexpected console warning: ', mocks.fakeConsoleWarn.getCall(0).args[0]));
-        assert.fail();
-      }
-    }
-    // console error
-    if (test.error) {
-      if (DEBUG) {
-        console.debug('test.error: ', test.error);
-      }
-      actlError = mocks.fakeConsoleError.getCall(0).args[0];
-      assert.strictEqual(actlError, test.error);
-    } else {
-      if (mocks.fakeConsoleError?.called) {
-        if (DEBUG) {
-          console.debug('mocks.fakeConsoleError: ', mocks.fakeConsoleError);
-        }
-        console.debug(chalk.red('unexpected console error: ', mocks.fakeConsoleError.getCall(0).args[0]));
-        assert.fail();
-      }
-    }
-    // file changes
-    if (test.contents) {
-      if (DEBUG) {
-        console.debug('test.contents: ', test.contents);
-      }
-      if (!test.contents) { assert.fail(); }
-      for (const fname of Object.keys(test.contents)) {
-        const expdContent: string = test.contents[fname];
-        const testFilePath: string = path.join(mocks.testCwd, fname + MD);
-        if (!await fs.promises.stat(testFilePath)) {
-          console.debug(`could not find file at: ${testFilePath}`);
-          console.debug(chalk.red('LS CONTENTS:'), ls(mocks.testCwd));
-          assert.fail();
-        }
-        const actlContent: string = await fs.promises.readFile(testFilePath, 'utf8');
-        assert.strictEqual(expdContent, actlContent);
-      }
-    }
-    // file content changes
-    if (mocks.testFilePath && test.ocontent) {
-      if (DEBUG) {
-        console.debug('test.ocontent: ', test.ocontent);
-      }
-      const content: string = await fs.promises.readFile(mocks.testFilePath, 'utf8');
-      assert.strictEqual(content, test.ocontent);
-    }
-  }
-  if (DEBUG) {
-    console.debug('=== show results ===');
-  }
-  if (showRes) {
-    if (actlOutput) {
-      console.debug('Output Result:\n' + actlOutput);
-    }
-    if (actlWarn) {
-      console.debug('Warn Result:\n' + actlWarn);
-    }
-    if (actlError) {
-      console.debug('Error Result:\n' + actlError);
-    }
-  }
-  // done();
 };
 
 export const runCmdTestSync = (
@@ -227,6 +72,9 @@ export const runCmdTestSync = (
   }
   // arguments
   if (test.args) {
+    if (DEBUG) {
+      console.debug('test.args: ', test.args);
+    }
     for (const key of Object.keys(test.args)) {
       assert.strictEqual(Object.keys(res).includes(key), true); // key
       assert.strictEqual(res[key], test.args[key]);             // value
@@ -234,6 +82,9 @@ export const runCmdTestSync = (
   }
   // options
   if (test.opts) {
+    if (DEBUG) {
+      console.debug('test.opts: ', test.opts);
+    }
     for (const key of Object.keys(test.opts)) {
       assert.strictEqual(Object.keys(res).includes(key), true); // key
       assert.strictEqual(res[key], test.opts[key]);             // value
@@ -242,44 +93,108 @@ export const runCmdTestSync = (
   // confirmation prompt
   // these console log assertions are triggered in 'stubConfirm' above
   if (test.confirm) {
-    const actlPrompt: string = mocks.fakeConsoleLog.getCall(0).args[0];
-    assert.strictEqual(actlPrompt, test.confirm);
+    if (DEBUG) {
+      console.debug('test.confirm: ', test.confirm);
+    }
+    const logCall = mocks.fakeConsoleLog.getCall(0);
+    if (logCall) {
+      const actlPrompt: string = logCall.args[0];
+      assert.strictEqual(actlPrompt, test.confirm);
+    } else {
+      console.debug(chalk.red('Confirmation prompt not found in mocks.fakeConsoleLog'));
+      assert.fail('Expected confirmation prompt not found');
+    }
   }
   // aborted
   if (test.aborted) {
-    const actlPrompt: string = mocks.fakeConsoleLog.getCall(1).args[0];
-    assert.strictEqual(actlPrompt, prompt.PROMPT_ABORT);
+    if (DEBUG) {
+      console.debug('test.aborted: ', test.aborted);
+    }
+    const logCall = mocks.fakeConsoleLog.getCall(1);
+    if (logCall) {
+      const actlPrompt: string = logCall.args[0];
+      assert.strictEqual(actlPrompt, prompt.PROMPT_ABORT);
+    } else {
+      console.debug(chalk.red('Abort prompt not found in mocks.fakeConsoleLog'));
+      assert.fail('Expected abort prompt not found');
+    }
   // executed
   } else {
     // console output
     if (test.output) {
+      if (DEBUG) {
+        console.debug('test.output: ', test.output);
+      }
       // if a confirmation prompt was displayed, output will be at index 1
       const callNo: number = test.confirm ? 1 : 0;
-      actlOutput = mocks.fakeConsoleLog.getCall(callNo).args[0];
-      assert.strictEqual(actlOutput, test.output);
+      const logCall = mocks.fakeConsoleLog.getCall(callNo);
+      if (logCall) {
+        actlOutput = logCall.args[0];
+        assert.strictEqual(actlOutput, test.output);
+      } else {
+        console.debug(chalk.red('Output not found in mocks.fakeConsoleLog'));
+        assert.fail('Expected output not found');
+      }
     }
     // console warn
     if (test.warn) {
-      actlWarn = mocks.fakeConsoleWarn.getCall(0).args[0];
-      assert.strictEqual(actlWarn, test.warn);
+      if (DEBUG) {
+        console.debug('test.warn: ', test.warn);
+      }
+      const warnCall = mocks.fakeConsoleWarn.getCall(0);
+      if (warnCall) {
+        actlWarn = warnCall.args[0];
+        assert.strictEqual(actlWarn, test.warn);
+      } else {
+        console.debug(chalk.red('Warning not found in mocks.fakeConsoleWarn'));
+        assert.fail('Expected warning not found');
+      }
     } else {
       if (mocks.fakeConsoleWarn?.called) {
-        console.debug(chalk.red('unexpected console warning: ', mocks.fakeConsoleWarn.getCall(0).args[0]));
+        if (DEBUG) {
+          console.debug('mocks.fakeConsoleWarn: ', mocks.fakeConsoleWarn);
+        }
+        const warnCall = mocks.fakeConsoleWarn.getCall(0);
+        if (warnCall) {
+          console.debug(chalk.red('unexpected console warning: ', warnCall.args[0]));
+        } else {
+          console.debug(chalk.red('unexpected console warning'));
+        }
         assert.fail();
       }
     }
     // console error
     if (test.error) {
-      actlError = mocks.fakeConsoleError.getCall(0).args[0];
-      assert.strictEqual(actlError, test.error);
+      if (DEBUG) {
+        console.debug('test.error: ', test.error);
+      }
+      const errorCall = mocks.fakeConsoleError.getCall(0);
+      if (errorCall) {
+        actlError = errorCall.args[0];
+        assert.strictEqual(actlError, test.error);
+      } else {
+        console.debug(chalk.red('Error not found in mocks.fakeConsoleError'));
+        assert.fail('Expected error not found');
+      }
     } else {
       if (mocks.fakeConsoleError?.called) {
-        console.debug(chalk.red('unexpected console error: ', mocks.fakeConsoleError.getCall(0).args[0]));
+        if (DEBUG) {
+          console.debug('mocks.fakeConsoleError: ', mocks.fakeConsoleError);
+        }
+        const errorCall = mocks.fakeConsoleError.getCall(0);
+        if (errorCall) {
+          console.debug(chalk.red('unexpected console error: ', errorCall.args[0]));
+        } else {
+          console.debug(chalk.red('unexpected console error'));
+        }
         assert.fail();
       }
     }
     // file changes
     if (test.contents) {
+      if (DEBUG) {
+        console.debug('test.contents: ', test.contents);
+      }
       if (!test.contents) { assert.fail(); }
       for (const fname of Object.keys(test.contents)) {
         const expdContent: string = test.contents[fname];
@@ -295,7 +210,10 @@ export const runCmdTestSync = (
     }
     // file content changes
     if (mocks.testFilePath && test.ocontent) {
-      const content: string = fs.readFileSync(mocks.testFilePath, 'utf8');
+      if (DEBUG) {
+        console.debug('test.ocontent: ', test.ocontent);
+      }
+      const content = fs.readFileSync(mocks.testFilePath, 'utf8');
       assert.strictEqual(content, test.ocontent);
     }
   }
