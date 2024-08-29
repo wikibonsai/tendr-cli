@@ -86,8 +86,11 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           rootFileName: argv.root as string | undefined,
           globIndexUris: argv.glob as string | undefined
         };
-        const lintMsg: string = lint(payload);
-        console.log(lintMsg);
+        try {
+          lint(payload);
+        } catch (e) {
+          console.error(e);
+        }
       },
     })
 
