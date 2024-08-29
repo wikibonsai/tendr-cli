@@ -311,7 +311,7 @@ describe('rename', () => {
 
   });
 
-  describe('warn (execute, but warn user)', () => {
+  describe.skip('warn (execute, but warn user)', () => {
 
     // todo
 
