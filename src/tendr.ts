@@ -13,6 +13,7 @@ import { buildTree, buildTreeSync } from './util/tree';
 import * as prompt from './util/prompt';
 
 import { REL_KINDS, status } from './cmds/status';
+import { find } from './cmds/find';
 import { camlToYaml, mkdnToWiki, wikiToMkdn, yamlToCaml } from './cmds/convert';
 import { lint } from './cmds/lint';
 // import { list } from './cmds/list';
@@ -182,6 +183,32 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           const semtree: Promise<SemTree | undefined> = buildTree(payload);
           const doctypes: any[] | undefined = getDocTypes(payload.doctypeUri);
           return status(argv.filename as string, semtree, doctypes, argv);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    })
+
+    .command({
+      command: 'find <fname>',
+      aliases: ['f'],
+      describe: 'show full path of markdown file(s) with the given filename.',
+      builder: (yargs: yargs.Argv) => yargs
+        .option('regex', {
+          alias: 'r',
+          type: 'boolean',
+          describe: 'usage: find <regex>; use regex pattern instead of string -- this will find all filenames containing matches to the regex pattern. (use quotes around regex if the terminal is preemptively executing it)',
+          default: false,
+        }),
+      handler: (argv: ArgumentsCamelCase) => {
+        const payload: InitTree = {
+          configUri: argv.config as string,
+          doctypeUri: argv.doctype as string,
+          rootFileName: argv.root as string | undefined,
+          globIndexUris: argv.glob as string | undefined,
+        };
+        try {
+          return find(argv.fname as string, payload, argv);
         } catch (e) {
           console.error(e);
         }
