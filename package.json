@@ -41,7 +41,7 @@
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
     "readline-sync": "^1.4.10",
-    "semtree": "^0.0.10",
+    "semtree": "^0.0.12",
     "table": "^6.8.1",
     "wikirefs": "^0.0.4",
     "yargs": "^17.6.1"
