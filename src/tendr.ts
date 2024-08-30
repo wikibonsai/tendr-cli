@@ -48,6 +48,18 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
     .usage('usage: $0 <command>\n\ncli tools for markdown-based digital gardening.')
     .demandCommand(1, 'please provide a valid command.')
     .help()
+    .option('config', {
+      alias: 'c',
+      type: 'string',
+      describe: 'relative path to config file, including filename; defaults to "./config.toml"',
+      default: CONFIG_PATH,
+    })
+    .option('doctype', {
+      alias: 'd',
+      type: 'string',
+      describe: 'relative path to doctype file, including filename; defaults to "t.doc.toml"',
+      default: DOCTYPE_PATH,
+    })
     // .wrap(null)
     // .epilogue('cli tools for markdown-based digital gardening')
 
@@ -58,18 +70,6 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
       // aliases: [''],
       describe: 'lint garden files',
       builder: (yargs: yargs.Argv) => yargs
-        .option('config', {
-          alias: 'c',
-          type: 'string',
-          describe: 'relative path to config file, including filename; defaults to "./config.toml"',
-          default: CONFIG_PATH,
-        })
-        .option('doctype', {
-          alias: 'd',
-          type: 'string',
-          describe: 'relative path to doctype file, including filename; defaults to "t.doc.toml"',
-          default: DOCTYPE_PATH,
-        })
         .option('root', {
           alias: 'r',
           type: 'string',
@@ -115,18 +115,6 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
       // aliases: [''],
       describe: 'print full knowledge bonsai.',
       builder: (yargs: yargs.Argv) => yargs
-        .option('config', {
-          alias: 'c',
-          type: 'string',
-          describe: 'relative path to config file, including filename; defaults to "./config.toml"',
-          default: CONFIG_PATH,
-        })
-        .option('doctype', {
-          alias: 'd',
-          type: 'string',
-          describe: 'relative path to doctype file, including filename; defaults to "t.doc.toml"',
-          default: DOCTYPE_PATH,
-        })
         .option('root', {
           alias: 'r',
           type: 'string',
@@ -160,12 +148,6 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
       aliases: ['stat'],
       describe: 'show status of file relationships.',
       builder: (yargs: yargs.Argv) => yargs
-        .option('doctype', {
-          alias: 'd',
-          type: 'string',
-          describe: 'relative path to doctype file, including filename; defaults to "t.doc.toml"',
-          default: DOCTYPE_PATH,
-        })
         .option('kind', {
           alias: 'k',
           type: 'string',
