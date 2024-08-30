@@ -90,6 +90,78 @@ describe('lint', () => {
         '\x1B[32m✅ all clean\x1B[39m',
     }));
 
+    describe('success; delimiters', () => {
+
+      beforeEach(() => {
+        // prepend caml attrs to file
+        const filePath: string = path.join(testCwd, 'i.bonsai.md');
+        const existingContent: string = fs.readFileSync(filePath, 'utf-8');
+        const newContent: string = '---\n'
+                                 + 'yaml-attr: some-value\n'
+                                 + '---\n'
+                                 + ': caml-attr :: some-value\n'
+                                 + '<!--semtree-->\n'
+                                 + existingContent
+                                 + '<!--/semtree-->\n';
+        fs.writeFileSync(filePath, newContent);
+      });
+
+      it('found', runCmdTestSync(mocks, {
+        input: ['lint'],
+        cmd: ['lint'],
+        args: {},
+        opts: {},
+        output:
+          '\x1B[32m✅ all clean\x1B[39m',
+      }));
+
+    });
+
+    describe('success; strip caml', () => {
+
+      beforeEach(() => {
+        // prepend caml attrs to file
+        const filePath: string = path.join(testCwd, 'i.bonsai.md');
+        const existingContent: string = fs.readFileSync(filePath, 'utf-8');
+        const newContent: string = ': caml-attr :: some-value\n' + existingContent;
+        fs.writeFileSync(filePath, newContent);
+      });
+
+      it('found', runCmdTestSync(mocks, {
+        input: ['lint'],
+        cmd: ['lint'],
+        args: {},
+        opts: {},
+        output:
+          '\x1B[32m✅ all clean\x1B[39m',
+      }));
+
+    });
+
+    describe('success; strip yaml', () => {
+
+      beforeEach(() => {
+        // prepend caml attrs to file
+        const filePath: string = path.join(testCwd, 'i.bonsai.md');
+        const existingContent: string = fs.readFileSync(filePath, 'utf-8');
+        const newContent: string = '---\n'
+                                 + 'yaml-attr: some-value\n'
+                                 + '---\n'
+                                 + existingContent;
+        fs.writeFileSync(filePath, newContent);
+      });
+
+      it('found', runCmdTestSync(mocks, {
+        input: ['lint'],
+        cmd: ['lint'],
+        args: {},
+        opts: {},
+        output:
+          '\x1B[32m✅ all clean\x1B[39m',
+      }));
+
+    });
+
     describe('error; duplicates', () => {
 
       beforeEach(() => {

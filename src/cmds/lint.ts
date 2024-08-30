@@ -14,7 +14,10 @@ export function lint(payload: any, opts?: any): void {
   if ((indexFileUris === undefined) || (indexFileUris.length === 0)) {
     console.error(chalk.red('❌ unable to find index files to lint'));
   } else {
+    // tree
     const treeData: Record<string, string> = buildTreeData(indexFileUris);
+    const cleanTreeData: Record<string, string> = semtree.extractTreeContent(treeData);
+    // lint
     const lintOpts: any = {
       root: rootFileName || (config && config.garden && config.garden.root) ? config.garden.root : undefined,
       // add custom options if they are configured
@@ -24,7 +27,7 @@ export function lint(payload: any, opts?: any): void {
       ...(config.lint && config.lint.wikiLink && { wikiLink: config.lint.wikiLink }),
     };
     // build lint result string
-    const lintRes: void | { error: string, warn: string } = semtree.lint(treeData, lintOpts);
+    const lintRes: void | { error: string, warn: string } = semtree.lint(cleanTreeData, lintOpts);
     let lintMsg: string = '';
     if (lintRes) {
       if (lintRes.error) {
