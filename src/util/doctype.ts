@@ -20,7 +20,7 @@ export function resolve(uri: string, doctypes: any): string | undefined {
       // @ts-expect-error: prefix check in if-check above
       const prefix: string = opts.prefix;
       const filenameContainsPrefix: boolean = (filename.indexOf(prefix) === 0);
-      const filenameContainsPrefixWithPlaceholder: boolean = convertPlaceholderToRgx(prefix).test(filename);
+      const filenameContainsPrefixWithPlaceholder: boolean = convertPlaceholderToRgx(prefix, { kind: 'prefix' }).test(filename);
       if (filenameContainsPrefix || filenameContainsPrefixWithPlaceholder) {
         return type;
       }
@@ -69,23 +69,35 @@ export function getIDFormat(configUri?: string): any {
 // i have a bad feeling this is going to breed bugs...👀
 export function convertPlaceholderToRgx(
   str: string,
-  IDFormat: any = {
-    alphabet: '',
-    size: 0,
+  opts: {
+    kind?: 'prefix' | 'suffix';
+    id?: {
+      alphabet?: string;
+      size?: number;
+    };
+  } = {
+    kind: 'prefix',
+    id: {
+      alphabet: '',
+      size: 0,
+    },
   },
 ): RegExp {
   const id: RegExp = new RegExp(
-    '[' + IDFormat.alphabet + ']' +
-    '{' + String(IDFormat.size) + '}'
+    '[' + (opts.id?.alphabet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') + ']' +
+    '{' + String(opts.id?.size || 21) + '}'
   );
   /* eslint-disable indent */
-  return new RegExp(str.replace('.', '\\.')                           // escape regex chars that are normal chars
-                        .replace(/(?::id)/, id.source)                // Generate an id from [nanoid](https://github.com/ai/nanoid).
-                        .replace(/(?::date)/, '\\d{4}-\\d{2}-\\d{2}') // Generate the current date (format: `YYYY-MM-DD`).
-                        .replace(/(?::year)/, '\\d{4}')               // Generate the current year (format: `YYYY`).
-                        .replace(/(?::month)/, '\\d{2}')              // Generate the current month (format: `MM`).
-                        .replace(/(?::day)/, '\\d{2}')                // Generate the current day (format: `DD`).
-                        .replace(/(?::hour)/, '\\d{2}')               // Generate the current hour (format: `HH`).
-                        .replace(/(?::minute)/, '\\d{2}'));           // Generate the current minute (format: `mm`).
+  let replacements: string = str.replace('.', '\\.')                          // escape regex chars that are normal chars
+                                .replace(/(?::id)/, id.source)                // Generate an id from [nanoid](https://github.com/ai/nanoid).
+                                .replace(/(?::date)/, '\\d{4}-\\d{2}-\\d{2}') // Generate the current date (format: `YYYY-MM-DD`).
+                                .replace(/(?::year)/, '\\d{4}')               // Generate the current year (format: `YYYY`).
+                                .replace(/(?::month)/, '\\d{2}')              // Generate the current month (format: `MM`).
+                                .replace(/(?::day)/, '\\d{2}')                // Generate the current day (format: `DD`).
+                                .replace(/(?::hour)/, '\\d{2}')               // Generate the current hour (format: `HH`).
+                                .replace(/(?::minute)/, '\\d{2}');            // Generate the current minute (format: `mm`).
   /* eslint-enable indent */
+  replacements = (opts.kind === 'prefix') ? '^' + replacements : replacements;
+  replacements = (opts.kind === 'suffix') ? replacements + '$' : replacements;
+  return new RegExp(replacements);
 }
