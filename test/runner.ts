@@ -65,6 +65,9 @@ export const runCmdTestSync = (
   // grab output from 'argv.argv' so command isn't called multiple times.
   const res: any = argv.argv;
   // assert //
+  if (DEBUG) {
+    console.debug('general: ', res, test);
+  }
   // command
   assert.deepStrictEqual(res._, test.cmd);
   if (DEBUG) {
