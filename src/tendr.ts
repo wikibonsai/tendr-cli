@@ -81,13 +81,13 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           describe: 'glob to index files',
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        const payload: InitTree = {
-          configUri: argv.config as string,
-          doctypeUri: argv.doctype as string,
-          rootFileName: argv.root as string | undefined,
-          globIndexUris: argv.glob as string | undefined
-        };
         try {
+          const payload: InitTree = {
+            configUri: argv.config as string,
+            doctypeUri: argv.doctype as string,
+            rootFileName: argv.root as string | undefined,
+            globIndexUris: argv.glob as string | undefined
+          };
           lint(payload);
         } catch (e) {
           console.error(e);
@@ -126,17 +126,21 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           describe: 'glob to index files',
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        const payload: InitTree = {
-          configUri: argv.config as string,
-          doctypeUri: argv.doctype as string,
-          rootFileName: argv.root as string | undefined,
-          globIndexUris: argv.glob as string | undefined
-        };
-        const semtree: SemTree | undefined = buildTreeSync(payload);
-        if (semtree) {
-          tree(semtree, argv);
-        } else {
-          console.error(chalk.red('unable to build tree'));
+        try {
+          const payload: InitTree = {
+            configUri: argv.config as string,
+            doctypeUri: argv.doctype as string,
+            rootFileName: argv.root as string | undefined,
+            globIndexUris: argv.glob as string | undefined
+          };
+          const semtree: SemTree | undefined = buildTreeSync(payload);
+          if (semtree) {
+            tree(semtree, argv);
+          } else {
+            console.error(chalk.red('unable to build tree'));
+          }
+        } catch (e) {
+          console.error(e);
         }
       },
     })
@@ -155,13 +159,13 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           default: 'rel',
         }),
       handler: async (argv: ArgumentsCamelCase) => {
-        const payload: InitTree = {
-          configUri: argv.config as string,
-          doctypeUri: argv.doctype as string,
-          rootFileName: argv.root as string | undefined,
-          globIndexUris: argv.glob as string | undefined,
-        };
         try {
+          const payload: InitTree = {
+            configUri: argv.config as string,
+            doctypeUri: argv.doctype as string,
+            rootFileName: argv.root as string | undefined,
+            globIndexUris: argv.glob as string | undefined,
+          };
           const semtree: Promise<SemTree | undefined> = buildTree(payload);
           const doctypes: any[] | undefined = getDocTypes(payload.doctypeUri);
           return status(argv.filename as string, semtree, doctypes, argv);
@@ -183,13 +187,13 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           default: false,
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        const payload: InitTree = {
-          configUri: argv.config as string,
-          doctypeUri: argv.doctype as string,
-          rootFileName: argv.root as string | undefined,
-          globIndexUris: argv.glob as string | undefined,
-        };
         try {
+          const payload: InitTree = {
+            configUri: argv.config as string,
+            doctypeUri: argv.doctype as string,
+            rootFileName: argv.root as string | undefined,
+            globIndexUris: argv.glob as string | undefined,
+          };
           return find(argv.fname as string, payload, argv);
         } catch (e) {
           console.error(e);
@@ -217,10 +221,14 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           default: false,
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        if (argv.force || p.confirm(`rename "${argv.oldFname}" to "${argv.newFname}"`)) {
-          rename(argv.oldFname as string, argv.newFname as string, argv);
-        } else {
-          p.abort();
+        try {
+          if (argv.force || p.confirm(`rename "${argv.oldFname}" to "${argv.newFname}"`)) {
+            rename(argv.oldFname as string, argv.newFname as string, argv);
+          } else {
+            p.abort();
+          }
+        } catch (e) {
+          console.error(e);
         }
       }
     })
@@ -237,10 +245,14 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           default: false,
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        if (argv.force || p.confirm(`retype doctype "${argv.oldType}" to "${argv.newType}"`)) {
-          retypedoc(argv.oldType as string, argv.newType as string, argv);
-        } else {
-          p.abort();
+        try {
+          if (argv.force || p.confirm(`retype doctype "${argv.oldType}" to "${argv.newType}"`)) {
+            retypedoc(argv.oldType as string, argv.newType as string, argv);
+          } else {
+            p.abort();
+          }
+        } catch (e) {
+          console.error(e);
         }
       }
     })
@@ -263,10 +275,14 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           default: 'ref',
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        if (argv.force || p.confirm(`retype ${argv.kind}type "${argv.oldType}" to "${argv.newType}"`)) {
-          retyperef(argv.oldType as string, argv.newType as string, argv);
-        } else {
-          p.abort();
+        try {
+          if (argv.force || p.confirm(`retype ${argv.kind}type "${argv.oldType}" to "${argv.newType}"`)) {
+            retyperef(argv.oldType as string, argv.newType as string, argv);
+          } else {
+            p.abort();
+          }
+        } catch (e) {
+          console.error(e);
         }
       }
     })
@@ -315,10 +331,14 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           default: 'ref',
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        if (argv.force || p.confirm('convert [markdown](links) to [[wikirefs]]')) {
-          mkdnToWiki(argv.glob as string, argv);
-        } else {
-          p.abort();
+        try {
+          if (argv.force || p.confirm('convert [markdown](links) to [[wikirefs]]')) {
+            mkdnToWiki(argv.glob as string, argv);
+          } else {
+            p.abort();
+          }
+        } catch (e) {
+          console.error(e);
         }
       }
     })
@@ -347,10 +367,14 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           default: 'ref',
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        if (argv.force || p.confirm('convert [[wikirefs]] to [markdown](links)')) {
-          wikiToMkdn(argv.glob as string, argv);
-        } else {
-          p.abort();
+        try {
+          if (argv.force || p.confirm('convert [[wikirefs]] to [markdown](links)')) {
+            wikiToMkdn(argv.glob as string, argv);
+          } else {
+            p.abort();
+          }
+        } catch (e) {
+          console.error(e);
         }
       }
     })
@@ -367,10 +391,14 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           default: false,
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        if (argv.force || p.confirm('convert attributes from caml to yaml')) {
-          camlToYaml(argv.glob as string, argv);
-        } else {
-          p.abort();
+        try {
+          if (argv.force || p.confirm('convert attributes from caml to yaml')) {
+            camlToYaml(argv.glob as string, argv);
+          } else {
+            p.abort();
+          }
+        } catch (e) {
+          console.error(e);
         }
       }
     })
@@ -406,10 +434,14 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           default: true,
         }),
       handler: (argv: ArgumentsCamelCase) => {
-        if (argv.force || p.confirm('convert attributes from yaml to caml')) {
-          yamlToCaml(argv.glob as string, argv);
-        } else {
-          p.abort();
+        try {
+          if (argv.force || p.confirm('convert attributes from yaml to caml')) {
+            yamlToCaml(argv.glob as string, argv);
+          } else {
+            p.abort();
+          }
+        } catch (e) {
+          console.error(e);
         }
       }
     });
