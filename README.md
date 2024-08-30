@@ -247,6 +247,46 @@ Options:
                  is "rel")                             [string] [default: "rel"]
 ```
 
+### `find` , `f`
+
+Example:
+
+```
+$ tendr find <fname>
+```
+
+Sample output:
+
+Single file:
+
+```
+/path/to/notes/fname.md
+```
+
+Multiple files:
+
+```
+/path/to/notes/fname.md
+/path/to/notes/folder/fname.md
+```
+
+
+Manual:
+
+```
+tendr find <fname>
+
+show full path of markdown file(s) with the given filename.
+
+Options:
+      --version  Show version number                                   [boolean]
+      --help     Show help                                             [boolean]
+  -r, --regex    usage: find <regex>; use regex pattern instead of string -- thi
+                 s will find all filenames containing matches to the regex patte
+                 rn. (use quotes around regex if the terminal is preemptively ex
+                 ecuting it)                          [boolean] [default: false]
+```
+
 ### `rename`, `rn`
 
 Example:
