@@ -270,7 +270,6 @@ Multiple files:
 /path/to/notes/folder/fname.md
 ```
 
-
 Manual:
 
 ```
@@ -293,6 +292,22 @@ Example:
 
 ```
 $ tendr rename <old-fname> <new-fname>
+```
+
+Sample Output:
+
+```
+$ tendr rename '4-levels-of-reading' 'four-levels-of-reading'
+are you sure you want to rename "4-levels-of-reading" to "four-levels-of-reading"? [y/n]
+y
+UPDATED FILENAMES:
+  4-levels-of-reading -> four-levels-of-reading
+UPDATED FILE CONTENT:
+  analytical-reading
+  demanding-reading
+  elementary-reading
+  inspectional-reading
+  syntopical-reading
 ```
 
 Manual:
