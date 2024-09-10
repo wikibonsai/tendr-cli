@@ -86,6 +86,9 @@ export function rename(oldFname: string, newFname: string, opts?: any) {
       outputError.push(chalk.red('  [FILE CONTENT]' + e));
     }
   }
+  if (outputFnames.length === 1) {
+    outputFnames.push(chalk.dim('  no file named: ' + '\'' + oldFname + '\''));
+  }
   const output: string[] = (outputError.length > 1)
     ? outputFnames.concat(outputFiles).concat(outputError)
     : outputFnames.concat(outputFiles);
