@@ -3578,17 +3578,17 @@ which@^2.0.1:
   dependencies:
     isexe "^2.0.0"
 
-wikirefs@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/wikirefs/-/wikirefs-0.0.4.tgz#edf0163c15e72e644fc6e36339b7fa4d362cd811"
-  integrity sha512-R4rKxGToR5ejpNKVfTOzhcKHvWR+4F3WaAy+ACWvDiDIrspWjabXdepWSYrbnrBlzorjMVUT98KVw9nJi8UAMQ==
-  dependencies:
-    escape-mkdn "^0.0.3"
-
 wikirefs@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/wikirefs/-/wikirefs-0.0.5.tgz#78a097a72ac6a0a5215c9be753c9e27643d70a17"
   integrity sha512-wxGl7+XC+f4/dfhf9Z2J+dozgHDZoKvX6UpHRohQyTKDHIxfFMdoN3pDx9ySFNG5vC0xQXF9iIfPhLUwKXjXVg==
+  dependencies:
+    escape-mkdn "^0.0.3"
+
+wikirefs@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/wikirefs/-/wikirefs-0.0.6.tgz#a054193c7c9b4cc9e50ee03886b039f85632a8fd"
+  integrity sha512-/2uoFf/BBXCPzvIlZYViADVPgKYiRFxXzWv2igILWY02hIipQTNiWtwGBSRrjTjbf6+h4rK/ZlA/8TFuu4oR7w==
   dependencies:
     escape-mkdn "^0.0.3"
 

@@ -38,10 +38,12 @@ export function rename(oldFname: string, newFname: string, opts?: any) {
     if ((path.basename(thisFilePath, MD) === oldFname)
       || (opts.regex && path.basename(thisFilePath, MD).match(oldSrchPat))
     ) {
+      // default case
       if (!opts.regex) {
         oldFnameString = oldFname;
         newFnameString = newFname;
         thisNewFilePath = thisFilePath.replace(oldFname + MD, newFname + MD);
+      // regex option case
       } else {
         // construct 'oldFnameString'
         oldFnameString = path.basename(thisFilePath, MD);
@@ -66,8 +68,10 @@ export function rename(oldFname: string, newFname: string, opts?: any) {
   for (const thisFilePath of updatedVaultFilePaths) {
     const oldContent: string = fs.readFileSync(thisFilePath, 'utf8');
     let newContent: string;
+    // default case
     if (!opts.regex) {
       newContent = wikirefs.renameFileName(oldFname, newFname, oldContent);
+    // regex option case
     } else {
       let editContent: string = oldContent;
       for (const [oldFnameStr, newFnameStr] of fileNameUpdates) {
@@ -88,6 +92,9 @@ export function rename(oldFname: string, newFname: string, opts?: any) {
   }
   if (outputFnames.length === 1) {
     outputFnames.push(chalk.dim('  no file named: ' + '\'' + oldFname + '\''));
+  }
+  if (outputFiles.length === 1) {
+    outputFiles.push(chalk.dim('  no wikirefs named: ' + '\'' + oldFname + '\''));
   }
   const output: string[] = (outputError.length > 1)
     ? outputFnames.concat(outputFiles).concat(outputError)

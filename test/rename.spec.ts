@@ -126,6 +126,100 @@ describe('rename', () => {
     },
   }));
 
+  it('base; no file + no refs', runCmdTestSync(mocks, {
+    input: ['rename', 'imaginary-doc', 'new-name'],
+    cmd: ['rename'],
+    args: {
+      ['old-fname']: 'imaginary-doc',
+      ['new-fname']: 'new-name',
+    },
+    confirm: 'are you sure you want to rename "imaginary-doc" to "new-name"? [y/n]\n',
+    output:
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+\x1B[2m  no file named: 'imaginary-doc'\x1B[22m
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
+\x1B[2m  no wikirefs named: 'imaginary-doc'\x1B[22m`,
+    contents: {
+      'fname-a':
+`
+:reftype::[[fname-b]]
+:attrtype::[[fname-c]]
+
+:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
+
+[[fname-e]]
+
+[[no-doc]]
+`,
+      'fname-b': `
+:attrtype::[[fname-a]]
+`,
+      'fname-c': `
+:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[fname-a]] and some text to illustrate that this is a typed wikilink!
+`,
+      'fname-d': `
+[[fname-a]]
+`,
+      'fname-e': `
+[[fname-a|label]]
+`,
+      'fname-f': `
+[[no-doc]]
+`,
+      'fname-g': `
+![[fname-a]]
+`,
+    },
+  }));
+
+  it('base; has file + no refs', runCmdTestSync(mocks, {
+    input: ['rename', 'fname-g', 'new-name'],
+    cmd: ['rename'],
+    args: {
+      ['old-fname']: 'fname-g',
+      ['new-fname']: 'new-name',
+    },
+    confirm: 'are you sure you want to rename "fname-g" to "new-name"? [y/n]\n',
+    output:
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-g -> new-name
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
+\x1B[2m  no wikirefs named: 'fname-g'\x1B[22m`,
+    contents: {
+      'fname-a':
+`
+:reftype::[[fname-b]]
+:attrtype::[[fname-c]]
+
+:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
+
+[[fname-e]]
+
+[[no-doc]]
+`,
+      'fname-b': `
+:attrtype::[[fname-a]]
+`,
+      'fname-c': `
+:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[fname-a]] and some text to illustrate that this is a typed wikilink!
+`,
+      'fname-d': `
+[[fname-a]]
+`,
+      'fname-e': `
+[[fname-a|label]]
+`,
+      'fname-f': `
+[[no-doc]]
+`,
+      'new-name': `
+![[fname-a]]
+`,
+    },
+  }));
+
   it('base; no file + all refs', runCmdTestSync(mocks, {
     input: ['rename', 'no-doc', 'new-name'],
     cmd: ['rename'],
@@ -174,7 +268,7 @@ describe('rename', () => {
     },
   }));
 
-  it('aborted', runCmdTestSync(mocks, {
+  it('base; aborted', runCmdTestSync(mocks, {
     input: ['rename', 'fname-a', 'new-name'],
     cmd: ['rename'],
     args: {
