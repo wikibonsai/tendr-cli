@@ -15,16 +15,177 @@ import { ls } from '../src/util/util';
 const DEBUG: boolean = false;
 
 
-export const runCmdTest = async (
+export const runCmdTest = (
   mocks: TestMocks,
   test: CommandTestCase,
   showRes: boolean = false,
-): Promise<void> => {
-  try {
-    runCmdTestSync(mocks, test, showRes);
-    return Promise.resolve();
-  } catch (e) {
-    return Promise.reject(e);
+) => async () => {
+  if (DEBUG) {
+    console.debug('=== entering async runner ===');
+    console.debug('for test: ', test);
+  }
+  // setup //
+  let actlOutput: string | undefined;
+  let actlError: string | undefined;
+  let actlWarn: string | undefined;
+  const stubPrompt: any = {
+    abort: () => prompt.abort(),
+    confirm: (action: string) => {
+      console.log(`are you sure you want to ${action}? [y/n]\n`);
+      return test.aborted ? false : true;
+    },
+  };
+  if (mocks.testFilePath && test.icontent) {
+    fs.writeFileSync(mocks.testFilePath, test.icontent as string);
+  }
+  // go — use .parse() to await async handlers //
+  const argv: yargs.Argv = tendr(test.input, stubPrompt);
+  const res: any = await argv.parse();
+  // assert //
+  // command
+  assert.deepStrictEqual(res._, test.cmd);
+  // arguments
+  if (test.args) {
+    for (const key of Object.keys(test.args)) {
+      assert.strictEqual(Object.keys(res).includes(key), true);
+      assert.strictEqual(res[key], test.args[key]);
+    }
+  }
+  // options
+  if (test.opts) {
+    for (const key of Object.keys(test.opts)) {
+      assert.strictEqual(Object.keys(res).includes(key), true);
+      assert.strictEqual(res[key], test.opts[key]);
+    }
+  }
+  // confirmation prompt
+  if (test.confirm) {
+    const logCall = mocks.fakeConsoleLog.getCall(0);
+    if (logCall) {
+      const actlPrompt: string = logCall.args[0];
+      assert.strictEqual(actlPrompt, test.confirm);
+    } else {
+      assert.fail('Expected confirmation prompt not found');
+    }
+  }
+  // aborted
+  if (test.aborted) {
+    const logCall = mocks.fakeConsoleLog.getCall(1);
+    if (logCall) {
+      const actlPrompt: string = logCall.args[0];
+      assert.strictEqual(actlPrompt, prompt.PROMPT_ABORT);
+    } else {
+      assert.fail('Expected abort prompt not found');
+    }
+  } else {
+    // console output
+    if (test.output) {
+      const callNo: number = test.confirm ? 1 : 0;
+      const logCall = mocks.fakeConsoleLog.getCall(callNo);
+      if (logCall) {
+        actlOutput = logCall.args[0];
+        assert.strictEqual(actlOutput, test.output);
+      } else {
+        assert.fail('Expected output not found');
+      }
+    }
+    // console warn
+    if (test.warn) {
+      const warnCall = mocks.fakeConsoleWarn.getCall(0);
+      if (warnCall) {
+        actlWarn = warnCall.args[0];
+        assert.strictEqual(actlWarn, test.warn);
+      } else {
+        assert.fail('Expected warning not found');
+      }
+    } else {
+      if (mocks.fakeConsoleWarn?.called) {
+        const warnCall = mocks.fakeConsoleWarn.getCall(0);
+        if (warnCall) {
+          console.debug(chalk.red('unexpected console warning: ', warnCall.args[0]));
+        }
+        assert.fail();
+      }
+    }
+    // console error
+    if (test.error) {
+      const errorCall = mocks.fakeConsoleError.getCall(0);
+      if (errorCall) {
+        actlError = errorCall.args[0];
+        assert.ok(actlError!.includes(test.error),
+          `Expected error to include "${test.error}", got: "${actlError}"`);
+      } else {
+        assert.fail('Expected error not found');
+      }
+    } else {
+      if (mocks.fakeConsoleError?.called) {
+        const errorCall = mocks.fakeConsoleError.getCall(0);
+        if (errorCall) {
+          console.debug(chalk.red('unexpected console error: ', errorCall.args[0]));
+        }
+        assert.fail();
+      }
+    }
+    // logIncludes — assert console.log calls by index contain text
+    if (test.logIncludes) {
+      for (const { index, text } of test.logIncludes) {
+        const logCall = mocks.fakeConsoleLog.getCall(index);
+        assert.ok(logCall, `Expected console.log call at index ${index}`);
+        assert.ok(logCall.args[0].includes(text),
+          `Expected console.log[${index}] to include "${text}", got: "${logCall.args[0]}"`);
+      }
+    }
+    // logLastIncludes — assert last console.log call includes text
+    if (test.logLastIncludes) {
+      const lastLog: string = mocks.fakeConsoleLog.getCall(mocks.fakeConsoleLog.callCount - 1).args[0];
+      assert.ok(lastLog.includes(test.logLastIncludes),
+        `Expected last console.log to include "${test.logLastIncludes}", got: "${lastLog}"`);
+    }
+    // writeFile — assert fs.writeFileSync was called with expected filename and content
+    if (test.writeFile && mocks.fakeWriteFile) {
+      assert.ok(mocks.fakeWriteFile.called, 'Expected fs.writeFileSync to be called');
+      const writeCall = mocks.fakeWriteFile.getCall(0);
+      assert.strictEqual(writeCall.args[0], test.writeFile.filename);
+      assert.strictEqual(writeCall.args[1], test.writeFile.content);
+    }
+    // writeFileExcludes — strings that must NOT be in file content
+    if (test.writeFileExcludes && mocks.fakeWriteFile) {
+      const fileContent: string = mocks.fakeWriteFile.getCall(0).args[1];
+      for (const excluded of test.writeFileExcludes) {
+        assert.ok(!fileContent.includes(excluded),
+          `File content should NOT include "${excluded}"`);
+      }
+    }
+    // file changes
+    if (test.contents) {
+      for (const fname of Object.keys(test.contents)) {
+        const expdContent: string = test.contents[fname];
+        const testFilePath: string = path.join(mocks.testCwd, fname + MD);
+        if (!fs.existsSync(testFilePath)) {
+          console.debug(`could not find file at: ${testFilePath}`);
+          console.debug(chalk.red('LS CONTENTS:'), ls(mocks.testCwd));
+          assert.fail();
+        }
+        const actlContent: string = fs.readFileSync(testFilePath, 'utf8');
+        assert.strictEqual(expdContent, actlContent);
+      }
+    }
+    // file content changes
+    if (mocks.testFilePath && test.ocontent) {
+      const content = fs.readFileSync(mocks.testFilePath, 'utf8');
+      assert.strictEqual(content, test.ocontent);
+    }
+  }
+  if (showRes) {
+    if (actlOutput) {
+      console.info('Output Result:\n' + actlOutput);
+    }
+    if (actlWarn) {
+      console.info('Warn Result:\n' + actlWarn);
+    }
+    if (actlError) {
+      console.info('Error Result:\n' + actlError);
+    }
   }
 };
 

@@ -3592,6 +3592,11 @@ wikirefs@^0.0.6:
   dependencies:
     escape-mkdn "^0.0.3"
 
+wisp-ai@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/wisp-ai/-/wisp-ai-0.0.1.tgz#dcb81836695ae0097af15c48f45f666fe0ea1797"
+  integrity sha512-DOzYMFDk+kskTBa9Cly9eSsKaINoS1Xg/UtWR+/Wwa4PmJ65ptXUDUVH5OVroXvGKilVS/XIQC3SmIvIFfkQkQ==
+
 word-wrap@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.3.tgz#610636f6b1f703891bd34771ccb17fb93b47079c"

@@ -38,6 +38,7 @@ cli tools for markdown-based digital gardening.
 
 Commands:
   tendr lint                             lint garden files.
+  tendr seed <concept>                   seed a concept file from an llm.
   tendr tree                             print full knowledge bonsai.
   tendr status <filename>                show status of file relationships.
                                                                  [aliases: stat]
@@ -66,6 +67,7 @@ Options:
 ## Commands
 
 Note:
+
 - Commands expect markdown files using the `.md` extension.
 - Commands that perform anything other than read operations will display a confirmation prompt before executing. This may typically be skipped with the force flag (`-f`).
 
@@ -124,6 +126,74 @@ Options:
                  "t.doc.toml"                 [string] [default: "./t.doc.toml"]
   -r, --root     filename for root of tree                              [string]
   -g, --glob     glob to index files                                    [string]
+```
+
+### `seed`
+
+Seed a concept file with generated content from an LLM. Uses the [wisp-ai](https://github.com/wikibonsai/wisp-ai) package.
+
+Example:
+
+```
+$ tendr seed 4-levels-of-reading
+```
+
+Sample output:
+
+```
+[[knowledge]] > [[learning]] > [[literacy]] > [[reading]] > [[the-art-of-reading]] > [[4-levels-of-reading]]
+
+: title    :: 4 Levels Of Reading
+: alias    :: ''
+: hypernym :: [[the-art-of-reading]]
+: hyponym  ::
+             - [[elementary-reading]]
+             - [[inspectional-reading]]
+             - [[analytical-reading]]
+             - [[syntopical-reading]]
+: synonym  :: ''
+: antonym  :: ''
+: tldr     :: "The four levels of reading represent the ideal steps and skills in the art of reading."
+
+- [[4-levels-of-reading]]
+  - [[elementary-reading]]
+    - [[reading-readiness]]
+    - [[word-mastery]]
+  - [[inspectional-reading]]
+    - [[skimming]]
+    - [[superficial-reading]]
+  - [[analytical-reading]]
+    - [[outline]]
+    - [[interpret]]
+    - [[criticize]]
+  - [[syntopical-reading]]
+    - [[prepare-bibliography]]
+    - [[inspect-passages]]
+```
+
+Manual:
+
+```
+tendr seed <concept>
+
+seed a concept file from an llm.
+
+Options:
+      --version    Show version number                                  [boolean]
+      --help       Show help                                            [boolean]
+  -p, --provider   llm provider (anthropic, openai, xai)
+                                                  [string] [default: "anthropic"]
+  -k, --api-key    api key (overrides env var)                           [string]
+  -m, --model      model name (overrides default per provider)           [string]
+  -o, --output     write to <concept>.md file instead of stdout
+                                                      [boolean] [default: false]
+  -c, --config     relative path to config file       [string] [default: "./config.toml"]
+      --attrs      attribute format (caml, yaml)                         [string]
+      --case       case style (upper, lower)                             [string]
+      --text       text format (regular, [[wikitext]])                   [string]
+      --indent     indent style (2 spaces, 4 spaces, 1 tab)             [string]
+      --whitespace whitespace style (white space, snake_case, kabob-case)
+                                                                         [string]
 ```
 
 ### `list`, `ls` (⚠️ todo)

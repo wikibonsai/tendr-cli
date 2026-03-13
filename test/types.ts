@@ -3,6 +3,7 @@ export interface TestMocks {
   fakeConsoleLog?: any;
   fakeConsoleWarn?: any;
   fakeConsoleError?: any;
+  fakeWriteFile?: any;
   testCwd: string;
   testFilePath?: string;
 }
@@ -22,4 +23,9 @@ export interface CommandTestCase {
   output?: string;
   contents?: Record<string, string>;  // [filename]: content
   ocontent?: string;                  // Out-content
+  // seed-specific assertions
+  logIncludes?: { index: number; text: string }[];  // console.log assertions by call index
+  logLastIncludes?: string;                          // last console.log call includes text
+  writeFile?: { filename: string; content: string }; // assert fs.writeFileSync call
+  writeFileExcludes?: string[];                       // strings that must NOT be in file content
 }

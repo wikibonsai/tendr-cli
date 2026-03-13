@@ -19,6 +19,7 @@ import { lint } from './cmds/lint';
 // import { list } from './cmds/list';
 import { rename } from './cmds/rename';
 import { retypedoc, retyperef } from './cmds/retype';
+import { seed } from './cmds/seed';
 import { tree } from './cmds/tree';
 
 
@@ -91,6 +92,65 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           lint(payload);
         } catch (e) {
           console.error(e);
+        }
+      },
+    })
+
+    .command({
+      command: 'seed <concept>',
+      // aliases: [''],
+      describe: 'seed a concept file from an llm.',
+      builder: (yargs: yargs.Argv) => yargs
+        // ai options
+        .option('provider', {
+          alias: 'p',
+          type: 'string',
+          describe: 'llm provider (anthropic, openai, xai)',
+          default: 'anthropic',
+        })
+        .option('api-key', {
+          alias: 'k',
+          type: 'string',
+          describe: 'api key (overrides stored key)',
+        })
+        .option('model', {
+          alias: 'm',
+          type: 'string',
+          describe: 'model name (overrides default per provider)',
+        })
+        // output options
+        .option('output', {
+          alias: 'o',
+          type: 'boolean',
+          describe: 'write to <concept>.md file instead of stdout',
+          default: false,
+        })
+        // formatting options
+        .option('attrs', {
+          type: 'string',
+          describe: 'attribute format (caml, yaml)',
+        })
+        .option('case', {
+          type: 'string',
+          describe: 'case style (upper, lower)',
+        })
+        .option('text', {
+          type: 'string',
+          describe: 'text format (regular, [[wikitext]])',
+        })
+        .option('indent', {
+          type: 'string',
+          describe: 'indent style (2 spaces, 4 spaces, 1 tab)',
+        })
+        .option('whitespace', {
+          type: 'string',
+          describe: 'whitespace style (white space, snake_case, kabob-case)',
+        }),
+      handler: async (argv: ArgumentsCamelCase) => {
+        try {
+          await seed(argv.concept as string, argv);
+        } catch (e: any) {
+          console.error(chalk.red(e?.message || String(e)));
         }
       },
     })

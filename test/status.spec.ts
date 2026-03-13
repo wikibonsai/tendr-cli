@@ -125,8 +125,7 @@ path   = "/"
     mocks.fakeProcessCwd.restore();
   });
 
-  it('base; all rels',  async () =>
-    runCmdTest(mocks, {
+  it('base; all rels', runCmdTest(mocks, {
       input: ['status', 'fname-a'],
       cmd: ['status'],
       args: { filename: 'fname-a' },
@@ -168,8 +167,7 @@ path   = "/"
 
   describe('kind', () => {
 
-    it('rel; all fam and ref rels; (default)', async () =>
-      runCmdTest(mocks, {
+    it('rel; all fam and ref rels; (default)', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'rel'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -209,8 +207,7 @@ path   = "/"
 `
       }));
 
-    it('fam; all fam rels (ancestors + children)', async () =>
-      runCmdTest(mocks, {
+    it('fam; all fam rels (ancestors + children)', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'fam'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -234,8 +231,7 @@ path   = "/"
 `,
       }, SHOW_RESULT));
 
-    it('ancestors', async () =>
-      runCmdTest(mocks, {
+    it('ancestors', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'ancestor'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -254,8 +250,7 @@ path   = "/"
 `,
       }));
 
-    it('children',  async () =>
-      runCmdTest(mocks, {
+    it('children', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'child'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -277,8 +272,7 @@ path   = "/"
 `,
       }));
 
-    it('refs; all ref rels (attrs + links + embeds)',  async () =>
-      runCmdTest(mocks, {
+    it('refs; all ref rels (attrs + links + embeds)', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'ref'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -308,8 +302,7 @@ path   = "/"
 `,
       }));
 
-    it('attrs', async () =>
-      runCmdTest(mocks, {
+    it('attrs', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'attr'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -333,8 +326,7 @@ path   = "/"
 `,
       }, SHOW_RESULT));
 
-    it('attrs; list', async () =>
-      runCmdTest(mocks, {
+    it('attrs; list', runCmdTest(mocks, {
         input: ['status', 'fname-g', '-k', 'attr'],
         cmd: ['status'],
         args: { filename: 'fname-g' },
@@ -360,8 +352,7 @@ path   = "/"
 `,
       }));
 
-    it('links', async () =>
-      runCmdTest(mocks, {
+    it('links', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'link'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -388,8 +379,7 @@ path   = "/"
 
   describe('fore', () => {
 
-    it('fore; equivalent to forerefs', async () =>
-      runCmdTest(mocks, {
+    it('fore; equivalent to forerefs', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'fore'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -419,8 +409,7 @@ path   = "/"
 `,
       }, SHOW_RESULT));
 
-    it('forerefs; equivalent to fore', async () =>
-      runCmdTest(mocks, {
+    it('forerefs; equivalent to fore', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'foreref'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -450,8 +439,7 @@ path   = "/"
 `,
       }));
 
-    it('foreattrs', async () =>
-      runCmdTest(mocks, {
+    it('foreattrs', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'foreattr'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -475,8 +463,7 @@ path   = "/"
 `,
       }));
 
-    it('forelinks', async () =>
-      runCmdTest(mocks, {
+    it('forelinks', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'forelink'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -499,8 +486,7 @@ path   = "/"
 `,
       }));
 
-    it('foreembeds', async () =>
-      runCmdTest(mocks, {
+    it('foreembeds', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'foreembed'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -525,8 +511,7 @@ path   = "/"
 
   describe('back', () => {
 
-    it('back; equivalent to backrefs', async () =>
-      runCmdTest(mocks, {
+    it('back; equivalent to backrefs', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'back'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -554,8 +539,7 @@ path   = "/"
 `,
       }, SHOW_RESULT));
 
-    it('backrefs; equivalent to back', async () =>
-      runCmdTest(mocks, {
+    it('backrefs; equivalent to back', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'backref'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -583,8 +567,7 @@ path   = "/"
 `,
       }));
 
-    it('backattrs', async () =>
-      runCmdTest(mocks, {
+    it('backattrs', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'backattr'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -606,8 +589,7 @@ path   = "/"
 `,
       }));
 
-    it('backlinks', async () =>
-      runCmdTest(mocks, {
+    it('backlinks', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'backlink'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -630,8 +612,7 @@ path   = "/"
 `,
       }));
 
-    it('backembeds', async () =>
-      runCmdTest(mocks, {
+    it('backembeds', runCmdTest(mocks, {
         input: ['status', 'fname-a', '-k', 'backembed'],
         cmd: ['status'],
         args: { filename: 'fname-a' },
@@ -656,8 +637,7 @@ path   = "/"
 
   describe('zombie', () => {
 
-    it('zombie (target file does not exist); rels do not exist', async () =>
-      runCmdTest(mocks, {
+    it('zombie (target file does not exist); rels do not exist', runCmdTest(mocks, {
         input: ['status', 'no-doc-no-rels'],
         cmd: ['status'],
         args: { filename: 'no-doc-no-rels' },
@@ -689,8 +669,7 @@ path   = "/"
 `,
       }));
 
-    it('zombie (target file does not exist); fam rels exist', async () =>
-      runCmdTest(mocks, {
+    it('zombie (target file does not exist); fam rels exist', runCmdTest(mocks, {
         input: ['status', 'fname-i'],
         cmd: ['status'],
         args: { filename: 'fname-i' },
@@ -722,8 +701,7 @@ path   = "/"
 `,
       }));
 
-    it('zombie (target file does not exist); ref rels exist', async () =>
-      runCmdTest(mocks, {
+    it('zombie (target file does not exist); ref rels exist', runCmdTest(mocks, {
         input: ['status', 'no-doc'],
         cmd: ['status'],
         args: { filename: 'no-doc' },
@@ -770,8 +748,7 @@ path   = "/"
         }
       });
 
-      it('do not display fam rel table', async () =>
-        runCmdTest(mocks, {
+      it('do not display fam rel table', runCmdTest(mocks, {
           input: ['status', 'fname-a'],
           cmd: ['status'],
           args: { filename: 'fname-a' },
@@ -822,8 +799,7 @@ prefix = "evt.:date"
           fs.writeFileSync(path.join(testCwd, 'evt.2020-02-07.md'), eventFile);
         });
 
-        it('":date"', async () =>
-          runCmdTest(mocks, {
+        it('":date"', runCmdTest(mocks, {
             input: ['status', 'evt.2020-02-07'],
             cmd: ['status'],
             args: { filename: 'evt.2020-02-07' },
@@ -866,8 +842,7 @@ prefix = "evt.:date"
           }
         });
 
-        it('do not display doctype', async () =>
-          runCmdTest(mocks, {
+        it('do not display doctype', runCmdTest(mocks, {
             input: ['status', 'fname-a'],
             cmd: ['status'],
             args: { filename: 'fname-a' },
@@ -916,8 +891,7 @@ prefix = "evt.:date"
 
   describe.skip('error (do not execute)', () => {
 
-    it('problem with fs.readFileSync() of target file', async () =>
-      runCmdTest(mocks, {
+    it('problem with fs.readFileSync() of target file', runCmdTest(mocks, {
         input: ['status', ''],
         cmd: ['status'],
         args: { filename: '' },
@@ -925,24 +899,21 @@ prefix = "evt.:date"
         output: '',
       }));
 
-    it('problem with wikirefs.scan(); attr', async () =>
-      runCmdTest(mocks, {
+    it('problem with wikirefs.scan(); attr', runCmdTest(mocks, {
         input: ['status', ''],
         cmd: ['status'],
         args: { filename: '' },
         output: '',
       }));
 
-    it('problem with wikirefs.scan(); link', async () =>
-      runCmdTest(mocks, {
+    it('problem with wikirefs.scan(); link', runCmdTest(mocks, {
         input: ['status', ''],
         cmd: ['status'],
         args: { filename: '' },
         output: '',
       }));
 
-    it('problem with wikirefs.scan(); embed', async () =>
-      runCmdTest(mocks, {
+    it('problem with wikirefs.scan(); embed', runCmdTest(mocks, {
         input: ['status', ''],
         cmd: ['status'],
         args: { filename: '' },

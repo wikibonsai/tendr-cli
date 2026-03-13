@@ -44,6 +44,7 @@
     "semtree": "^0.0.12",
     "table": "^6.8.1",
     "wikirefs": "^0.0.6",
+    "wisp-ai": "^0.0.1",
     "yargs": "^17.6.1"
   },
   "devDependencies": {
