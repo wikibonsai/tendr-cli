@@ -36,6 +36,7 @@
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "caml-mkdn": "^0.0.2",
+    "chalk": "^5.6.2",
     "columnify": "^1.6.0",
     "glob": "^8.0.3",
     "gray-matter": "^4.0.3",
