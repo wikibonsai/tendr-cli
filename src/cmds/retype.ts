@@ -11,7 +11,7 @@ import { resolve } from '../util/doctype';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function retypedoc(oldType: string, newType: string, opts: any) {
-  console.log(chalk.yellow('`retypedoc` is not yet impelemented. 😱'));
+  console.log(chalk.yellow('`retypedoc` is not yet implemented. 😱'));
 }
 
 export function retyperef(oldType: string, newType: string, opts: any) {
