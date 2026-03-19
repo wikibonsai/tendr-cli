@@ -100,13 +100,6 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
       command: 'list',
       aliases: ['ls'],
       describe: 'list garden contents',
-      builder: (yargs: yargs.Argv) => yargs
-        .option('kind', {
-          alias: 'k',
-          type: 'string',
-          describe: 'kind of relationships to list',
-          default: 'rel',
-        }),
       handler: (argv: ArgumentsCamelCase) => {
         try {
           const payload: InitTree = {
