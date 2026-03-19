@@ -37,7 +37,9 @@ usage: tendr <command>
 cli tools for markdown-based digital gardening.
 
 Commands:
-  tendr lint                             lint garden files.
+  tendr doctor                           check garden health.          [aliases: doc, dr]
+  tendr lint                             deprecated: use doctor.
+  tendr list                             list garden contents.              [aliases: ls]
   tendr seed <concept>                   seed a concept file from an llm.
   tendr tree                             print full knowledge bonsai.
   tendr status <filename>                show status of file relationships.
@@ -71,12 +73,12 @@ Note:
 - Commands expect markdown files using the `.md` extension.
 - Commands that perform anything other than read operations will display a confirmation prompt before executing. This may typically be skipped with the force flag (`-f`).
 
-### `lint`
+### `doctor`, `doc`, `dr`
 
 Example:
 
 ```
-$ tendr lint
+$ tendr doctor
 ```
 
 Sample output:
@@ -113,9 +115,9 @@ semtree.lint(): duplicate entity names found:
 Manual:
 
 ```
-tendr lint
+tendr doctor
 
-lint garden files.
+check garden health
 
 Options:
       --version  Show version number                                   [boolean]
@@ -126,6 +128,16 @@ Options:
                  "t.doc.toml"                 [string] [default: "./t.doc.toml"]
   -r, --root     filename for root of tree                              [string]
   -g, --glob     glob to index files                                    [string]
+```
+
+### `lint`
+
+`lint` is a backwards-compatible shim that delegates to `doctor` for now.
+
+Example:
+
+```
+$ tendr lint
 ```
 
 ### `seed`
@@ -196,7 +208,7 @@ Options:
                                                                          [string]
 ```
 
-### `list`, `ls` (⚠️ todo)
+### `list`, `ls`
 
 List garden information. Runs on all files in current directory and all subdirectories.
 
@@ -208,11 +220,45 @@ $ tendr list
 
 Sample output:
 
-todo
+```
+🌱 garden census
+
+structure
+
+  nodes              5
+  tree               3
+  web                3
+  orphans            2
+  isolates           2
+
+references
+
+  wikiattrs          1
+  wikilinks          3
+  wikiembeds         0
+
+types
+
+  doctypes           1
+  attrtypes          1
+  linktypes          1
+```
 
 Manual:
 
-todo
+```
+tendr list
+
+list garden contents
+
+Options:
+      --version  Show version number                                   [boolean]
+      --help     Show help                                             [boolean]
+  -c, --config   relative path to config file, including filename; defaults to "
+                 ./config.toml"              [string] [default: "./config.toml"]
+  -d, --doctype  relative path to doctype file, including filename; defaults to
+                 "t.doc.toml"                 [string] [default: "./t.doc.toml"]
+```
 
 ### `tree`
 
@@ -266,38 +312,23 @@ $ tendr status <filename>
 Sample output:
 
 ```
-┌────────────────────────────────────┐
-│ 📄 RELs for...                     │
-├──────┬─────────┬─────────┬─────────┤
-│ FILE │ fname-a │ DOCTYPE │ default │
-└──────┴─────────┴─────────┴─────────┘
-┌───────────────────────┐
-│ 🌳 FAM                │
-├───────────┬───────────┤
-│ ANCESTORS │ i.bonsai  │
-├───────────┼───────────┤
-│ CHILDREN  │ • fname-b │
-│           │ • fname-c │
-│           │ • fname-d │
-│           │ • fname-e │
-└───────────┴───────────┘
-┌─────────────────────────────────────────────────────┐
-│ 🕸️ REF                                              │
-├───────┬──────────────────────┬──────────────────────┤
-│       │ BACK                 │ FORE                 │
-├───────┼──────────────────────┼──────────────────────┤
-│ ATTR  │ ◦ attrtype           │ ◦ reftype            │
-│       │   • fname-b          │   • fname-b          │
-│       │                      │ ◦ attrtype           │
-│       │                      │   • fname-c          │
-├───────┼──────────────────────┼──────────────────────┤
-│ LINK  │ • fname-b (attrtype) │ • fname-d (linktype) │
-│       │ • fname-c (linktype) │ • fname-e            │
-│       │ • fname-d            │ • no-doc             │
-│       │ • i.bonsai           │                      │
-├───────┼──────────────────────┼──────────────────────┤
-│ EMBED │ • fname-f            │ --                   │
-└───────┴──────────────────────┴──────────────────────┘
+📄 fname-a [default]
+
+🌳 Tree
+
+  ancestors: i.bonsai
+  children: fname-b, fname-c, fname-d, fname-e
+
+🕸️ Web
+                back                    fore
+  attr    ◦ attrtype                    ◦ reftype
+            • fname-b                   • fname-b
+                                        ◦ attrtype
+                                        • fname-c
+  link    • fname-c [linktype]          • fname-d [linktype]
+          • fname-d                     • fname-e
+          • i.bonsai                    • no-doc
+  embed   • fname-f                     --
 ```
 
 Manual:
@@ -398,6 +429,13 @@ Options:
                                                       [boolean] [default: false]
   -f, --force    skip verification prompt and perform operation
                                                       [boolean] [default: false]
+      --no-title  skip updating the renamed note title attribute
+                                                      [boolean] [default: false]
+      --title     explicit title value to set on the renamed note       [string]
+      --title-case, --case
+                  override config.format.title_case
+                  (kinds: "Title Case", "lower case", "kabob-case", "snake_case")
+                                                                        [string]
 ```
 
 ### `retyperef`, `rtref`, `rtr`
