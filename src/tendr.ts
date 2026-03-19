@@ -16,7 +16,7 @@ import { REL_KINDS, status } from './cmds/status';
 import { find } from './cmds/find';
 import { camlToYaml, mkdnToWiki, wikiToMkdn, yamlToCaml } from './cmds/convert';
 import { lint } from './cmds/lint';
-// import { list } from './cmds/list';
+import { list } from './cmds/list';
 import { rename } from './cmds/rename';
 import { retypedoc, retyperef } from './cmds/retype';
 import { seed } from './cmds/seed';
@@ -90,6 +90,32 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
             globIndexUris: argv.glob as string | undefined
           };
           lint(payload);
+        } catch (e) {
+          console.error(e);
+        }
+      },
+    })
+
+    .command({
+      command: 'list',
+      aliases: ['ls'],
+      describe: 'list garden contents',
+      builder: (yargs: yargs.Argv) => yargs
+        .option('kind', {
+          alias: 'k',
+          type: 'string',
+          describe: 'kind of relationships to list',
+          default: 'rel',
+        }),
+      handler: (argv: ArgumentsCamelCase) => {
+        try {
+          const payload: InitTree = {
+            configUri: argv.config as string,
+            doctypeUri: argv.doctype as string,
+            rootFileName: argv.root as string | undefined,
+            globIndexUris: argv.glob as string | undefined
+          };
+          list(payload);
         } catch (e) {
           console.error(e);
         }
