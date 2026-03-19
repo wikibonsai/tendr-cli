@@ -28,7 +28,7 @@ export const REL_KINDS: string[] = [
 ];
 /* eslint-enable indent */
 
-const EMPTY: string = chalk.dim('--');
+const EMPTY: string = '--';
 
 function isEmpty(refs: Record<string, string[]> | string[]): boolean {
   // link or embed case
@@ -121,6 +121,8 @@ export async function status(
   ////
   // fam/tree
   const treeTableData: string[][] = [];
+  let treeAncestors: string[] = [];
+  let treeChildren: string[] = [];
   const treeJob: Promise<void> = (async () => {
     if (fam) {
       return semtree.then((res: SemTree | undefined) => {
@@ -138,6 +140,8 @@ export async function status(
           if (child) {
             children = node ? node.children : [];
           }
+          treeAncestors = ancestors;
+          treeChildren = children;
           // build table
           if (ancestor) {
             const ancestorValue: string = (ancestors.length > 0) ? ancestors.join(' > ') : EMPTY;
@@ -174,7 +178,7 @@ export async function status(
             for (const fnameData of data.filenames) {
               const type: string = data.type[0];
               const fname: string = fnameData[0];
-              const tableTxt: string = allFileNames.includes(fname) ? fname : chalk.dim(fname);
+              const tableTxt: string = fname;
               if (!Object.keys(foreattrs).includes(type)) {
                 foreattrs[type] = [];
               }
@@ -184,13 +188,13 @@ export async function status(
           } else if (forelink && (data.kind === wikirefs.CONST.WIKI.LINK)) {
             const fname: string = path.basename(data.filename[0], MD);
             const type: string = data.type[0];
-            const item: string = (type === undefined) ? fname : fname + ' (' + type + ')';
-            const tableTxt: string = allFileNames.includes(fname) ? item : chalk.dim(item);
+            const item: string = (type === undefined) ? fname : fname + ' [' + type + ']';
+            const tableTxt: string = item;
             forelinks.push(tableTxt);
           // embed
           } else if (foreembed && (data.kind === wikirefs.CONST.WIKI.EMBED)) {
             const fname: string = path.basename(data.filename[0], MD);
-            const tableTxt: string = allFileNames.includes(fname) ? fname : chalk.dim(fname);
+            const tableTxt: string = fname;
             foreembeds.push(tableTxt);
           } else {
             // do nothing
@@ -218,7 +222,7 @@ export async function status(
           if (backattr && (data.kind === wikirefs.CONST.WIKI.ATTR)) {
             const type: string = data.type[0];
             const fname: string = path.basename(thatFilePath, MD);
-            const tableTxt: string = allFileNames.includes(fname) ? fname : chalk.dim(fname);
+            const tableTxt: string = fname;
             if (!Object.keys(backattrs).includes(type)) {
               backattrs[type] = [];
             }
@@ -227,13 +231,13 @@ export async function status(
           } else if (backlink && (data.kind === wikirefs.CONST.WIKI.LINK)) {
             const fname: string = path.basename(thatFilePath, MD);
             const type: string = data.type[0];
-            const item: string = (type === undefined) ? fname : fname + ' (' + type + ')';
-            const tableTxt: string = allFileNames.includes(fname) ? item : chalk.dim(item);
+            const item: string = (type === undefined) ? fname : fname + ' [' + type + ']';
+            const tableTxt: string = item;
             backlinks.push(tableTxt);
           // embed
           } else if (backembed && (data.kind === wikirefs.CONST.WIKI.EMBED)) {
             const fname: string = path.basename(thatFilePath, MD);
-            const tableTxt: string = allFileNames.includes(fname) ? fname : chalk.dim(fname);
+            const tableTxt: string = fname;
             backembeds.push(tableTxt);
           } else {
             // do nothing
@@ -337,21 +341,169 @@ export async function status(
     treeJob,
     webJob,
   ]).then(() => {
-    // print table
-    const fileText: string = (fileTableData.length > 0) ? table(fileTableData, { ...config, header: {
-      alignment: 'left',
-      content: chalk.bold('📄 RELs for...'),
-    }}) : '';
-    const treeText: string = (treeTableData.length > 0) ? table(treeTableData, { ...config, header: {
-      alignment: 'left',
-      content: chalk.bold('🌳 FAM'),
-    } }) : '';
-    const webText: string = (webTableData.length > 0) ? table(webTableData, { ...config, header: {
-      alignment: 'left',
-      content: chalk.bold('🕸️ REF'),
-    } }) : '';
-    const output: string = fileText + treeText + webText;
-    console.log(output);
+    const RIGHT_START_COL: number = 40;
+
+    function padRight(s: string, width: number): string {
+      return s.padEnd(width, ' ');
+    }
+
+    function mergeColumns(leftLines: string[], rightLines: string[]): string[] {
+      const maxLen: number = Math.max(leftLines.length, rightLines.length);
+      const out: string[] = [];
+      for (let i: number = 0; i < maxLen; i++) {
+        const l: string = leftLines[i] ?? '';
+        const r: string = rightLines[i] ?? '';
+        out.push(padRight(l, RIGHT_START_COL) + r);
+      }
+      return out;
+    }
+
+    function renderAttrGroups(record: Record<string, string[]>): { type: string; fnames: string[] }[] {
+      return Object.entries(record).map(([type, fnames]) => ({ type, fnames }));
+    }
+
+    function attrTypeStr(type: string): string {
+      return type === EMPTY ? EMPTY : `◦ ${type}`;
+    }
+
+    function renderAttrLeft(groups: { type: string; fnames: string[] }[]): string[] {
+      const lines: string[] = [];
+      const typePrefix: string = '  attr    ';
+      const typeContPrefix: string = ' '.repeat(typePrefix.length);
+      const bulletIndent: string = ' '.repeat(12);
+
+      groups.forEach((g, idx) => {
+        lines.push((idx === 0 ? typePrefix : typeContPrefix) + attrTypeStr(g.type));
+        for (const fname of g.fnames) {
+          lines.push(bulletIndent + '• ' + fname);
+        }
+      });
+      return lines;
+    }
+
+    function renderAttrRight(groups: { type: string; fnames: string[] }[]): string[] {
+      const lines: string[] = [];
+      groups.forEach((g) => {
+        lines.push(attrTypeStr(g.type));
+        for (const fname of g.fnames) {
+          lines.push('• ' + fname);
+        }
+      });
+      return lines;
+    }
+
+    function renderLinksLeft(items: string[]): string[] {
+      const lines: string[] = [];
+      const firstPrefix: string = '  link    ';
+      const contPrefix: string = ' '.repeat(firstPrefix.length);
+      items.forEach((item, idx) => {
+        const prefix: string = (idx === 0) ? firstPrefix : contPrefix;
+        if (item === EMPTY) {
+          lines.push(prefix + EMPTY);
+        } else {
+          lines.push(prefix + '• ' + item);
+        }
+      });
+      return lines;
+    }
+
+    function renderLinksRight(items: string[]): string[] {
+      const lines: string[] = [];
+      items.forEach((item) => {
+        if (item === EMPTY) {
+          lines.push(EMPTY);
+        } else {
+          lines.push('• ' + item);
+        }
+      });
+      return lines;
+    }
+
+    function renderEmbedsLeft(items: string[]): string[] {
+      const lines: string[] = [];
+      const firstPrefix: string = '  embed   ';
+      const contIndent: string = ' '.repeat(12);
+      items.forEach((item, idx) => {
+        const prefix: string = (idx === 0) ? firstPrefix : contIndent;
+        if (item === EMPTY) {
+          lines.push(prefix + EMPTY);
+        } else {
+          lines.push(prefix + '• ' + item);
+        }
+      });
+      return lines;
+    }
+
+    function renderEmbedsRight(items: string[]): string[] {
+      const lines: string[] = [];
+      items.forEach((item) => {
+        if (item === EMPTY) {
+          lines.push(EMPTY);
+        } else {
+          lines.push('• ' + item);
+        }
+      });
+      return lines;
+    }
+
+    const outLines: string[] = [];
+
+    // file header
+    if (thisFilePath === undefined) {
+      outLines.push(`📄 ${filename}`);
+    } else {
+      const dtypeOut: string = dtype ?? 'default';
+      outLines.push(`📄 ${filename} [${dtypeOut}]`);
+    }
+
+    // tree
+    outLines.push('');
+    outLines.push('🌳 Tree');
+    outLines.push('');
+
+    if (ancestor) {
+      const val: string = (treeAncestors.length > 0) ? treeAncestors.join(' > ') : EMPTY;
+      outLines.push(`  ancestors: ${val}`);
+    }
+    if (child) {
+      const val: string = (treeChildren.length > 0) ? treeChildren.join(', ') : EMPTY;
+      outLines.push(`  children: ${val}`);
+    }
+
+    // web
+    outLines.push('');
+    if (ref) {
+      const showBack: boolean = backattr || backlink || backembed;
+      const showFore: boolean = foreattr || forelink || foreembed;
+      if (showBack || showFore) {
+        outLines.push('🕸️ Web');
+
+        const leftHead: string = ' '.repeat(16) + 'back';
+        outLines.push(padRight(leftHead, RIGHT_START_COL) + 'fore');
+
+        if (backattr || foreattr) {
+          const backGroups = renderAttrGroups(backattrs);
+          const foreGroups = renderAttrGroups(foreattrs);
+          outLines.push(...mergeColumns(renderAttrLeft(backGroups), renderAttrRight(foreGroups)));
+        }
+
+        if (backlink || forelink) {
+          outLines.push(...mergeColumns(
+            renderLinksLeft(backlinks),
+            renderLinksRight(forelinks),
+          ));
+        }
+
+        if (backembed || foreembed) {
+          outLines.push(...mergeColumns(
+            renderEmbedsLeft(backembeds),
+            renderEmbedsRight(foreembeds),
+          ));
+        }
+      }
+    }
+
+    console.log(outLines.join('\n'));
   }).catch((e) => {
     console.error('problem with data', chalk.red(e));
   });

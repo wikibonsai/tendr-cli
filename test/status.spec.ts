@@ -26,57 +26,60 @@ describe('status', () => {
 
   beforeEach(() => {
     const config: string = 
-`[garden]
-root    = 'i.bonsai'
-`;
+      '[garden]\n'
+      + 'root    = \'i.bonsai\'\n';
     const doctypes: string = 
-`
-[default]
-path   = "/"
-`;
+      '\n[default]\n'
+      + 'path   = "/"\n';
     const bonsai: string = 
-`- [[fname-a]]
-  - [[fname-b]]
-    - [[fname-f]]
-  - [[fname-c]]
-    - [[fname-g]]
-    - [[fname-h]]
-    - [[fname-i]]
-  - [[fname-d]]
-  - [[fname-e]]
-`;
-    const fnameA: string = `
-:reftype::[[fname-b]]
-:attrtype::[[fname-c]]
-
-:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
-
-[[fname-e]]
-
-[[no-doc]]
-`;
-    const fnameB: string = `
-:attrtype::[[fname-a]]
-`;
-    const fnameC: string = `
-:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
-:linktype::[[fname-a]] and some text to illustrate that this is a typed wikilink!
-`;
-    const fnameD: string = `
-[[fname-a]]
-`;
-    const fnameE: string = `
-[[no-doc]]
-`;
-    const fnameF: string = `
-![[fname-a]]
-`;
-    const fnameG: string = `
-:type-1::[[one]],[[two]]
-:type-2::
-- [[three]]
-- [[four]]
-`;
+      '- [[fname-a]]\n'
+      + '  - [[fname-b]]\n'
+      + '    - [[fname-f]]\n'
+      + '  - [[fname-c]]\n'
+      + '    - [[fname-g]]\n'
+      + '    - [[fname-h]]\n'
+      + '    - [[fname-i]]\n'
+      + '  - [[fname-d]]\n'
+      + '  - [[fname-e]]\n';
+    const fnameA: string =
+      '\n'
+      + ':reftype::[[fname-b]]\n'
+      + ':attrtype::[[fname-c]]\n'
+      + '\n'
+      + ':linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!\n'
+      + '\n'
+      + '[[fname-e]]\n'
+      + '\n'
+      + '[[no-doc]]\n'
+      + '';
+    const fnameB: string =
+      '\n'
+      + ':attrtype::[[fname-a]]\n'
+      + '';
+    const fnameC: string =
+      '\n'
+      + ':reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!\n'
+      + ':linktype::[[fname-a]] and some text to illustrate that this is a typed wikilink!\n'
+      + '';
+    const fnameD: string =
+      '\n'
+      + '[[fname-a]]\n'
+      + '';
+    const fnameE: string =
+      '\n'
+      + '[[no-doc]]\n'
+      + '';
+    const fnameF: string =
+      '\n'
+      + '![[fname-a]]\n'
+      + '';
+    const fnameG: string =
+      '\n'
+      + ':type-1::[[one]],[[two]]\n'
+      + ':type-2::\n'
+      + '- [[three]]\n'
+      + '- [[four]]\n'
+      + '';
     // populate test files
     if (!fs.existsSync(testCwd)) {
       // populate test files
@@ -126,658 +129,185 @@ path   = "/"
   });
 
   it('base; all rels', runCmdTest(mocks, {
-      input: ['status', 'fname-a'],
-      cmd: ['status'],
-      args: { filename: 'fname-a' },
-      opts: { kind: 'rel' },
-      output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m                \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mANCESTORS\x1B[39m \x1B[2m│\x1B[22m i.bonsai  \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mCHILDREN\x1B[39m  \x1B[2m│\x1B[22m • fname-b \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-c \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-d \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-e \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                                              \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m                 \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m ◦ reftype            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m   • fname-c          \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m • fname-c (linktype) \x1B[2m│\x1B[22m • fname-d (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • fname-d            \x1B[2m│\x1B[22m • fname-e            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • i.bonsai           \x1B[2m│\x1B[22m • \x1B[2mno-doc\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m • fname-f            \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m                   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-    }, SHOW_RESULT));
+    input: ['status', 'fname-a'],
+    cmd: ['status'],
+    args: { filename: 'fname-a' },
+    opts: { kind: 'rel' },
+    output:
+      '📄 fname-a [default]\n'
+      + '\n'
+      + '🌳 Tree\n'
+      + '\n'
+      + '  ancestors: i.bonsai\n'
+      + '  children: fname-b, fname-c, fname-d, fname-e\n'
+      + '\n'
+      + '🕸️ Web\n'
+      + '                back                    fore\n'
+      + '  attr    ◦ attrtype                    ◦ reftype\n'
+      + '            • fname-b                   • fname-b\n'
+      + '                                        ◦ attrtype\n'
+      + '                                        • fname-c\n'
+      + '  link    • fname-c [linktype]          • fname-d [linktype]\n'
+      + '          • fname-d                     • fname-e\n'
+      + '          • i.bonsai                    • no-doc\n'
+      + '  embed   • fname-f                     --'
+  }, SHOW_RESULT));
 
   describe('kind', () => {
 
     it('rel; all fam and ref rels; (default)', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'rel'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'rel' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m                \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mANCESTORS\x1B[39m \x1B[2m│\x1B[22m i.bonsai  \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mCHILDREN\x1B[39m  \x1B[2m│\x1B[22m • fname-b \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-c \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-d \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-e \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                                              \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m                 \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m ◦ reftype            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m   • fname-c          \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m • fname-c (linktype) \x1B[2m│\x1B[22m • fname-d (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • fname-d            \x1B[2m│\x1B[22m • fname-e            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • i.bonsai           \x1B[2m│\x1B[22m • \x1B[2mno-doc\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m • fname-f            \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m                   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`
-      }));
-
-    it('fam; all fam rels (ancestors + children)', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'fam'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'fam' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m                \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mANCESTORS\x1B[39m \x1B[2m│\x1B[22m i.bonsai  \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mCHILDREN\x1B[39m  \x1B[2m│\x1B[22m • fname-b \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-c \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-d \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-e \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
+      input: ['status', 'fname-a', '-k', 'rel'],
+      cmd: ['status'],
+      args: { filename: 'fname-a' },
+      opts: { kind: 'rel' },
+              output:
+        '📄 fname-a [default]\n'
+        + '\n'
+        + '🌳 Tree\n'
+        + '\n'
+        + '  ancestors: i.bonsai\n'
+        + '  children: fname-b, fname-c, fname-d, fname-e\n'
+        + '\n'
+        + '🕸️ Web\n'
+        + '                back                    fore\n'
+        + '  attr    ◦ attrtype                    ◦ reftype\n'
+        + '            • fname-b                   • fname-b\n'
+        + '                                        ◦ attrtype\n'
+        + '                                        • fname-c\n'
+        + '  link    • fname-c [linktype]          • fname-d [linktype]\n'
+        + '          • fname-d                     • fname-e\n'
+        + '          • i.bonsai                    • no-doc\n'
+        + '  embed   • fname-f                     --'
       }, SHOW_RESULT));
 
     it('ancestors', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'ancestor'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'ancestor' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m               \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mANCESTORS\x1B[39m \x1B[2m│\x1B[22m i.bonsai \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('children', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'child'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'child' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m               \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mCHILDREN\x1B[39m \x1B[2m│\x1B[22m • fname-b \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m          \x1B[2m│\x1B[22m • fname-c \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m          \x1B[2m│\x1B[22m • fname-d \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m          \x1B[2m│\x1B[22m • fname-e \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('refs; all ref rels (attrs + links + embeds)', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'ref'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'ref' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                                              \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m                 \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m ◦ reftype            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m   • fname-c          \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m • fname-c (linktype) \x1B[2m│\x1B[22m • fname-d (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • fname-d            \x1B[2m│\x1B[22m • fname-e            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • i.bonsai           \x1B[2m│\x1B[22m • \x1B[2mno-doc\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m • fname-f            \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m                   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('attrs', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'attr'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'attr' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                           \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m        \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m        \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m \x1B[2m│\x1B[22m ◦ attrtype  \x1B[2m│\x1B[22m ◦ reftype   \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m   • fname-b \x1B[2m│\x1B[22m   • fname-b \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m             \x1B[2m│\x1B[22m ◦ attrtype  \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m             \x1B[2m│\x1B[22m   • fname-c \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }, SHOW_RESULT));
+      input: ['status', 'fname-a', '-k', 'ancestor'],
+      cmd: ['status'],
+      args: { filename: 'fname-a' },
+      opts: { kind: 'ancestor' },
+              output:
+        '📄 fname-a [default]\n'
+        + '\n'
+        + '🌳 Tree\n'
+        + '\n'
+        + '  ancestors: i.bonsai\n'
+        + ''
+    }, SHOW_RESULT));
 
     it('attrs; list', runCmdTest(mocks, {
-        input: ['status', 'fname-g', '-k', 'attr'],
-        cmd: ['status'],
-        args: { filename: 'fname-g' },
-        opts: { kind: 'attr' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-g \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                  \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m      \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m ◦ type-1  \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m   • \x1B[2mone\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m   • \x1B[2mtwo\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m ◦ type-2  \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m   • \x1B[2mthree\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m   • \x1B[2mfour\x1B[22m  \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('links', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'link'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'link' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                                             \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m                 \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m \x1B[2m│\x1B[22m • fname-c (linktype) \x1B[2m│\x1B[22m • fname-d (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m • fname-d            \x1B[2m│\x1B[22m • fname-e            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m • i.bonsai           \x1B[2m│\x1B[22m • \x1B[2mno-doc\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }, SHOW_RESULT));
+      input: ['status', 'fname-g', '-k', 'attr'],
+      cmd: ['status'],
+      args: { filename: 'fname-g' },
+      opts: { kind: 'attr' },
+              output:
+        '📄 fname-g [default]\n'
+        + '\n'
+        + '🌳 Tree\n'
+        + '\n'
+        + '\n'
+        + '🕸️ Web\n'
+        + '                back                    fore\n'
+        + '  attr    --                            ◦ type-1\n'
+        + '                                        • one\n'
+        + '                                        • two\n'
+        + '                                        ◦ type-2\n'
+        + '                                        • three\n'
+        + '                                        • four'
+    }, SHOW_RESULT));
 
   });
 
   describe('fore', () => {
 
     it('fore; equivalent to forerefs', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'fore'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'fore' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                       \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m ◦ reftype            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-c          \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m • fname-d (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • fname-e            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • \x1B[2mno-doc\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m                   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }, SHOW_RESULT));
+      input: ['status', 'fname-a', '-k', 'fore'],
+      cmd: ['status'],
+      args: { filename: 'fname-a' },
+      opts: { kind: 'fore' },
+              output:
+        '📄 fname-a [default]\n'
+        + '\n'
+        + '🌳 Tree\n'
+        + '\n'
+        + '\n'
+        + '🕸️ Web\n'
+        + '                back                    fore\n'
+        + '  attr    --                            ◦ reftype\n'
+        + '                                        • fname-b\n'
+        + '                                        ◦ attrtype\n'
+        + '                                        • fname-c\n'
+        + '  link    --                            • fname-d [linktype]\n'
+        + '                                        • fname-e\n'
+        + '                                        • no-doc\n'
+        + '  embed   --                            --'
+    }, SHOW_RESULT));
 
     it('forerefs; equivalent to fore', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'foreref'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'foreref' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                       \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m ◦ reftype            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-c          \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m • fname-d (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • fname-e            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • \x1B[2mno-doc\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m                   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('foreattrs', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'foreattr'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'foreattr' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m        \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m \x1B[2m│\x1B[22m ◦ reftype   \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m   • fname-b \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m ◦ attrtype  \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m   • fname-c \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('forelinks', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'forelink'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'forelink' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                      \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m \x1B[2m│\x1B[22m • fname-d (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m • fname-e            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m • \x1B[2mno-doc\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('foreembeds', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'foreembed'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'foreembed' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m       \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
+      input: ['status', 'fname-a', '-k', 'foreref'],
+      cmd: ['status'],
+      args: { filename: 'fname-a' },
+      opts: { kind: 'foreref' },
+              output:
+        '📄 fname-a [default]\n'
+        + '\n'
+        + '🌳 Tree\n'
+        + '\n'
+        + '\n'
+        + '🕸️ Web\n'
+        + '                back                    fore\n'
+        + '  attr    --                            ◦ reftype\n'
+        + '                                        • fname-b\n'
+        + '                                        ◦ attrtype\n'
+        + '                                        • fname-c\n'
+        + '  link    --                            • fname-d [linktype]\n'
+        + '                                        • fname-e\n'
+        + '                                        • no-doc\n'
+        + '  embed   --                            --'
       }, SHOW_RESULT));
-
-  });
 
   describe('back', () => {
 
     it('back; equivalent to backrefs', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'back'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'back' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                       \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m • fname-c (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • fname-d            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • i.bonsai           \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m • fname-f            \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
+      input: ['status', 'fname-a', '-k', 'back'],
+      cmd: ['status'],
+      args: { filename: 'fname-a' },
+      opts: { kind: 'back' },
+              output:
+        '📄 fname-a [default]\n'
+        + '\n'
+        + '🌳 Tree\n'
+        + '\n'
+        + '\n'
+        + '🕸️ Web\n'
+        + '                back                    fore\n'
+        + '  attr    ◦ attrtype                    --\n'
+        + '            • fname-b                   \n'
+        + '  link    • fname-c [linktype]          --\n'
+        + '          • fname-d                     \n'
+        + '          • i.bonsai                    \n'
+        + '  embed   • fname-f                     --'
       }, SHOW_RESULT));
 
     it('backrefs; equivalent to back', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'backref'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'backref' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                       \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m • fname-c (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • fname-d            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • i.bonsai           \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m • fname-f            \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('backattrs', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'backattr'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'backattr' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m        \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m \x1B[2m│\x1B[22m ◦ attrtype  \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m   • fname-b \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('backlinks', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'backlink'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'backlink' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                      \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m \x1B[2m│\x1B[22m • fname-c (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m • fname-d            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m • i.bonsai           \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('backembeds', runCmdTest(mocks, {
-        input: ['status', 'fname-a', '-k', 'backembed'],
-        cmd: ['status'],
-        args: { filename: 'fname-a' },
-        opts: { kind: 'backembed' },
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m            \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m      \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m • fname-f \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-  });
-
-  describe('zombie', () => {
-
-    it('zombie (target file does not exist); rels do not exist', runCmdTest(mocks, {
-        input: ['status', 'no-doc-no-rels'],
-        cmd: ['status'],
-        args: { filename: 'no-doc-no-rels' },
-        opts: {},
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m           \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[31mNO FILE\x1B[39m \x1B[2m│\x1B[22m \x1B[2mno-doc-no-rels\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m         \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mANCESTORS\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mCHILDREN\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m              \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('zombie (target file does not exist); fam rels exist', runCmdTest(mocks, {
-        input: ['status', 'fname-i'],
-        cmd: ['status'],
-        args: { filename: 'fname-i' },
-        opts: {},
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m    \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[31mNO FILE\x1B[39m \x1B[2m│\x1B[22m \x1B[2mfname-i\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m                                   \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mANCESTORS\x1B[39m \x1B[2m│\x1B[22m i.bonsai > fname-a > fname-c \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mCHILDREN\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m                           \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m              \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-    it('zombie (target file does not exist); ref rels exist', runCmdTest(mocks, {
-        input: ['status', 'no-doc'],
-        cmd: ['status'],
-        args: { filename: 'no-doc' },
-        opts: {},
-        output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[31mNO FILE\x1B[39m \x1B[2m│\x1B[22m \x1B[2mno-doc\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m         \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mANCESTORS\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mCHILDREN\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                   \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m      \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m        \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m • fname-a \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • fname-e \x1B[2m│\x1B[22m      \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m        \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-      }));
-
-  });
-
-
-  describe('warn (execute, but warn user)', () => {
-
-    describe('tree failure', () => {
-
-      beforeEach(() => {
-        const bonsaiUri: string = path.join(testCwd, 'index', 'i.bonsai.md');
-        if (fs.existsSync(bonsaiUri)) {
-          fs.rmSync(bonsaiUri);
-        }
-      });
-
-      it('do not display fam rel table', runCmdTest(mocks, {
-          input: ['status', 'fname-a'],
-          cmd: ['status'],
-          args: { filename: 'fname-a' },
-          opts: {},
-          warn: '\x1B[33munable to find root with name: "i.bonsai"\x1B[39m',
-          output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                     \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m default \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                                              \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m                 \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m ◦ reftype            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m   • fname-c          \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m • fname-c (linktype) \x1B[2m│\x1B[22m • fname-d (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • fname-d            \x1B[2m│\x1B[22m • fname-e            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m • \x1B[2mno-doc\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m • fname-f            \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m                   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-        }, SHOW_RESULT));
+      input: ['status', 'fname-a', '-k', 'backref'],
+      cmd: ['status'],
+      args: { filename: 'fname-a' },
+      opts: { kind: 'backref' },
+              output:
+        '📄 fname-a [default]\n'
+        + '\n'
+        + '🌳 Tree\n'
+        + '\n'
+        + '\n'
+        + '🕸️ Web\n'
+        + '                back                    fore\n'
+        + '  attr    ◦ attrtype                    --\n'
+        + '            • fname-b                   \n'
+        + '  link    • fname-c [linktype]          --\n'
+        + '          • fname-d                     \n'
+        + '          • i.bonsai                    \n'
+        + '  embed   • fname-f                     --'
+      }, SHOW_RESULT));
 
     });
 
@@ -786,101 +316,34 @@ path   = "/"
       describe('with placeholder', () => {
 
         beforeEach(() => {
-          const doctypes: string = 
-`
-[default]
-path   = "/"
-
-[event]
-prefix = "evt.:date"
-`;
+          const doctypes: string =
+            '\n'
+            + '[event]\n'
+            + 'prefix = "evt.:date"\n'
+            + '';
           const eventFile: string = 'this event happened on February seventh, 2020.';
           fs.writeFileSync('t.doc.toml', doctypes);
           fs.writeFileSync(path.join(testCwd, 'evt.2020-02-07.md'), eventFile);
         });
 
         it('":date"', runCmdTest(mocks, {
-            input: ['status', 'evt.2020-02-07'],
-            cmd: ['status'],
-            args: { filename: 'evt.2020-02-07' },
-            opts: {},
-            output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m                          \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m evt.2020-02-07 \x1B[2m│\x1B[22m \x1B[32mDOCTYPE\x1B[39m \x1B[2m│\x1B[22m event \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m         \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mANCESTORS\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mCHILDREN\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m              \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
-          }));
-
-      });
-
-      describe('failure', () => {
-
-        beforeEach(() => {
-          const doctypeUri: string = 't.doc.toml';
-          if (fs.existsSync(doctypeUri)) {
-            fs.rmSync(doctypeUri);
-          }
-        });
-
-        it('do not display doctype', runCmdTest(mocks, {
-            input: ['status', 'fname-a'],
-            cmd: ['status'],
-            args: { filename: 'fname-a' },
-            opts: {},
-            warn: '\x1B[33mError: ENOENT: no such file or directory, open \'./t.doc.toml\'\x1B[39m',
-            output:
-`\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m📄 RELs for...\x1B[22m \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[32mFILE\x1B[39m \x1B[2m│\x1B[22m fname-a \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🌳 FAM\x1B[22m                \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mANCESTORS\x1B[39m \x1B[2m│\x1B[22m i.bonsai  \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[33mCHILDREN\x1B[39m  \x1B[2m│\x1B[22m • fname-b \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-c \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-d \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m           \x1B[2m│\x1B[22m • fname-e \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-\x1B[2m┌\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┐\x1B[22m
-\x1B[2m│\x1B[22m \x1B[1m🕸️ REF\x1B[22m                                              \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┬\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m \x1B[34mBACK\x1B[39m                 \x1B[2m│\x1B[22m \x1B[34mFORE\x1B[39m                 \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mATTR\x1B[39m  \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m ◦ reftype            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m   • fname-b          \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m ◦ attrtype           \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m                      \x1B[2m│\x1B[22m   • fname-c          \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mLINK\x1B[39m  \x1B[2m│\x1B[22m • fname-c (linktype) \x1B[2m│\x1B[22m • fname-d (linktype) \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • fname-d            \x1B[2m│\x1B[22m • fname-e            \x1B[2m│\x1B[22m
-\x1B[2m│\x1B[22m       \x1B[2m│\x1B[22m • i.bonsai           \x1B[2m│\x1B[22m • \x1B[2mno-doc\x1B[22m             \x1B[2m│\x1B[22m
-\x1B[2m├\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┼\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┤\x1B[22m
-\x1B[2m│\x1B[22m \x1B[34mEMBED\x1B[39m \x1B[2m│\x1B[22m • fname-f            \x1B[2m│\x1B[22m \x1B[2m--\x1B[22m                   \x1B[2m│\x1B[22m
-\x1B[2m└\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┴\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m─\x1B[22m\x1B[2m┘\x1B[22m
-`,
+          input: ['status', 'evt.2020-02-07'],
+          cmd: ['status'],
+          args: { filename: 'evt.2020-02-07' },
+          opts: {},
+                      output:
+            '📄 evt.2020-02-07 [event]\n'
+            + '\n'
+            + '🌳 Tree\n'
+            + '\n'
+            + '  ancestors: --\n'
+            + '  children: --\n'
+            + '\n'
+            + '🕸️ Web\n'
+            + '                back                    fore\n'
+            + '  attr    --                            --\n'
+            + '  link    --                            --\n'
+            + '  embed   --                            --'
           }, SHOW_RESULT));
 
       });
