@@ -24,7 +24,7 @@ const mocks: TestMocks = {
   testCwd,
 };
 
-describe('lint', () => {
+describe('doctor', () => {
 
   beforeEach(() => {
     const config: string = '[garden]\n'
@@ -82,8 +82,8 @@ describe('lint', () => {
   describe('single index file', () => {
 
     it('success', runCmdTestSync(mocks, {
-      input: ['lint'],
-      cmd: ['lint'],
+      input: ['doctor'],
+      cmd: ['doctor'],
       args: {},
       opts: {},
       output:
@@ -107,8 +107,8 @@ describe('lint', () => {
       });
 
       it('found', runCmdTestSync(mocks, {
-        input: ['lint'],
-        cmd: ['lint'],
+        input: ['doctor'],
+        cmd: ['doctor'],
         args: {},
         opts: {},
         output:
@@ -128,8 +128,8 @@ describe('lint', () => {
       });
 
       it('found', runCmdTestSync(mocks, {
-        input: ['lint'],
-        cmd: ['lint'],
+        input: ['doctor'],
+        cmd: ['doctor'],
         args: {},
         opts: {},
         output:
@@ -152,8 +152,8 @@ describe('lint', () => {
       });
 
       it('found', runCmdTestSync(mocks, {
-        input: ['lint'],
-        cmd: ['lint'],
+        input: ['doctor'],
+        cmd: ['doctor'],
         args: {},
         opts: {},
         output:
@@ -170,8 +170,8 @@ describe('lint', () => {
       });
 
       it('found', runCmdTestSync(mocks, {
-        input: ['lint'],
-        cmd: ['lint'],
+        input: ['doctor'],
+        cmd: ['doctor'],
         args: {},
         opts: {},
         output:
@@ -195,8 +195,8 @@ describe('lint', () => {
       });
 
       it('found', runCmdTestSync(mocks, {
-        input: ['lint'],
-        cmd: ['lint'],
+        input: ['doctor'],
+        cmd: ['doctor'],
         args: {},
         opts: {},
         output:
@@ -219,8 +219,8 @@ describe('lint', () => {
       });
 
       it('found', runCmdTestSync(mocks, {
-        input: ['lint'],
-        cmd: ['lint'],
+        input: ['doctor'],
+        cmd: ['doctor'],
         args: {},
         opts: {},
         output:
@@ -243,8 +243,8 @@ describe('lint', () => {
       });
 
       it('found', runCmdTestSync(mocks, {
-        input: ['lint'],
-        cmd: ['lint'],
+        input: ['doctor'],
+        cmd: ['doctor'],
         args: {},
         opts: {},
         output:
@@ -266,8 +266,8 @@ describe('lint', () => {
       });
 
       it('found', runCmdTestSync(mocks, {
-        input: ['lint'],
-        cmd: ['lint'],
+        input: ['doctor'],
+        cmd: ['doctor'],
         args: {},
         opts: {},
         output:
@@ -297,8 +297,8 @@ describe('lint', () => {
     });
 
     it('success', runCmdTestSync(mocks, {
-      input: ['lint'],
-      cmd: ['lint'],
+      input: ['doctor'],
+      cmd: ['doctor'],
       args: {},
       opts: {},
       output:
@@ -308,3 +308,4 @@ describe('lint', () => {
   });
 
 });
+

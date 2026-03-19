@@ -15,6 +15,7 @@ import * as prompt from './util/prompt';
 import { REL_KINDS, status } from './cmds/status';
 import { find } from './cmds/find';
 import { camlToYaml, mkdnToWiki, wikiToMkdn, yamlToCaml } from './cmds/convert';
+import { doctor } from './cmds/doctor';
 import { lint } from './cmds/lint';
 import { list } from './cmds/list';
 import { rename } from './cmds/rename';
@@ -64,12 +65,43 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
     // .wrap(null)
     // .epilogue('cli tools for markdown-based digital gardening')
 
-  // garden level
+    // garden level
+
+    .command({
+      command: 'doctor',
+      aliases: ['doc', 'dr'],
+      // aliases: [''],
+      describe: 'check garden health',
+      builder: (yargs: yargs.Argv) => yargs
+        .option('root', {
+          alias: 'r',
+          type: 'string',
+          describe: 'filename for root of tree',
+        })
+        .option('glob', {
+          alias: 'g',
+          type: 'string',
+          describe: 'glob to index files',
+        }),
+      handler: (argv: ArgumentsCamelCase) => {
+        try {
+          const payload: InitTree = {
+            configUri: argv.config as string,
+            doctypeUri: argv.doctype as string,
+            rootFileName: argv.root as string | undefined,
+            globIndexUris: argv.glob as string | undefined
+          };
+          doctor(payload);
+        } catch (e) {
+          console.error(e);
+        }
+      },
+    })
 
     .command({
       command: 'lint',
-      // aliases: [''],
-      describe: 'lint garden files',
+      // deprecated: `doctor` replaces `lint`
+      describe: 'deprecated: use doctor',
       builder: (yargs: yargs.Argv) => yargs
         .option('root', {
           alias: 'r',
