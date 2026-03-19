@@ -21,7 +21,17 @@ const mocks: TestMocks = {
 describe('rename', () => {
 
   beforeEach(() => {
+    // `rename.ts` reads `./config.toml` relative to the real process cwd.
+    // Our tests mock `process.cwd()` to `testCwd`, but that does not affect
+    // these relative reads.
+    fs.writeFileSync(
+      'config.toml',
+      `[format]\n` + 'title_case = "Title Case"\n',
+      'utf8',
+    );
+
     const fnameA: string = `
+: title    :: Old Title
 :reftype::[[fname-b]]
 :attrtype::[[fname-c]]
 
@@ -48,6 +58,7 @@ describe('rename', () => {
 [[no-doc]]
 `;
     const fnameG: string = `
+: title    :: Old Title G
 ![[fname-a]]
 `;
     // populate test files
@@ -72,6 +83,9 @@ describe('rename', () => {
 
   afterEach(() => {
     fs.rmSync(testCwd, { recursive: true });
+    if (fs.existsSync('config.toml')) {
+      fs.rmSync('config.toml');
+    }
     mocks.fakeConsoleLog.restore();
   });
 
@@ -87,6 +101,7 @@ describe('rename', () => {
 `\x1B[32mUPDATED FILENAMES:\x1B[39m
   fname-a -> new-name
 \x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  new-name
   fname-b
   fname-c
   fname-d
@@ -95,6 +110,7 @@ describe('rename', () => {
     contents: {
       'new-name':
 `
+: title    :: New Name
 :reftype::[[fname-b]]
 :attrtype::[[fname-c]]
 
@@ -121,10 +137,336 @@ describe('rename', () => {
 [[no-doc]]
 `,
       'fname-g': `
+: title    :: Old Title G
 ![[new-name]]
 `,
     },
   }));
+
+  it('title; --no-title skips title update', runCmdTestSync(mocks, {
+    input: ['rename', 'fname-a', 'new-name', '--no-title'],
+    cmd: ['rename'],
+    args: {
+      ['old-fname']: 'fname-a',
+      ['new-fname']: 'new-name',
+    },
+    confirm: 'are you sure you want to rename "fname-a" to "new-name"? [y/n]\n',
+    output:
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-a -> new-name
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  fname-b
+  fname-c
+  fname-d
+  fname-e
+  fname-g`,
+    contents: {
+      'new-name':
+`
+: title    :: Old Title
+:reftype::[[fname-b]]
+:attrtype::[[fname-c]]
+
+:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
+
+[[fname-e]]
+
+[[no-doc]]
+`,
+      'fname-b': `
+:attrtype::[[new-name]]
+`,
+      'fname-c': `
+:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[new-name]] and some text to illustrate that this is a typed wikilink!
+`,
+      'fname-d': `
+[[new-name]]
+`,
+      'fname-e': `
+[[new-name|label]]
+`,
+      'fname-f': `
+[[no-doc]]
+`,
+      'fname-g': `
+: title    :: Old Title G
+![[new-name]]
+`,
+    },
+  }));
+
+  it('title; --title "Custom Title" overrides computed title', runCmdTestSync(mocks, {
+    input: ['rename', 'fname-a', 'new-name', '--title', 'Custom Title'],
+    cmd: ['rename'],
+    args: {
+      ['old-fname']: 'fname-a',
+      ['new-fname']: 'new-name',
+    },
+    confirm: 'are you sure you want to rename "fname-a" to "new-name"? [y/n]\n',
+    output:
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-a -> new-name
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  new-name
+  fname-b
+  fname-c
+  fname-d
+  fname-e
+  fname-g`,
+    contents: {
+      'new-name':
+`
+: title    :: Custom Title
+:reftype::[[fname-b]]
+:attrtype::[[fname-c]]
+
+:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
+
+[[fname-e]]
+
+[[no-doc]]
+`,
+      'fname-b': `
+:attrtype::[[new-name]]
+`,
+      'fname-c': `
+:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[new-name]] and some text to illustrate that this is a typed wikilink!
+`,
+      'fname-d': `
+[[new-name]]
+`,
+      'fname-e': `
+[[new-name|label]]
+`,
+      'fname-f': `
+[[no-doc]]
+`,
+      'fname-g': `
+: title    :: Old Title G
+![[new-name]]
+`,
+    },
+  }));
+
+  describe('title; --title-case', () => {
+    it('Title Case (default)', runCmdTestSync(mocks, {
+      input: ['rename', 'fname-a', 'new-name', '--title-case', 'Title Case'],
+      cmd: ['rename'],
+      args: {
+        ['old-fname']: 'fname-a',
+        ['new-fname']: 'new-name',
+      },
+      confirm: 'are you sure you want to rename "fname-a" to "new-name"? [y/n]\n',
+      output:
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-a -> new-name
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  new-name
+  fname-b
+  fname-c
+  fname-d
+  fname-e
+  fname-g`,
+      contents: {
+        'new-name':
+`
+: title    :: New Name
+:reftype::[[fname-b]]
+:attrtype::[[fname-c]]
+
+:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
+
+[[fname-e]]
+
+[[no-doc]]
+`,
+        'fname-b': `
+:attrtype::[[new-name]]
+`,
+        'fname-c': `
+:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[new-name]] and some text to illustrate that this is a typed wikilink!
+`,
+        'fname-d': `
+[[new-name]]
+`,
+        'fname-e': `
+[[new-name|label]]
+`,
+        'fname-f': `
+[[no-doc]]
+`,
+        'fname-g': `
+: title    :: Old Title G
+![[new-name]]
+`,
+      },
+    }));
+
+    it('lower case', runCmdTestSync(mocks, {
+      input: ['rename', 'fname-a', 'new-name', '--title-case', 'lower case'],
+      cmd: ['rename'],
+      args: {
+        ['old-fname']: 'fname-a',
+        ['new-fname']: 'new-name',
+      },
+      confirm: 'are you sure you want to rename "fname-a" to "new-name"? [y/n]\n',
+      output:
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-a -> new-name
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  new-name
+  fname-b
+  fname-c
+  fname-d
+  fname-e
+  fname-g`,
+      contents: {
+        'new-name':
+`
+: title    :: new name
+:reftype::[[fname-b]]
+:attrtype::[[fname-c]]
+
+:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
+
+[[fname-e]]
+
+[[no-doc]]
+`,
+        'fname-b': `
+:attrtype::[[new-name]]
+`,
+        'fname-c': `
+:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[new-name]] and some text to illustrate that this is a typed wikilink!
+`,
+        'fname-d': `
+[[new-name]]
+`,
+        'fname-e': `
+[[new-name|label]]
+`,
+        'fname-f': `
+[[no-doc]]
+`,
+        'fname-g': `
+: title    :: Old Title G
+![[new-name]]
+`,
+      },
+    }));
+
+    it('kabob-case', runCmdTestSync(mocks, {
+      input: ['rename', 'fname-a', 'new-name', '--title-case', 'kabob-case'],
+      cmd: ['rename'],
+      args: {
+        ['old-fname']: 'fname-a',
+        ['new-fname']: 'new-name',
+      },
+      confirm: 'are you sure you want to rename "fname-a" to "new-name"? [y/n]\n',
+      output:
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-a -> new-name
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  new-name
+  fname-b
+  fname-c
+  fname-d
+  fname-e
+  fname-g`,
+      contents: {
+        'new-name':
+`
+: title    :: new-name
+:reftype::[[fname-b]]
+:attrtype::[[fname-c]]
+
+:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
+
+[[fname-e]]
+
+[[no-doc]]
+`,
+        'fname-b': `
+:attrtype::[[new-name]]
+`,
+        'fname-c': `
+:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[new-name]] and some text to illustrate that this is a typed wikilink!
+`,
+        'fname-d': `
+[[new-name]]
+`,
+        'fname-e': `
+[[new-name|label]]
+`,
+        'fname-f': `
+[[no-doc]]
+`,
+        'fname-g': `
+: title    :: Old Title G
+![[new-name]]
+`,
+      },
+    }));
+
+    it('snake_case', runCmdTestSync(mocks, {
+      input: ['rename', 'fname-a', 'new-name', '--title-case', 'snake_case'],
+      cmd: ['rename'],
+      args: {
+        ['old-fname']: 'fname-a',
+        ['new-fname']: 'new-name',
+      },
+      confirm: 'are you sure you want to rename "fname-a" to "new-name"? [y/n]\n',
+      output:
+`\x1B[32mUPDATED FILENAMES:\x1B[39m
+  fname-a -> new-name
+\x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  new-name
+  fname-b
+  fname-c
+  fname-d
+  fname-e
+  fname-g`,
+      contents: {
+        'new-name':
+`
+: title    :: new_name
+:reftype::[[fname-b]]
+:attrtype::[[fname-c]]
+
+:linktype::[[fname-d]] and some text to illustrate that this is a typed wikilink!
+
+[[fname-e]]
+
+[[no-doc]]
+`,
+        'fname-b': `
+:attrtype::[[new-name]]
+`,
+        'fname-c': `
+:reftype::[[fname-e]] and some text to illustrate that this is a typed wikilink!
+:linktype::[[new-name]] and some text to illustrate that this is a typed wikilink!
+`,
+        'fname-d': `
+[[new-name]]
+`,
+        'fname-e': `
+[[new-name|label]]
+`,
+        'fname-f': `
+[[no-doc]]
+`,
+        'fname-g': `
+: title    :: Old Title G
+![[new-name]]
+`,
+      },
+    }));
+  });
 
   it('base; no file + no refs', runCmdTestSync(mocks, {
     input: ['rename', 'imaginary-doc', 'new-name'],
@@ -142,6 +484,7 @@ describe('rename', () => {
     contents: {
       'fname-a':
 `
+: title    :: Old Title
 :reftype::[[fname-b]]
 :attrtype::[[fname-c]]
 
@@ -168,6 +511,7 @@ describe('rename', () => {
 [[no-doc]]
 `,
       'fname-g': `
+: title    :: Old Title G
 ![[fname-a]]
 `,
     },
@@ -185,10 +529,11 @@ describe('rename', () => {
 `\x1B[32mUPDATED FILENAMES:\x1B[39m
   fname-g -> new-name
 \x1B[32mUPDATED FILE CONTENT:\x1B[39m
-\x1B[2m  no wikirefs named: 'fname-g'\x1B[22m`,
+  new-name`,
     contents: {
       'fname-a':
 `
+: title    :: Old Title
 :reftype::[[fname-b]]
 :attrtype::[[fname-c]]
 
@@ -215,6 +560,7 @@ describe('rename', () => {
 [[no-doc]]
 `,
       'new-name': `
+: title    :: New Name
 ![[fname-a]]
 `,
     },
@@ -237,6 +583,7 @@ describe('rename', () => {
     contents: {
       'fname-a':
 `
+: title    :: Old Title
 :reftype::[[fname-b]]
 :attrtype::[[fname-c]]
 
@@ -263,6 +610,7 @@ describe('rename', () => {
 [[new-name]]
 `,
       'fname-g': `
+: title    :: Old Title G
 ![[fname-a]]
 `,
     },
@@ -295,6 +643,7 @@ describe('rename', () => {
 `\x1B[32mUPDATED FILENAMES:\x1B[39m
   fname-a -> fname-new
 \x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  fname-new
   fname-b
   fname-c
   fname-d
@@ -303,6 +652,7 @@ describe('rename', () => {
         contents: {
           'fname-new':
 `
+: title    :: Fname New
 :reftype::[[fname-b]]
 :attrtype::[[fname-c]]
 
@@ -329,6 +679,7 @@ describe('rename', () => {
 [[no-doc]]
 `,
           'fname-g': `
+: title    :: Old Title G
 ![[fname-new]]
 `,
         },
@@ -361,6 +712,7 @@ describe('rename', () => {
         contents: {
           'new-a':
 `
+: title    :: New A
 :reftype::[[new-b]]
 :attrtype::[[new-c]]
 
@@ -387,6 +739,7 @@ describe('rename', () => {
 [[no-doc]]
 `,
           'new-g': `
+: title    :: New G
 ![[new-a]]
 `,
         },
@@ -412,6 +765,7 @@ describe('rename', () => {
 `\x1B[32mUPDATED FILENAMES:\x1B[39m
   fname-a -> new-name
 \x1B[32mUPDATED FILE CONTENT:\x1B[39m
+  new-name
   fname-b
   fname-c
   fname-d
@@ -420,6 +774,7 @@ describe('rename', () => {
       contents: {
         'new-name':
 `
+: title    :: New Name
 :reftype::[[fname-b]]
 :attrtype::[[fname-c]]
 
@@ -446,6 +801,7 @@ describe('rename', () => {
 [[no-doc]]
 `,
         'fname-g': `
+: title    :: Old Title G
 ![[new-name]]
 `,
       },

@@ -6,7 +6,9 @@ import chalk from 'chalk';
 import * as wikirefs from 'wikirefs';
 
 import { MD } from '../util/const';
+import { filenameToTitle } from '../util/case';
 import { isValidRegex } from '../util/util';
+import { getConfig } from '../util/config';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -14,6 +16,38 @@ export function rename(oldFname: string, newFname: string, opts?: any) {
   // console.log('rename\nargs: ', oldFname, newFname, 'opts: ', opts);
   ////
   // setup
+  // yargs may provide dashed boolean options either as `noTitle` (camelCase)
+  // or as the literal key `no-title`, depending on config.
+  const noTitle: boolean = !!opts?.noTitle
+    || !!opts?.['no-title']
+    || (opts?.title === false);
+  const explicitTitle: string | undefined = (typeof opts?.title === 'string') ? opts.title : undefined;
+  const requestedCase: string | undefined = (typeof opts?.titleCase === 'string')
+    ? opts.titleCase
+    : (typeof opts?.['title-case'] === 'string')
+      ? opts['title-case']
+      : (typeof opts?.case === 'string')
+        ? opts.case
+        : undefined;
+
+  // Only read config if we need it for the default case conversion.
+  const configForCase: any = (!noTitle && !explicitTitle && !requestedCase) ? getConfig(opts?.config as string) : {};
+  const caseKind: string = requestedCase
+    || configForCase?.format?.title_case
+    || 'Title Case';
+
+  const setTitleInContent = (content: string, title: string): string => {
+    // CAML format (observed in tests as either `: title    :: ...` or `:: title    :: ...`)
+    const camlRe = /^(:+\s*title\s*::\s*)(.*)$/m;
+    let next = content.replace(camlRe, (_match, prefix: string) => `${prefix}${title}`);
+
+    // YAML frontmatter format (`title: ...`)
+    const yamlRe = /^(title\s*:\s*)(.*)$/m;
+    next = next.replace(yamlRe, (_match, prefix: string) => `${prefix}${title}`);
+
+    return next;
+  };
+
   if (opts.regex) {
     // validate regex
     if (!isValidRegex(oldFname)) {
@@ -33,6 +67,7 @@ export function rename(oldFname: string, newFname: string, opts?: any) {
   let oldFnameString: string | undefined;
   let newFnameString: string | undefined;
   let thisNewFilePath: string;
+  const renamedNewFnames: string[] = [];
   // rename file
   for (const thisFilePath of vaultFilePaths) {
     if ((path.basename(thisFilePath, MD) === oldFname)
@@ -56,12 +91,20 @@ export function rename(oldFname: string, newFname: string, opts?: any) {
         outputFnames.push('  ' + oldFnameString + ' -> ' + newFnameString);
         // replace old filename with new filename
         updatedVaultFilePaths.push(thisNewFilePath);
+        if (newFnameString) renamedNewFnames.push(newFnameString);
       } catch (e: any) {
         outputError.push(chalk.red('  [FILENAME]' + e));
         return;
       }
     } else {
       updatedVaultFilePaths.push(thisFilePath);
+    }
+  }
+
+  const titleByNewFname: Map<string, string> = new Map();
+  if (!noTitle && renamedNewFnames.length > 0) {
+    for (const renamed of renamedNewFnames) {
+      titleByNewFname.set(renamed, explicitTitle !== undefined ? explicitTitle : filenameToTitle(renamed, caseKind));
     }
   }
   // rename all [[wiki]] occurrences in file
@@ -78,6 +121,15 @@ export function rename(oldFname: string, newFname: string, opts?: any) {
         editContent = wikirefs.renameFileName(oldFnameStr, newFnameStr, editContent);
       }
       newContent = editContent;
+    }
+
+    // Update title attribute inside the renamed note only.
+    if (!noTitle) {
+      const maybeNewFname = path.basename(thisFilePath, MD);
+      const updatedTitle = titleByNewFname.get(maybeNewFname);
+      if (updatedTitle !== undefined) {
+        newContent = setTitleInContent(newContent, updatedTitle);
+      }
     }
     // update content
     try {

@@ -330,6 +330,22 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
           type: 'boolean',
           describe: 'skip verification prompt and perform operation',
           default: false,
+        })
+        // title options
+        .option('title', {
+          type: 'string',
+          describe: 'explicit title value to set on the renamed note',
+        })
+        .option('noTitle', {
+          alias: 'no-title',
+          type: 'boolean',
+          describe: 'skip updating the renamed note title attribute',
+          default: false,
+        })
+        .option('titleCase', {
+          alias: ['title-case', 'case'],
+          type: 'string',
+          describe: 'override config.format.title_case (kinds: "Title Case", "lower case", "kabob-case", "snake_case")',
         }),
       handler: (argv: ArgumentsCamelCase) => {
         try {
