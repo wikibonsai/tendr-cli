@@ -6,7 +6,7 @@ import yargs from 'yargs';
 
 import type { SemTree } from 'semtree';
 
-import { CONFIG_PATH, DOCTYPE_PATH } from './util/const';
+import { CONFIG_PATH, DOCTYPE_PATH, RELTYPE_PATH } from './util/const';
 import { getDocTypes } from './util/config';
 import type { InitTree } from './util/tree';
 import { buildTree, buildTreeSync } from './util/tree';
@@ -62,6 +62,11 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
       describe: 'relative path to doctype file, including filename; defaults to "t.doc.toml"',
       default: DOCTYPE_PATH,
     })
+    .option('reltype', {
+      type: 'string',
+      describe: 'relative path to reltype file, including filename; defaults to "t.rel.toml"',
+      default: RELTYPE_PATH,
+    })
     // .wrap(null)
     // .epilogue('cli tools for markdown-based digital gardening')
 
@@ -85,9 +90,10 @@ export const tendr = (argv: string[], p: any = prompt): yargs.Argv => {
         }),
       handler: (argv: ArgumentsCamelCase) => {
         try {
-          const payload: InitTree = {
+          const payload: any = {
             configUri: argv.config as string,
             doctypeUri: argv.doctype as string,
+            reltypeUri: argv.reltype as string,
             rootFileName: argv.root as string | undefined,
             globIndexUris: argv.glob as string | undefined
           };
