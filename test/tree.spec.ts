@@ -27,17 +27,17 @@ const mocks: TestMocks = {
 describe('tree', () => {
 
   beforeEach(() => {
-    const config: string = 
+    const config: string =
 `[garden]
 root    = 'i.bonsai'
 `;
-    const doctypes: string = 
+    const doctypes: string =
 `
 [index]
 path   = "/index/"
 prefix = "i."
 `;
-    const bonsai: string = 
+    const bonsai: string =
 `- [[fname-a]]
   - [[fname-b]]
     - [[fname-f]]
@@ -94,13 +94,19 @@ prefix = "i."
     if (fs.existsSync('t.doc.toml')) {
       fs.rmSync('t.doc.toml');
     }
+    if (fs.existsSync('custom-config.toml')) {
+      fs.rmSync('custom-config.toml');
+    }
+    if (fs.existsSync('custom-doctypes.toml')) {
+      fs.rmSync('custom-doctypes.toml');
+    }
     mocks.fakeConsoleLog.restore();
     mocks.fakeConsoleWarn.restore();
     mocks.fakeConsoleError.restore();
     mocks.fakeProcessCwd.restore();
   });
 
-  describe('default', () => {
+  describe('base', () => {
 
     it('single index file', runCmdTestSync(mocks, {
       input: ['tree'],
@@ -121,21 +127,11 @@ prefix = "i."
 \x1B[32m\x1B[39m`,
     }, SHOW_RESULT));
 
-    describe('multiple index files', () => {
-
-      beforeEach(() => {
-        // add new index file
-        const ibranch: string = '- [[fname-j]]\n';
-        fs.writeFileSync(path.join(testCwd, 'i.branch.md'), ibranch);
-        // append reference to root file
-        fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '  - [[i.branch]]\n');
-      });
-
-      afterEach(() => {
-        fs.rmSync(path.join(testCwd, 'i.branch.md'));
-      });
-
-      it('multiple index files', runCmdTestSync(mocks, {
+    it('multiple index files', () => {
+      const ibranch: string = '- [[fname-j]]\n';
+      fs.writeFileSync(path.join(testCwd, 'i.branch.md'), ibranch);
+      fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '  - [[i.branch]]\n');
+      runCmdTestSync(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
@@ -154,42 +150,35 @@ prefix = "i."
 \x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[33mi.branch\x1B[39m
 \x1B[33m\x1B[39m        \x1B[33m└── \x1B[39m\x1B[2mfname-j\x1B[22m
 \x1B[2m\x1B[22m`,
-      }, SHOW_RESULT));
-
+      }, SHOW_RESULT)();
     });
 
   });
 
-  // also custom configs in default config locations
-  describe('custom config content', () => {
+  describe('custom config', () => {
 
-    beforeEach(() => {
-      const config: string = 
+    it('content; config + doctypes (root from dir, not prefix)', () => {
+      const config: string =
 `[garden]
 root    = 'custom-bonsai'
 `;
-      const doctypes: string = 
+      const doctypes: string =
 `
 [index]
 path   = "/custom-index/"
 `;
       fs.writeFileSync('config.toml', config);
       fs.writeFileSync('t.doc.toml', doctypes);
-      // make custom index dir
       if (!fs.existsSync(path.join(testCwd, 'custom-index'))) {
-        // populate test files
         fs.mkdirSync(path.join(testCwd, 'custom-index'));
       }
-      // move resources to custom locations
       fs.renameSync(path.join(testCwd, 'i.bonsai.md'), path.join(testCwd, 'custom-index', 'custom-bonsai.md'));
-    });
-
-    it('config + doctypes (root from dir, not prefix)', runCmdTestSync(mocks, {
-      input: ['tree'],
-      cmd: ['tree'],
-      args: {},
-      opts: {},
-      output:
+      runCmdTestSync(mocks, {
+        input: ['tree'],
+        cmd: ['tree'],
+        args: {},
+        opts: {},
+        output:
 `\x1B[33mcustom-bonsai\x1B[39m
 \x1B[33m\x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-a\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m├── \x1B[39m\x1B[32mfname-b\x1B[39m
@@ -201,53 +190,36 @@ path   = "/custom-index/"
 \x1B[2m\x1B[22m    \x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m
 \x1B[32m\x1B[39m`,
-    }));
+      })();
+    });
 
-  });
-
-  describe('custom config content and custom config location', () => {
-
-    beforeEach(() => {
-      const config: string = 
+    it('content + location; config + doctypes', () => {
+      const config: string =
 `[garden]
 root    = 'custom-bonsai'
 `;
-      const doctypes: string = 
+      const doctypes: string =
 `
 [index]
 path   = "/custom-index/"
 `;
       fs.writeFileSync('config.toml', config);
       fs.writeFileSync('t.doc.toml', doctypes);
-      // move resources to custom locations
       fs.renameSync('config.toml', 'custom-config.toml');
       fs.renameSync('t.doc.toml', 'custom-doctypes.toml');
-      // make custom index dir
       if (!fs.existsSync(path.join(testCwd, 'custom-index'))) {
         fs.mkdirSync(path.join(testCwd, 'custom-index'));
       }
-      // move resources to custom locations
       fs.renameSync(path.join(testCwd, 'i.bonsai.md'), path.join(testCwd, 'custom-index', 'custom-bonsai.md'));
-    });
-
-    afterEach(() => {
-      if (fs.existsSync('custom-config.toml')) {
-        fs.rmSync('custom-config.toml');
-      }
-      if (fs.existsSync('custom-doctypes.toml')) {
-        fs.rmSync('custom-doctypes.toml');
-      }
-    });
-
-    it('config + doctypes', runCmdTestSync(mocks, {
-      input: ['tree', '-c', './custom-config.toml', '-d', 'custom-doctypes.toml'],
-      cmd: ['tree'],
-      args: {},
-      opts: {
-        config: './custom-config.toml',
-        doctype: 'custom-doctypes.toml',
-      },
-      output:
+      runCmdTestSync(mocks, {
+        input: ['tree', '-c', './custom-config.toml', '-d', 'custom-doctypes.toml'],
+        cmd: ['tree'],
+        args: {},
+        opts: {
+          config: './custom-config.toml',
+          doctype: 'custom-doctypes.toml',
+        },
+        output:
 `\x1B[33mcustom-bonsai\x1B[39m
 \x1B[33m\x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-a\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m├── \x1B[39m\x1B[32mfname-b\x1B[39m
@@ -259,35 +231,31 @@ path   = "/custom-index/"
 \x1B[2m\x1B[22m    \x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m
 \x1B[32m\x1B[39m`,
-    }));
+      })();
+    });
 
   });
 
   describe('no configs', () => {
 
-    // todo: load from default rootname and glob pattern?
-    beforeEach(() => {
+    it('config + doctypes', () => {
       if (fs.existsSync('config.toml')) {
         fs.rmSync('config.toml');
       }
       if (fs.existsSync('t.doc.toml')) {
         fs.rmSync('t.doc.toml');
       }
-      // make index dir
       if (!fs.existsSync(path.join(testCwd, 'index'))) {
         fs.mkdirSync(path.join(testCwd, 'index'));
       }
-      // move resources to default locations
       fs.renameSync(path.join(testCwd, 'i.bonsai.md'), path.join(testCwd, 'index', 'i.bonsai.md'));
-    });
-
-    it('config + doctypes', runCmdTestSync(mocks, {
-      input: ['tree'],
-      cmd: ['tree'],
-      args: {},
-      opts: {},
-      warn: '\x1B[33mError: ENOENT: no such file or directory, open \'./config.toml\'\x1B[39m',
-      output:
+      runCmdTestSync(mocks, {
+        input: ['tree'],
+        cmd: ['tree'],
+        args: {},
+        opts: {},
+        warn: '\x1B[33mError: ENOENT: no such file or directory, open \'./config.toml\'\x1B[39m',
+        output:
 `\x1B[33mi.bonsai\x1B[39m
 \x1B[33m\x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-a\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m├── \x1B[39m\x1B[32mfname-b\x1B[39m
@@ -299,44 +267,30 @@ path   = "/custom-index/"
 \x1B[2m\x1B[22m    \x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m
 \x1B[32m\x1B[39m`,
-    }));
+      })();
+    });
 
   });
 
   describe('custom options', () => {
 
-    beforeEach(() => {
-      // remove configs
+    it('root filename + index files glob', () => {
       fs.rmSync('config.toml');
       fs.rmSync('t.doc.toml');
-      // move tree files
-      // make custom index dir
       if (!fs.existsSync(path.join(testCwd, 'custom-index'))) {
         fs.mkdirSync(path.join(testCwd, 'custom-index'));
       }
-      // move resources to custom locations
       fs.renameSync(path.join(testCwd, 'i.bonsai.md'), path.join(testCwd, 'custom-index', 'custom-bonsai.md'));
-    });
-
-    afterEach(() => {
-      if (fs.existsSync('custom-config.toml')) {
-        fs.rmSync('custom-config.toml');
-      }
-      if (fs.existsSync('custom-doctypes.toml')) {
-        fs.rmSync('custom-doctypes.toml');
-      }
-    });
-
-    it('root filename + index files glob', runCmdTestSync(mocks, {
-      input: ['tree', '-r', 'custom-bonsai', '-g', 'custom-index/**/*'],
-      cmd: ['tree'],
-      args: {},
-      opts: {
-        root: 'custom-bonsai',
-        glob: 'custom-index/**/*',
-      },
-      warn: '\x1B[33mError: ENOENT: no such file or directory, open \'./config.toml\'\x1B[39m',
-      output:
+      runCmdTestSync(mocks, {
+        input: ['tree', '-r', 'custom-bonsai', '-g', 'custom-index/**/*'],
+        cmd: ['tree'],
+        args: {},
+        opts: {
+          root: 'custom-bonsai',
+          glob: 'custom-index/**/*',
+        },
+        warn: '\x1B[33mError: ENOENT: no such file or directory, open \'./config.toml\'\x1B[39m',
+        output:
 `\x1B[33mcustom-bonsai\x1B[39m
 \x1B[33m\x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-a\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m├── \x1B[39m\x1B[32mfname-b\x1B[39m
@@ -348,29 +302,24 @@ path   = "/custom-index/"
 \x1B[2m\x1B[22m    \x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m
 \x1B[32m\x1B[39m`,
-    }));
+      })();
+    });
 
   });
 
   describe('strip metadata', () => {
 
-    describe('caml', () => {
-
-      beforeEach(() => {
-        // populate test files
-        if (!fs.existsSync(testCwd)) {
-          fs.mkdirSync(testCwd);
-        }
-        const metadata = 
+    it('caml', () => {
+      if (!fs.existsSync(testCwd)) {
+        fs.mkdirSync(testCwd);
+      }
+      const metadata =
 `
 : title    :: a title
 : attrtype :: [[fname-b]]
 `;
-        // Write the combined data back to the file
-        fs.writeFileSync(path.join(testCwd, 'fname-a'), metadata, 'utf8');
-      });
-
-      it('caml', runCmdTestSync(mocks, {
+      fs.writeFileSync(path.join(testCwd, 'fname-a'), metadata, 'utf8');
+      runCmdTestSync(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
@@ -387,28 +336,21 @@ path   = "/custom-index/"
 \x1B[2m\x1B[22m    \x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m
 \x1B[32m\x1B[39m`,
-      }));
-
+      })();
     });
 
-    describe('yaml', () => {
-
-      beforeEach(() => {
-        // populate test files
-        if (!fs.existsSync(testCwd)) {
-          fs.mkdirSync(testCwd);
-        }
-        const metadata = 
+    it('yaml', () => {
+      if (!fs.existsSync(testCwd)) {
+        fs.mkdirSync(testCwd);
+      }
+      const metadata =
 `
 ---
 title: a title
 ---
 `;
-        // Write the combined data back to the file
-        fs.writeFileSync(path.join(testCwd, 'fname-a'), metadata, 'utf8');
-      });
-
-      it('yaml', runCmdTestSync(mocks, {
+      fs.writeFileSync(path.join(testCwd, 'fname-a'), metadata, 'utf8');
+      runCmdTestSync(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
@@ -425,34 +367,23 @@ title: a title
 \x1B[2m\x1B[22m    \x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m
 \x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m
 \x1B[32m\x1B[39m`,
-      }));
-
+      })();
     });
 
   });
 
-  describe('warn (execute, but warn user)', () => {
+  describe('warn', () => {
 
-    describe('orphan index/trunk files', () => {
-
-      beforeEach(() => {
-        // add unlinked trunk file
-        fs.writeFileSync(path.join(testCwd, 'i.trunk-1.md'), '- [[fname-1]]\n');
-        fs.writeFileSync(path.join(testCwd, 'i.trunk-2.md'), '- [[fname-2]]\n');
-      });
-
-      it('found', runCmdTestSync(mocks, {
+    it('orphan index/trunk files', () => {
+      fs.writeFileSync(path.join(testCwd, 'i.trunk-1.md'), '- [[fname-1]]\n');
+      fs.writeFileSync(path.join(testCwd, 'i.trunk-2.md'), '- [[fname-2]]\n');
+      runCmdTestSync(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
         opts: {},
         warn: '',
         output:
-        //   '\x1B[33m'
-        // + 'orphan trunk files found:\n'
-        // + '\n'
-        // + '- unused-trunk-file\n'
-        // + '\x1B[39m\n'
           '\x1B[33mi.bonsai\x1B[39m\n'
         + '\x1B[33m\x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-a\x1B[39m\n'
         + '\x1B[32m\x1B[39m    \x1B[33m├── \x1B[39m\x1B[32mfname-b\x1B[39m\n'
@@ -464,28 +395,16 @@ title: a title
         + '\x1B[2m\x1B[22m    \x1B[33m├── \x1B[39m\x1B[32mfname-d\x1B[39m\n'
         + '\x1B[32m\x1B[39m    \x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m\n'
         + '\x1B[32m\x1B[39m',
-      }));
-
+      })();
     });
 
-    describe('- markdown bullet', () => {
-
-      beforeEach(() => {
-        // append entity with missing markdown bullet to root file
-        fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '[[no-mkdn-bullet]]\n');
-      });
-
-      it('missing', runCmdTestSync(mocks, {
+    it('missing; - markdown bullet', () => {
+      fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '[[no-mkdn-bullet]]\n');
+      runCmdTestSync(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
         opts: {},
-        // warn:
-        // '\x1B[33m'
-        // + 'semtree.lint():  missing markdown bullet found:\n'
-        // + '\n'
-        // + '- File "i.bonsai" Line 10: "  [[no-mkdn-bullet]]"\n'
-        // + '\x1B[39m\n'
         output:
           '\x1B[33mi.bonsai\x1B[39m\n'
         + '\x1B[33m\x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-a\x1B[39m\n'
@@ -499,27 +418,16 @@ title: a title
         + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m\n'
         + '\x1B[32m\x1B[39m\x1B[33m└── \x1B[39m\x1B[2mno-mkdn-bullet\x1B[22m\n'
         + '\x1B[2m\x1B[22m',
-      }));
-
+      })();
     });
 
-    describe('[[wikilink]]', () => {
-
-      beforeEach(() => {
-        // append entity with missing wikilink to root file
-        fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- no-wikilink\n');
-      });
-
-      it('missing', runCmdTestSync(mocks, {
+    it('missing; [[wikilink]]', () => {
+      fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- no-wikilink\n');
+      runCmdTestSync(mocks, {
         input: ['tree'],
         cmd: ['tree'],
         args: {},
         opts: {},
-        // warn:
-        // '\x1B[33m'
-        // + 'semtree.lint():  missing wikilink found:\n'
-        // + '\n'
-        // + '- File "i.bonsai" Line 10: "  - no-wikilink"\n',
         output:
           '\x1B[33mi.bonsai\x1B[39m\n'
         + '\x1B[33m\x1B[39m\x1B[33m├── \x1B[39m\x1B[32mfname-a\x1B[39m\n'
@@ -533,13 +441,12 @@ title: a title
         + '\x1B[32m\x1B[39m\x1B[33m|   \x1B[39m\x1B[33m└── \x1B[39m\x1B[32mfname-e\x1B[39m\n'
         + '\x1B[32m\x1B[39m\x1B[33m└── \x1B[39m\x1B[2mno-wikilink\x1B[22m\n'
         + '\x1B[2m\x1B[22m',
-      }));
-
+      })();
     });
 
   });
 
-  describe('error (do not execute)', () => {
+  describe('error', () => {
 
     it('no root', runCmdTestSync(mocks, {
       input: ['tree', '-r', 'no-root'],
@@ -565,50 +472,34 @@ title: a title
       error: '\x1B[31munable to build tree\x1B[39m',
     }));
 
-    describe('tree errors', () => {
+    it('duplicates', () => {
+      fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- [[fname-a]]\n');
+      runCmdTestSync(mocks, {
+        input: ['tree'],
+        cmd: ['tree'],
+        args: {},
+        opts: {},
+        error:
+          'semtree.lint(): duplicate entity names found:\n'
+        + '\n'
+        + '- "fname-a"\n'
+        + '  - File "i.bonsai" Line 1\n'
+        + '  - File "i.bonsai" Line 10\n'
+      })();
+    });
 
-      describe('duplicates', () => {
-
-        beforeEach(() => {
-          // append duplicate wikilink to root file
-          fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- [[fname-a]]\n');
-        });
-
-        it('found', runCmdTestSync(mocks, {
-          input: ['tree'],
-          cmd: ['tree'],
-          args: {},
-          opts: {},
-          error:
-            'semtree.lint(): duplicate entity names found:\n'
-          + '\n'
-          + '- "fname-a"\n'
-          + '  - File "i.bonsai" Line 1\n'
-          + '  - File "i.bonsai" Line 10\n'
-        }));
-
-      });
-
-      describe('improper indentation', () => {
-
-        beforeEach(() => {
-          // append entity with improper indentaiton to root file
-          fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), ' - [[bad-indentation]]\n');
-        });
-    
-        it('found', runCmdTestSync(mocks, {
-          input: ['tree'],
-          cmd: ['tree'],
-          args: {},
-          opts: {},
-          error:
-            'semtree.lint(): improper indentation found:\n'
-          + '\n'
-          + '- File "i.bonsai" Line 10 (inconsistent indentation): " - [[bad-indentation]]"\n'
-        }));
-
-      });
-
+    it('improper indentation', () => {
+      fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), ' - [[bad-indentation]]\n');
+      runCmdTestSync(mocks, {
+        input: ['tree'],
+        cmd: ['tree'],
+        args: {},
+        opts: {},
+        error:
+          'semtree.lint(): improper indentation found:\n'
+        + '\n'
+        + '- File "i.bonsai" Line 10 (inconsistent indentation): " - [[bad-indentation]]"\n'
+      })();
     });
 
   });
