@@ -90,22 +90,30 @@ Sample output:
 ```
 
 ```
-// warnings
+// config warning
 
-⚠️ lint warnings:
+⚠️  [config] [lint] is deprecated — rename to [format]
+```
 
-semtree.lint(): orphan trunk files found:
+```
+// type error
+
+❌ [types] "hypernym" syncs to "nonexistent" but "nonexistent" does not exist in types
+```
+
+```
+// tree warning
+
+⚠️  [tree] orphan trunk files found:
 
 - i.orphan-trunk-1
 - i.orphan-trunk-2
 ```
 
 ```
-// errors
+// tree error
 
-❌ lint errors:
-
-semtree.lint(): duplicate entity names found:
+❌ [tree] duplicate entity names found:
 
 - "duplicate-filename"
   - File "i.bonsai" Line 1
@@ -126,6 +134,8 @@ Options:
                  ./config.toml"              [string] [default: "./config.toml"]
   -d, --doctype  relative path to doctype file, including filename; defaults to
                  "t.doc.toml"                 [string] [default: "./t.doc.toml"]
+      --reltype  relative path to reltype file, including filename; defaults to
+                 "t.rel.toml"                [string] [default: "./t.rel.toml"]
   -r, --root     filename for root of tree                              [string]
   -g, --glob     glob to index files                                    [string]
 ```
@@ -320,7 +330,7 @@ Sample output:
   children: fname-b, fname-c, fname-d, fname-e
 
 🕸️ Web
-                back                    fore
+          back                          fore
   attr    ◦ attrtype                    ◦ reftype
             • fname-b                   • fname-b
                                         ◦ attrtype
