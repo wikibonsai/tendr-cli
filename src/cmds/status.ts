@@ -341,7 +341,7 @@ export async function status(
     treeJob,
     webJob,
   ]).then(() => {
-    const RIGHT_START_COL: number = 40;
+    let RIGHT_START_COL: number = 20;
 
     function padRight(s: string, width: number): string {
       return s.padEnd(width, ' ');
@@ -386,7 +386,7 @@ export async function status(
       groups.forEach((g) => {
         lines.push(attrTypeStr(g.type));
         for (const fname of g.fnames) {
-          lines.push('• ' + fname);
+          lines.push('  • ' + fname);
         }
       });
       return lines;
@@ -461,14 +461,10 @@ export async function status(
     outLines.push('🌳 Tree');
     outLines.push('');
 
-    if (ancestor) {
-      const val: string = (treeAncestors.length > 0) ? treeAncestors.join(' > ') : EMPTY;
-      outLines.push(`  ancestors: ${val}`);
-    }
-    if (child) {
-      const val: string = (treeChildren.length > 0) ? treeChildren.join(', ') : EMPTY;
-      outLines.push(`  children: ${val}`);
-    }
+    const ancestorVal: string = (treeAncestors.length > 0) ? treeAncestors.join(' > ') : EMPTY;
+    outLines.push(`  ancestors: ${ancestorVal}`);
+    const childVal: string = (treeChildren.length > 0) ? treeChildren.join(', ') : EMPTY;
+    outLines.push(`  children: ${childVal}`);
 
     // web
     outLines.push('');
@@ -476,29 +472,31 @@ export async function status(
       const showBack: boolean = backattr || backlink || backembed;
       const showFore: boolean = foreattr || forelink || foreembed;
       if (showBack || showFore) {
+        // pre-render left (back) lines to compute dynamic column width
+        const attrLeftLines  = (backattr || foreattr) ? renderAttrLeft(renderAttrGroups(backattrs)) : [];
+        const linkLeftLines  = (backlink || forelink) ? renderLinksLeft(backlinks) : [];
+        const embedLeftLines = (backembed || foreembed) ? renderEmbedsLeft(backembeds) : [];
+        const GAP = 4;
+        const MIN_COL = 20;
+        const allLeft = [...attrLeftLines, ...linkLeftLines, ...embedLeftLines];
+        const maxLeft = allLeft.reduce((max, line) => Math.max(max, line.length), 0);
+        RIGHT_START_COL = Math.max(maxLeft + GAP, MIN_COL);
+
         outLines.push('🕸️ Web');
 
-        const leftHead: string = ' '.repeat(16) + 'back';
+        const leftHead: string = ' '.repeat(10) + 'back';
         outLines.push(padRight(leftHead, RIGHT_START_COL) + 'fore');
 
         if (backattr || foreattr) {
-          const backGroups = renderAttrGroups(backattrs);
-          const foreGroups = renderAttrGroups(foreattrs);
-          outLines.push(...mergeColumns(renderAttrLeft(backGroups), renderAttrRight(foreGroups)));
+          outLines.push(...mergeColumns(attrLeftLines, renderAttrRight(renderAttrGroups(foreattrs))));
         }
 
         if (backlink || forelink) {
-          outLines.push(...mergeColumns(
-            renderLinksLeft(backlinks),
-            renderLinksRight(forelinks),
-          ));
+          outLines.push(...mergeColumns(linkLeftLines, renderLinksRight(forelinks)));
         }
 
         if (backembed || foreembed) {
-          outLines.push(...mergeColumns(
-            renderEmbedsLeft(backembeds),
-            renderEmbedsRight(foreembeds),
-          ));
+          outLines.push(...mergeColumns(embedLeftLines, renderEmbedsRight(foreembeds)));
         }
       }
     }
