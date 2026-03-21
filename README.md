@@ -92,7 +92,7 @@ Sample output:
 ```
 // config warning
 
-⚠️  [config] [lint] is deprecated — rename to [format]
+⚠️ [config] [lint] is deprecated — rename to [format]
 ```
 
 ```
@@ -104,7 +104,7 @@ Sample output:
 ```
 // tree warning
 
-⚠️  [tree] orphan trunk files found:
+⚠️ [tree] orphan trunk files found:
 
 - i.orphan-trunk-1
 - i.orphan-trunk-2
@@ -231,8 +231,6 @@ $ tendr list
 Sample output:
 
 ```
-🌱 garden census
-
 structure
 
   nodes              5

@@ -25,7 +25,7 @@ export function doctor(payload: any, opts?: any): void {
     hasIssues = true;
   }
   for (const warn of configResult.warnings) {
-    console.log(chalk.yellow(`⚠️  [config] ${warn.message}`));
+    console.log(chalk.yellow(`⚠️ [config] ${warn.message}`));
     hasIssues = true;
   }
   // print type validation results
@@ -34,7 +34,7 @@ export function doctor(payload: any, opts?: any): void {
     hasIssues = true;
   }
   for (const warn of typeResult.warnings) {
-    console.log(chalk.yellow(`⚠️  [types] ${warn.message}`));
+    console.log(chalk.yellow(`⚠️ [types] ${warn.message}`));
     hasIssues = true;
   }
 

@@ -115,7 +115,7 @@ describe('doctor', () => {
         opts: {},
         warn: 'trug: found [lint] in config \u2014 please rename to [format]',
         output:
-          '\x1B[33m\u26A0\uFE0F  [config] [lint] is deprecated \u2014 rename to [format]\x1B[39m',
+          '\x1B[33m\u26A0\uFE0F [config] [lint] is deprecated \u2014 rename to [format]\x1B[39m',
       })();
     });
 
@@ -153,7 +153,7 @@ describe('doctor', () => {
         args: {},
         opts: {},
         output:
-          '\x1B[33m\u26A0\uFE0F  [types] Named section [stale-section] does not match any type in the types array\x1B[39m',
+          '\x1B[33m\u26A0\uFE0F [types] Named section [stale-section] does not match any type in the types array\x1B[39m',
       })();
     });
 

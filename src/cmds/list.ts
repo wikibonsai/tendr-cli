@@ -88,8 +88,6 @@ export function list(payload: InitTree, _opts?: any): void {
   const doctypes: number = doctypesObj ? Object.keys(doctypesObj).length : 0;
 
   const out: string = [
-    '🌱 garden census',
-    '',
     'structure',
     '',
     formatCountLine('nodes', nodes),

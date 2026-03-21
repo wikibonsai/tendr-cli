@@ -81,8 +81,6 @@ describe('list', () => {
       input: ['list'],
       cmd: ['list'],
       output:
-        '🌱 garden census\n'
-        + '\n'
         + 'structure\n'
         + '\n'
         + '  nodes              5\n'
@@ -110,8 +108,6 @@ describe('list', () => {
       input: ['list'],
       cmd: ['list'],
       output:
-        '🌱 garden census\n'
-        + '\n'
         + 'structure\n'
         + '\n'
         + '  nodes              0\n'
@@ -147,8 +143,6 @@ describe('list', () => {
       input: ['list'],
       cmd: ['list'],
       output:
-        '🌱 garden census\n'
-        + '\n'
         + 'structure\n'
         + '\n'
         + '  nodes              3\n'
