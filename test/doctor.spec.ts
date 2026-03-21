@@ -73,15 +73,95 @@ describe('doctor', () => {
     if (fs.existsSync('t.doc.toml')) {
       fs.rmSync('t.doc.toml');
     }
+    if (fs.existsSync('t.rel.toml')) {
+      fs.rmSync('t.rel.toml');
+    }
     mocks.fakeConsoleLog.restore();
     mocks.fakeConsoleWarn.restore();
     mocks.fakeConsoleError.restore();
     mocks.fakeProcessCwd.restore();
   });
 
-  describe('single index file', () => {
+  describe('config', () => {
 
-    it('success', runCmdTestSync(mocks, {
+    it('error; invalid format value', () => {
+      const config: string = '[garden]\n'
+                           + 'root = \'i.bonsai\'\n'
+                           + '\n'
+                           + '[format]\n'
+                           + 'case_title = \'INVALID\'\n';
+      fs.writeFileSync('config.toml', config);
+      runCmdTestSync(mocks, {
+        input: ['doctor'],
+        cmd: ['doctor'],
+        args: {},
+        opts: {},
+        output:
+          '\x1B[31m❌ [config] case_title "INVALID" must be one of: Title Case, lower case, kabob-case, snake_case\x1B[39m',
+      })();
+    });
+
+    it('warn; deprecated [lint] key', () => {
+      const config: string = '[garden]\n'
+                           + 'root = \'i.bonsai\'\n'
+                           + '\n'
+                           + '[lint]\n'
+                           + 'indent_kind = \'space\'\n';
+      fs.writeFileSync('config.toml', config);
+      runCmdTestSync(mocks, {
+        input: ['doctor'],
+        cmd: ['doctor'],
+        args: {},
+        opts: {},
+        warn: 'trug: found [lint] in config \u2014 please rename to [format]',
+        output:
+          '\x1B[33m\u26A0\uFE0F  [config] [lint] is deprecated \u2014 rename to [format]\x1B[39m',
+      })();
+    });
+
+  });
+
+  describe('types', () => {
+
+    it('error; broken sync pair', () => {
+      const reltypes: string = '[[types]]\n'
+                             + 'name = "hypernym"\n'
+                             + 'kind = "attr"\n'
+                             + 'sync = "nonexistent"\n';
+      fs.writeFileSync('t.rel.toml', reltypes);
+      runCmdTestSync(mocks, {
+        input: ['doctor'],
+        cmd: ['doctor'],
+        args: {},
+        opts: {},
+        output:
+          '\x1B[31m❌ [types] "hypernym" syncs to "nonexistent" but "nonexistent" does not exist in types\x1B[39m',
+      })();
+    });
+
+    it('warn; orphan named section', () => {
+      const reltypes: string = '[[types]]\n'
+                             + 'name = "hypernym"\n'
+                             + 'kind = "attr"\n'
+                             + '\n'
+                             + '[stale-section]\n'
+                             + 'color = "red"\n';
+      fs.writeFileSync('t.rel.toml', reltypes);
+      runCmdTestSync(mocks, {
+        input: ['doctor'],
+        cmd: ['doctor'],
+        args: {},
+        opts: {},
+        output:
+          '\x1B[33m\u26A0\uFE0F  [types] Named section [stale-section] does not match any type in the types array\x1B[39m',
+      })();
+    });
+
+  });
+
+  describe('semtree', () => {
+
+    it('success; all clean', runCmdTestSync(mocks, {
       input: ['doctor'],
       cmd: ['doctor'],
       args: {},
@@ -90,86 +170,63 @@ describe('doctor', () => {
         '\x1B[32m✅ all clean\x1B[39m',
     }));
 
-    describe('success; delimiters', () => {
-
-      beforeEach(() => {
-        // prepend caml attrs to file
-        const filePath: string = path.join(testCwd, 'i.bonsai.md');
-        const existingContent: string = fs.readFileSync(filePath, 'utf-8');
-        const newContent: string = '---\n'
-                                 + 'yaml-attr: some-value\n'
-                                 + '---\n'
-                                 + ': caml-attr :: some-value\n'
-                                 + '<!--semtree-->\n'
-                                 + existingContent
-                                 + '<!--/semtree-->\n';
-        fs.writeFileSync(filePath, newContent);
-      });
-
-      it('found', runCmdTestSync(mocks, {
+    it('success; with delimiters', () => {
+      const filePath: string = path.join(testCwd, 'i.bonsai.md');
+      const existingContent: string = fs.readFileSync(filePath, 'utf-8');
+      const newContent: string = '---\n'
+                               + 'yaml-attr: some-value\n'
+                               + '---\n'
+                               + ': caml-attr :: some-value\n'
+                               + '<!--semtree-->\n'
+                               + existingContent
+                               + '<!--/semtree-->\n';
+      fs.writeFileSync(filePath, newContent);
+      runCmdTestSync(mocks, {
         input: ['doctor'],
         cmd: ['doctor'],
         args: {},
         opts: {},
         output:
           '\x1B[32m✅ all clean\x1B[39m',
-      }));
-
+      })();
     });
 
-    describe('success; strip caml', () => {
-
-      beforeEach(() => {
-        // prepend caml attrs to file
-        const filePath: string = path.join(testCwd, 'i.bonsai.md');
-        const existingContent: string = fs.readFileSync(filePath, 'utf-8');
-        const newContent: string = ': caml-attr :: some-value\n' + existingContent;
-        fs.writeFileSync(filePath, newContent);
-      });
-
-      it('found', runCmdTestSync(mocks, {
+    it('success; strip caml', () => {
+      const filePath: string = path.join(testCwd, 'i.bonsai.md');
+      const existingContent: string = fs.readFileSync(filePath, 'utf-8');
+      const newContent: string = ': caml-attr :: some-value\n' + existingContent;
+      fs.writeFileSync(filePath, newContent);
+      runCmdTestSync(mocks, {
         input: ['doctor'],
         cmd: ['doctor'],
         args: {},
         opts: {},
         output:
           '\x1B[32m✅ all clean\x1B[39m',
-      }));
-
+      })();
     });
 
-    describe('success; strip yaml', () => {
-
-      beforeEach(() => {
-        // prepend caml attrs to file
-        const filePath: string = path.join(testCwd, 'i.bonsai.md');
-        const existingContent: string = fs.readFileSync(filePath, 'utf-8');
-        const newContent: string = '---\n'
-                                 + 'yaml-attr: some-value\n'
-                                 + '---\n'
-                                 + existingContent;
-        fs.writeFileSync(filePath, newContent);
-      });
-
-      it('found', runCmdTestSync(mocks, {
+    it('success; strip yaml', () => {
+      const filePath: string = path.join(testCwd, 'i.bonsai.md');
+      const existingContent: string = fs.readFileSync(filePath, 'utf-8');
+      const newContent: string = '---\n'
+                               + 'yaml-attr: some-value\n'
+                               + '---\n'
+                               + existingContent;
+      fs.writeFileSync(filePath, newContent);
+      runCmdTestSync(mocks, {
         input: ['doctor'],
         cmd: ['doctor'],
         args: {},
         opts: {},
         output:
           '\x1B[32m✅ all clean\x1B[39m',
-      }));
-
+      })();
     });
 
-    describe('error; duplicates', () => {
-
-      beforeEach(() => {
-        // append duplicate wikilink to root file
-        fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- [[fname-a]]\n');
-      });
-
-      it('found', runCmdTestSync(mocks, {
+    it('error; duplicates', () => {
+      fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- [[fname-a]]\n');
+      runCmdTestSync(mocks, {
         input: ['doctor'],
         cmd: ['doctor'],
         args: {},
@@ -183,18 +240,12 @@ describe('doctor', () => {
         + '\x1B[31m  - File "i.bonsai" Line 1\x1B[39m\n'
         + '\x1B[31m  - File "i.bonsai" Line 4\x1B[39m\n'
         + '\x1B[31m\x1B[39m'
-      }));
-
+      })();
     });
 
-    describe('error; improper indentation', () => {
-
-      beforeEach(() => {
-        // append duplicate wikilink to root file
-        fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), ' - [[indent-error]]\n');
-      });
-
-      it('found', runCmdTestSync(mocks, {
+    it('error; improper indentation', () => {
+      fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), ' - [[indent-error]]\n');
+      runCmdTestSync(mocks, {
         input: ['doctor'],
         cmd: ['doctor'],
         args: {},
@@ -206,19 +257,13 @@ describe('doctor', () => {
         + '\x1B[31m\x1B[39m\n'
         + '\x1B[31m- File "i.bonsai" Line 4 (inconsistent indentation): " - [[indent-error]]"\x1B[39m\n'
         + '\x1B[31m\x1B[39m'
-      }));
-
+      })();
     });
 
-    describe('warn; orphan trunk files', () => {
-
-      beforeEach(() => {
-        // add unlinked trunk file
-        fs.writeFileSync(path.join(testCwd, 'i.trunk-1.md'), '- [[fname-1]]\n');
-        fs.writeFileSync(path.join(testCwd, 'i.trunk-2.md'), '- [[fname-2]]\n');
-      });
-
-      it('found', runCmdTestSync(mocks, {
+    it('warn; orphan trunk files', () => {
+      fs.writeFileSync(path.join(testCwd, 'i.trunk-1.md'), '- [[fname-1]]\n');
+      fs.writeFileSync(path.join(testCwd, 'i.trunk-2.md'), '- [[fname-2]]\n');
+      runCmdTestSync(mocks, {
         input: ['doctor'],
         cmd: ['doctor'],
         args: {},
@@ -231,18 +276,12 @@ describe('doctor', () => {
         + '\x1B[33m- i.trunk-1\x1B[39m\n'
         + '\x1B[33m- i.trunk-2\x1B[39m\n'
         + '\x1B[33m\x1B[39m',
-      }));
-
+      })();
     });
 
-    describe('warn; markdown bullets missing', () => {
-
-      beforeEach(() => {
-        // append duplicate wikilink to root file
-        fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '[[no-mkdn-bullet]]\n');
-      });
-
-      it('found', runCmdTestSync(mocks, {
+    it('warn; markdown bullets missing', () => {
+      fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '[[no-mkdn-bullet]]\n');
+      runCmdTestSync(mocks, {
         input: ['doctor'],
         cmd: ['doctor'],
         args: {},
@@ -254,18 +293,12 @@ describe('doctor', () => {
         + '\x1B[33m\x1B[39m\n'
         + '\x1B[33m- File "i.bonsai" Line 4: "[[no-mkdn-bullet]]"\x1B[39m\n'
         + '\x1B[33m\x1B[39m'
-      }));
-
+      })();
     });
 
-    describe('warn; wikilinks missing', () => {
-
-      beforeEach(() => {
-        // append duplicate wikilink to root file
-        fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- no-wikilinks\n');
-      });
-
-      it('found', runCmdTestSync(mocks, {
+    it('warn; wikilinks missing', () => {
+      fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '- no-wikilinks\n');
+      runCmdTestSync(mocks, {
         input: ['doctor'],
         cmd: ['doctor'],
         args: {},
@@ -277,35 +310,30 @@ describe('doctor', () => {
         + '\x1B[33m\x1B[39m\n'
         + '\x1B[33m- File "i.bonsai" Line 4: "- no-wikilinks"\x1B[39m\n'
         + '\x1B[33m\x1B[39m'
-      }));
-
+      })();
     });
 
   });
 
   describe.skip('multi index file', () => {
 
-    beforeEach(() => {
+    it('success', () => {
       const branch: string = '';
-      // populate test files
       if (!fs.existsSync(testCwd)) {
         fs.mkdirSync(testCwd);
       }
       fs.writeFileSync(path.join(testCwd, 'i.branch.md'), branch);
-      // append reference to root file
       fs.appendFileSync(path.join(testCwd, 'i.bonsai.md'), '  - [[i.branch]]\n');
+      runCmdTestSync(mocks, {
+        input: ['doctor'],
+        cmd: ['doctor'],
+        args: {},
+        opts: {},
+        output:
+          '\n',
+      }, SHOW_RESULT)();
     });
-
-    it('success', runCmdTestSync(mocks, {
-      input: ['doctor'],
-      cmd: ['doctor'],
-      args: {},
-      opts: {},
-      output:
-        '\n',
-    }, SHOW_RESULT));
 
   });
 
 });
-
