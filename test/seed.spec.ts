@@ -165,18 +165,8 @@ describe('seed', () => {
     sinon.restore();
   });
 
-  describe('seed behavior', () => {
+  describe('base', () => {
 
-    it('no api key; shows fallback error', () => {
-      // temporarily unset env key so api key resolves to ''
-      delete process.env.ANTHROPIC_API_KEY;
-      return runCmdTest(mocks, {
-        input: ['seed', 'myconcept'],
-        cmd: ['seed'],
-        args: { concept: 'myconcept' },
-        error: 'Cannot seed without an API key',
-      })();
-    });
 
     it('successful; prints to stdout', () => {
       fetchStub.resolves(fakeLlmResponse('# Machine Learning\n\nSome generated content here.'));
@@ -227,6 +217,21 @@ describe('seed', () => {
           { index: 0, text: '    - [[ai]]' },
           { index: 0, text: '      - [[machine-learning]]' },
         ],
+      })();
+    });
+
+  });
+
+  describe('api', () => {
+
+    it('no api key; shows fallback error', () => {
+      // temporarily unset env key so api key resolves to ''
+      delete process.env.ANTHROPIC_API_KEY;
+      return runCmdTest(mocks, {
+        input: ['seed', 'myconcept'],
+        cmd: ['seed'],
+        args: { concept: 'myconcept' },
+        error: 'Cannot seed without an API key',
       })();
     });
 
@@ -292,8 +297,8 @@ describe('seed', () => {
   describe('config-based formatting', () => {
 
     it('picks up config-based defaults for formatting', () => {
-      // write a real config.toml with lint settings
-      const configContent = `[lint]\nattrs = "yaml"\ncase = "upper"\n`;
+      // write a real config.toml with format settings
+      const configContent = `[format]\nattrs = "yaml"\ncase = "upper"\n`;
       fs.writeFileSync(path.join(testCwd, 'config.toml'), configContent);
       fetchStub.resolves(fakeLlmResponse(realisticResponse));
       return runCmdTest(mocks, {

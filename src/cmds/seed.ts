@@ -37,7 +37,7 @@ export async function seed(concept: string, argv: ArgumentsCamelCase): Promise<v
   const model: string = (argv.model as string) || DEFAULT_MODELS[provider] || DEFAULT_MODELS['anthropic'];
   // resolve markdown formatting options (flag > config > defaults)
   const config: any = getConfig(argv.config as string | undefined);
-  const lintConfig: any = (config && config.lint) ? config.lint : {};
+  const lintConfig: any = (config && (config.format || config.lint)) ? (config.format || config.lint) : {};
   const mkdn: OptMkdn = {
     attrs:      (argv.attrs      as OptMkdn['attrs'])      || lintConfig.attrs      || DEFAULT_MKDN.attrs,
     case:       (argv.case       as OptMkdn['case'])       || lintConfig.case       || DEFAULT_MKDN.case,
