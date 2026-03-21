@@ -1526,6 +1526,22 @@
   resolved "https://registry.yarnpkg.com/@wessberg/stringutil/-/stringutil-1.0.19.tgz#baadcb6f4471fe2d46462a7d7a8294e4b45b29ad"
   integrity sha512-9AZHVXWlpN8Cn9k5BC/O0Dzb9E9xfEMXzYrNunwvkUTvuK7xgQPVRZpLo+jWCOZ5r8oBa8NIrHuPEu1hzbb6bg==
 
+"@wikibonsai/almanac@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/@wikibonsai/almanac/-/almanac-0.0.1.tgz#c0f0182e9b280276045c74814c7057701b0da999"
+  integrity sha512-oO4WwANeHd4g0/c48lNQWEj9kq87IpKoadVHD66ILFCZt24bXmkQaj4/Ki+URn8oYSJXKP7po/7pn0B9I1pCNw==
+  dependencies:
+    "@iarna/toml" "^2.2.5"
+    js-yaml "^4.1.0"
+
+"@wikibonsai/trug@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/@wikibonsai/trug/-/trug-0.0.1.tgz#ae07837666dbef72238bf26dbaaa83df99aa7e19"
+  integrity sha512-Jv1GdzrOibGJZeG2Q9fGv4Fkv+XlnTsgwyQ2tlkElsF6+RUf90pIP0YvwqL8dNaoWDT0Wd2EWKup1yxUr3TCDg==
+  dependencies:
+    "@iarna/toml" "^2.2.5"
+    js-yaml "^4.1.0"
+
 acorn-jsx@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"
@@ -1797,6 +1813,11 @@ chalk@^4.0.0, chalk@^4.1.0:
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
+
+chalk@^5.6.2:
+  version "5.6.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-5.6.2.tgz#b1238b6e23ea337af71c7f8a295db5af0c158aea"
+  integrity sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA==
 
 chokidar@3.5.3:
   version "3.5.3"

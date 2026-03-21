@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
 import * as semtree from 'semtree';
-import { check as checkConfig } from 'trug';
-import { check as checkTypes } from 'almanac';
+import { check as checkConfig } from '@wikibonsai/trug';
+import { check as checkTypes } from '@wikibonsai/almanac';
 
 import { getConfig, getDocTypes, getRelTypes } from '../util/config';
 import { buildTreeData, getRootFileName } from '../util/tree';

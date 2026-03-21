@@ -1,8 +1,8 @@
 import fs from 'fs';
 
 import chalk from 'chalk';
-import { loadConfig } from 'trug';
-import { loadDocTypes, loadRelTypes } from 'almanac';
+import { loadConfig } from '@wikibonsai/trug';
+import { loadDocTypes, loadRelTypes } from '@wikibonsai/almanac';
 
 import { CONFIG_PATH, DOCTYPE_PATH, RELTYPE_PATH } from './const';
 
